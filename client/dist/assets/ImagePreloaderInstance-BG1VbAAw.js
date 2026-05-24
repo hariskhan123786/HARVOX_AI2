@@ -1,0 +1,1 @@
+var s=Object.defineProperty;var r=(n,e,t)=>e in n?s(n,e,{enumerable:!0,configurable:!0,writable:!0,value:t}):n[e]=t;var i=(n,e,t)=>r(n,typeof e!="symbol"?e+"":e,t);class o{constructor(e,t){i(this,"_container");i(this,"_engine");this._engine=e,this._container=t}destroy(){var e;(e=this._engine.images)==null||e.delete(this._container)}}export{o as ImagePreloaderInstance};
