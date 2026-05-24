@@ -14,6 +14,7 @@
     "@xterm/xterm": "^6.0.0",
     "axios": "^1.7.9",
     "clsx": "^2.1.1",
+    "date-fns": "^4.3.0",
     "file-saver": "^2.0.5",
     "framer-motion": "^11.15.0",
     "html2canvas": "^1.4.1",
@@ -33,6 +34,7 @@
     "socket.io-client": "^4.8.3",
     "tailwind-merge": "^2.6.0",
     "tsparticles": "^4.0.4",
+    "tsparticles-slim": "^2.12.0",
     "zustand": "^5.0.2"
   },
   "devDependencies": {

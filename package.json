@@ -1,0 +1,16 @@
+{
+  "name": "harvox-ai",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "dev": "npm run dev:server & npm run dev:client",
+    "start": "cd server && npm start"
+  },
+  "description": "HARVOX AI - Premium AI SaaS Platform",
+  "dependencies": {
+    "@studio-freight/lenis": "^1.0.42"
+  }
+}
