@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { settingsAPI, authAPI } from '../../services/api';
 import GlassCard from '../../components/ui/GlassCard';
 import NeonButton from '../../components/ui/NeonButton';
+import { AI_PROVIDERS, GROQ_MODELS, GEMINI_MODELS, getModelsByProvider } from '../../config/aiModels';
 import {
   Paintbrush, Cpu, Volume2, Shield,
   Bell, Layout, Database, LogOut, Check, User,
@@ -158,11 +159,14 @@ export default function Settings() {
   /* ── Settings toggles ──────────────────────────────────── */
   const [theme, setTheme] = useState('cyberpunk');
   const [accent, setAccent] = useState('purple');
+  const [provider, setProvider] = useState(AI_PROVIDERS.GROQ);
   const [model, setModel] = useState('llama-3.3-70b-versatile');
   const [creativity, setCreativity] = useState(0.7);
   const [responseLength, setResponseLength] = useState(2048);
   const [expertMode, setExpertMode] = useState(false);
   const [codingMode, setCodingMode] = useState(true);
+  const [groqApiKey, setGroqApiKey] = useState('');
+  const [geminiApiKey, setGeminiApiKey] = useState('');
   const [voiceGender, setVoiceGender] = useState('female');
   const [voiceSpeed, setVoiceSpeed] = useState(1.0);
   const [autoVoiceReplies, setAutoVoiceReplies] = useState(false);
@@ -223,10 +227,15 @@ export default function Settings() {
           const s = data.settings;
           if (s.appearance) { setTheme(s.appearance.theme); setAccent(s.appearance.accentColor); }
           if (s.ai) {
+            setProvider(s.ai.provider || AI_PROVIDERS.GROQ);
             setModel(s.ai.model);
             setCreativity(s.ai.creativity);
             setExpertMode(s.ai.expertiseLevel === 'expert');
             setCodingMode(s.ai.codingMode !== 'standard');
+          }
+          if (s.apiKeys) {
+            setGroqApiKey(s.apiKeys.groq || '');
+            setGeminiApiKey(s.apiKeys.gemini || '');
           }
           if (s.voice) {
             setVoiceGender(s.voice.voiceSelection);
@@ -607,13 +616,83 @@ export default function Settings() {
                       <h3 className="font-orbitron font-semibold text-sm text-white tracking-widest uppercase border-b border-white/5 pb-2">AI Configuration Panel</h3>
                       <div className="space-y-5">
                         <div className="space-y-2">
-                          <label className="text-xs font-semibold font-orbitron tracking-wider text-muted">AI MODEL SELECTION</label>
-                          <select value={model} onChange={(e) => { setModel(e.target.value); saveSetting('ai', { model: e.target.value }); }} className="input-neon text-xs font-mono">
-                            <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Expert)</option>
-                            <option value="llama3-70b-8192">llama3-70b-8192 (Fast)</option>
-                            <option value="mixtral-8x7b-32768">mixtral-8x7b-32768 (Lite)</option>
-                          </select>
+                          <label className="text-xs font-semibold font-orbitron tracking-wider text-muted">AI PROVIDER SELECTION</label>
+                          <div className="grid grid-cols-2 gap-3">
+                            {[
+                              { id: AI_PROVIDERS.GROQ, label: 'Groq AI', desc: 'Fast & Reliable' },
+                              { id: AI_PROVIDERS.GEMINI, label: 'Google Gemini', desc: 'Advanced & Capable' }
+                            ].map((p) => (
+                              <button
+                                key={p.id}
+                                onClick={() => {
+                                  setProvider(p.id);
+                                  const defaultModel = p.id === AI_PROVIDERS.GEMINI 
+                                    ? GEMINI_MODELS[0].id 
+                                    : GROQ_MODELS[0].id;
+                                  setModel(defaultModel);
+                                  saveSetting('ai', { provider: p.id, model: defaultModel });
+                                }}
+                                className={`p-3 rounded-xl border transition-all ${
+                                  provider === p.id
+                                    ? 'border-neon-blue/50 bg-neon-blue/10'
+                                    : 'border-white/5 bg-secondary/10 hover:border-white/10'
+                                }`}
+                              >
+                                <p className="font-orbitron text-xs font-bold text-white tracking-wider">{p.label}</p>
+                                <p className="text-[9px] text-muted">{p.desc}</p>
+                              </button>
+                            ))}
+                          </div>
                         </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold font-orbitron tracking-wider text-muted">AI MODEL SELECTION</label>
+                          <select 
+                            value={model} 
+                            onChange={(e) => { 
+                              setModel(e.target.value); 
+                              saveSetting('ai', { model: e.target.value }); 
+                            }} 
+                            className="input-neon text-xs font-mono"
+                          >
+                            {getModelsByProvider(provider).map((m) => (
+                              <option key={m.id} value={m.id}>{m.name}</option>
+                            ))}
+                          </select>
+                          <p className="text-[9px] text-muted/60">Switching providers will automatically select the recommended model</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-white/5">
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-orbitron font-bold tracking-widest text-muted uppercase">Groq API Key (Optional)</label>
+                            <input
+                              type="password"
+                              value={groqApiKey}
+                              onChange={(e) => {
+                                setGroqApiKey(e.target.value);
+                                saveSetting('apiKeys', { groq: e.target.value, gemini: geminiApiKey });
+                              }}
+                              placeholder="Leave empty to use admin's key"
+                              className="input-neon text-xs font-mono"
+                            />
+                            <p className="text-[9px] text-muted/60">Add your personal Groq API key for priority access</p>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-orbitron font-bold tracking-widest text-muted uppercase">Gemini API Key (Optional)</label>
+                            <input
+                              type="password"
+                              value={geminiApiKey}
+                              onChange={(e) => {
+                                setGeminiApiKey(e.target.value);
+                                saveSetting('apiKeys', { groq: groqApiKey, gemini: e.target.value });
+                              }}
+                              placeholder="Leave empty to use admin's key"
+                              className="input-neon text-xs font-mono"
+                            />
+                            <p className="text-[9px] text-muted/60">Add your personal Gemini API key for priority access</p>
+                          </div>
+                        </div>
+
                         <div className="space-y-2">
                           <div className="flex justify-between text-xs font-semibold font-orbitron tracking-wider">
                             <span className="text-muted">CREATIVITY SLIDER (TEMPERATURE)</span>

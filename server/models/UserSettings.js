@@ -11,6 +11,7 @@ const userSettingsSchema = new mongoose.Schema(
       uiDensity: { type: String, default: 'comfortable' },
     },
     ai: {
+      provider: { type: String, enum: ['groq', 'gemini'], default: 'groq' },
       model: { type: String, default: 'llama3-70b-8192' },
       creativity: { type: Number, min: 0, max: 2, default: 0.7 },
       responseLength: { type: String, enum: ['short', 'medium', 'long'], default: 'medium' },
@@ -43,7 +44,10 @@ const userSettingsSchema = new mongoose.Schema(
       layoutType: { type: String, default: 'default' },
       hiddenModules: [{ type: String }],
     },
-    apiKeys: { type: String, default: '' }
+    apiKeys: {
+      groq: { type: String, default: '', select: false },
+      gemini: { type: String, default: '', select: false },
+    }
   },
   { timestamps: true }
 );

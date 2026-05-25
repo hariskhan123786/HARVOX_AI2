@@ -3,6 +3,7 @@ import { Download, Code2 } from 'lucide-react';
 import { saveAs } from 'file-saver';
 import Editor from '@monaco-editor/react';
 import { aiAPI } from '../../services/api';
+import { AI_PROVIDERS, GROQ_MODELS, GEMINI_MODELS, getModelsByProvider } from '../../config/aiModels';
 import GlassCard from '../../components/ui/GlassCard';
 import NeonButton from '../../components/ui/NeonButton';
 import LoadingOrb from '../../components/ui/LoadingOrb';
@@ -12,6 +13,8 @@ const languages = ['JavaScript', 'React', 'Python', 'HTML', 'CSS', 'Node.js', 'C
 export default function CodeGenerator() {
   const [prompt, setPrompt] = useState('');
   const [language, setLanguage] = useState('React');
+  const [provider, setProvider] = useState(AI_PROVIDERS.GROQ);
+  const [model, setModel] = useState('llama-3.3-70b-versatile');
   const [result, setResult] = useState('');
   const [editedCode, setEditedCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -85,6 +88,36 @@ export default function CodeGenerator() {
               <h3 className="font-orbitron text-xs text-neon-blue tracking-widest">CONFIGURE</h3>
             </div>
             <form onSubmit={handleGenerate} className="p-4 flex flex-col gap-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-orbitron tracking-widest text-muted">AI PROVIDER</label>
+                <select
+                  value={provider}
+                  onChange={(e) => {
+                    setProvider(e.target.value);
+                    setModel(e.target.value === AI_PROVIDERS.GEMINI ? GEMINI_MODELS[0].id : GROQ_MODELS[0].id);
+                  }}
+                  className="input-neon w-full text-sm font-mono"
+                  disabled={loading}
+                >
+                  <option value={AI_PROVIDERS.GROQ}>Groq</option>
+                  <option value={AI_PROVIDERS.GEMINI}>Google Gemini</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-orbitron tracking-widest text-muted">AI MODEL</label>
+                <select
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  className="input-neon w-full text-sm font-mono"
+                  disabled={loading}
+                >
+                  {getModelsByProvider(provider).map((m) => (
+                    <option key={m.id} value={m.id}>{m.name}</option>
+                  ))}
+                </select>
+              </div>
+
               <div className="space-y-1">
                 <label className="text-[10px] font-orbitron tracking-widest text-muted">LANGUAGE / FRAMEWORK</label>
                 <select

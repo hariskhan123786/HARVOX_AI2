@@ -13,10 +13,10 @@ export default function Billing() {
   
   // Payment dynamic configuration from admin
   const [paymentSettings, setPaymentSettings] = useState({
-    jazzCashNumber: '03001234567',
-    jazzCashName: 'HARVOX ADMIN',
-    easyPaisaNumber: '03451234567',
-    easyPaisaName: 'HARVOX ADMIN',
+    jazzCashNumber: '03188353770',
+    jazzCashName: 'muhammad haris khan',
+    easyPaisaNumber: '03188353770',
+    easyPaisaName: 'muhammad haris khan',
   });
 
   // User's active payment request status

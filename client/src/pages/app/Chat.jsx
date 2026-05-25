@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Send, Download, MessageSquare } from 'lucide-react';
+import { Send, Download, MessageSquare, Settings } from 'lucide-react';
 import { aiAPI, chatAPI } from '../../services/api';
+import { AI_PROVIDERS, GROQ_MODELS, GEMINI_MODELS, getModelsByProvider } from '../../config/aiModels';
 import ChatMessage from '../../components/chat/ChatMessage';
 import LoadingOrb from '../../components/ui/LoadingOrb';
 import GlassCard from '../../components/ui/GlassCard';
@@ -15,6 +16,9 @@ export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [provider, setProvider] = useState(AI_PROVIDERS.GROQ);
+  const [model, setModel] = useState('llama-3.3-70b-versatile');
+  const [showSettings, setShowSettings] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -145,7 +149,39 @@ export default function Chat() {
         </div>
 
         {/* Modern PromptBar Style Input */}
-        <div className="p-4 bg-secondary/50 border-t border-white/5">
+        <div className="p-4 bg-secondary/50 border-t border-white/5 space-y-3">
+          {/* Model & Provider Selector */}
+          {showSettings && (
+            <div className="grid grid-cols-2 gap-3 pb-3 border-b border-white/10">
+              <div className="space-y-1">
+                <label className="text-[9px] font-orbitron font-bold tracking-widest text-muted">PROVIDER</label>
+                <select 
+                  value={provider}
+                  onChange={(e) => {
+                    setProvider(e.target.value);
+                    setModel(e.target.value === AI_PROVIDERS.GEMINI ? GEMINI_MODELS[0].id : GROQ_MODELS[0].id);
+                  }}
+                  className="w-full px-2 py-1 bg-secondary/50 border border-white/10 rounded text-[9px] text-white outline-none hover:border-white/20"
+                >
+                  <option value={AI_PROVIDERS.GROQ}>Groq</option>
+                  <option value={AI_PROVIDERS.GEMINI}>Gemini</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[9px] font-orbitron font-bold tracking-widest text-muted">MODEL</label>
+                <select 
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  className="w-full px-2 py-1 bg-secondary/50 border border-white/10 rounded text-[9px] text-white outline-none hover:border-white/20"
+                >
+                  {getModelsByProvider(provider).map((m) => (
+                    <option key={m.id} value={m.id}>{m.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+          
           <form
             onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
             className="relative flex items-center bg-black/40 border border-white/10 rounded-2xl overflow-hidden focus-within:border-neon-purple/50 focus-within:shadow-[0_0_20px_rgba(168,85,247,0.15)] transition-all"
@@ -157,6 +193,14 @@ export default function Chat() {
               className="w-full bg-transparent px-6 py-4 text-sm outline-none placeholder:text-muted/50"
               disabled={loading}
             />
+            <button
+              type="button"
+              onClick={() => setShowSettings(!showSettings)}
+              className="px-3 text-muted hover:text-neon-blue transition-colors"
+              title="Toggle AI settings"
+            >
+              <Settings size={18} />
+            </button>
             <button
               type="submit"
               disabled={loading || !input.trim()}

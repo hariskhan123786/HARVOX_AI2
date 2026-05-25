@@ -8,6 +8,7 @@ const systemSettingsSchema = new mongoose.Schema(
     easyPaisaName: { type: String, default: '' },
     announcement: { type: String, default: '' },
     groqKey: { type: String, default: '' },
+    geminiKey: { type: String, default: '' },
     maintenanceMode: { type: Boolean, default: false },
     proPriceMonthly: { type: Number, default: 500 },
     proPriceYearly: { type: Number, default: 5000 },

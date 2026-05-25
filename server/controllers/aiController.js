@@ -7,14 +7,16 @@ import UserSettings from '../models/UserSettings.js';
 import SystemSettings from '../models/SystemSettings.js';
 import { PROMPTS } from '../config/prompts.js';
 import * as groqService from '../services/groqService.js';
+import * as geminiService from '../services/geminiService.js';
 import { incrementUsage } from '../services/usageService.js';
 import fs from 'fs/promises';
 import path from 'path';
 import pdfParse from 'pdf-parse';
 import mammoth from 'mammoth';
 
-const getGroqOptions = async (userId) => {
+const getAIOptions = async (userId) => {
   const options = {
+    provider: 'groq', // Default provider
     model: 'llama-3.3-70b-versatile',
     temperature: 0.7,
     max_tokens: 2048,
@@ -22,10 +24,18 @@ const getGroqOptions = async (userId) => {
   };
 
   try {
-    const settings = await UserSettings.findOne({ userId });
+    const settings = await UserSettings.findOne({ userId }).select('+apiKeys.groq +apiKeys.gemini');
     if (settings) {
+      // Get provider preference
+      if (settings.ai?.provider) options.provider = settings.ai.provider;
+      
+      // Get model
       if (settings.ai?.model) options.model = settings.ai.model;
+      
+      // Get temperature (creativity)
       if (settings.ai?.creativity !== undefined) options.temperature = settings.ai.creativity;
+      
+      // Get max tokens based on response length
       if (settings.ai?.responseLength) {
         options.max_tokens = settings.ai.responseLength === 'short'
           ? 512
@@ -33,8 +43,12 @@ const getGroqOptions = async (userId) => {
           ? 4096
           : 2048;
       }
-      if (settings.apiKeys) {
-        options.apiKey = settings.apiKeys;
+      
+      // Get API key for selected provider
+      if (options.provider === 'gemini' && settings.apiKeys?.gemini) {
+        options.apiKey = settings.apiKeys.gemini;
+      } else if (options.provider === 'groq' && settings.apiKeys?.groq) {
+        options.apiKey = settings.apiKeys.groq;
       }
     }
   } catch (err) {
@@ -45,7 +59,9 @@ const getGroqOptions = async (userId) => {
   if (!options.apiKey) {
     try {
       const globalSettings = await SystemSettings.findOne();
-      if (globalSettings && globalSettings.groqKey) {
+      if (options.provider === 'gemini' && globalSettings?.geminiKey) {
+        options.apiKey = globalSettings.geminiKey;
+      } else if (options.provider === 'groq' && globalSettings?.groqKey) {
         options.apiKey = globalSettings.groqKey;
       }
     } catch (err) {
@@ -73,14 +89,18 @@ export const chatAI = async (req, res) => {
     const history = chat.messages.map((m) => ({ role: m.role, content: m.content }));
     history.push({ role: 'user', content: message });
 
-    const groqOptions = await getGroqOptions(req.user._id);
+    const aiOptions = await getAIOptions(req.user._id);
+    const aiService = aiOptions.provider === 'gemini' ? geminiService : groqService;
 
     if (stream) {
-      const responseStream = await groqService.chat({
+      const responseStream = await aiService.chat({
         messages: history,
         systemPrompt: PROMPTS.CHAT_ASSISTANT,
         stream: true,
-        ...groqOptions,
+        model: aiOptions.model,
+        temperature: aiOptions.temperature,
+        max_tokens: aiOptions.max_tokens,
+        apiKey: aiOptions.apiKey,
       });
 
       res.setHeader('Content-Type', 'text/event-stream');
@@ -88,11 +108,24 @@ export const chatAI = async (req, res) => {
       res.setHeader('Connection', 'keep-alive');
 
       let fullReply = '';
-      for await (const chunk of responseStream) {
-        const content = chunk.choices[0]?.delta?.content || '';
-        if (content) {
-          fullReply += content;
-          res.write(`data: ${JSON.stringify({ content })}\n\n`);
+      
+      if (aiOptions.provider === 'gemini') {
+        // Gemini streaming
+        for await (const chunk of responseStream.stream) {
+          const content = chunk.text();
+          if (content) {
+            fullReply += content;
+            res.write(`data: ${JSON.stringify({ content })}\n\n`);
+          }
+        }
+      } else {
+        // Groq streaming
+        for await (const chunk of responseStream) {
+          const content = chunk.choices[0]?.delta?.content || '';
+          if (content) {
+            fullReply += content;
+            res.write(`data: ${JSON.stringify({ content })}\n\n`);
+          }
         }
       }
 
@@ -105,10 +138,13 @@ export const chatAI = async (req, res) => {
       return res.end();
     }
 
-    const reply = await groqService.chat({
+    const reply = await aiService.chat({
       messages: history,
       systemPrompt: PROMPTS.CHAT_ASSISTANT,
-      ...groqOptions,
+      model: aiOptions.model,
+      temperature: aiOptions.temperature,
+      max_tokens: aiOptions.max_tokens,
+      apiKey: aiOptions.apiKey,
     });
 
     chat.messages.push({ role: 'user', content: message });
@@ -134,14 +170,18 @@ export const generateCode = async (req, res) => {
       ? `Generate ${language} code for: ${prompt}`
       : prompt;
 
-    const groqOptions = await getGroqOptions(req.user._id);
+    const aiOptions = await getAIOptions(req.user._id);
+    const aiService = aiOptions.provider === 'gemini' ? geminiService : groqService;
 
     if (stream) {
-      const responseStream = await groqService.chat({
+      const responseStream = await aiService.chat({
         messages: [{ role: 'user', content: userMessage }],
         systemPrompt: PROMPTS.CODE_GENERATOR,
         stream: true,
-        ...groqOptions,
+        model: aiOptions.model,
+        temperature: aiOptions.temperature,
+        max_tokens: aiOptions.max_tokens,
+        apiKey: aiOptions.apiKey,
       });
 
       res.setHeader('Content-Type', 'text/event-stream');
@@ -149,11 +189,24 @@ export const generateCode = async (req, res) => {
       res.setHeader('Connection', 'keep-alive');
 
       let fullReply = '';
-      for await (const chunk of responseStream) {
-        const content = chunk.choices[0]?.delta?.content || '';
-        if (content) {
-          fullReply += content;
-          res.write(`data: ${JSON.stringify({ content })}\n\n`);
+      
+      if (aiOptions.provider === 'gemini') {
+        // Gemini streaming
+        for await (const chunk of responseStream.stream) {
+          const content = chunk.text();
+          if (content) {
+            fullReply += content;
+            res.write(`data: ${JSON.stringify({ content })}\n\n`);
+          }
+        }
+      } else {
+        // Groq streaming
+        for await (const chunk of responseStream) {
+          const content = chunk.choices[0]?.delta?.content || '';
+          if (content) {
+            fullReply += content;
+            res.write(`data: ${JSON.stringify({ content })}\n\n`);
+          }
         }
       }
 
@@ -172,10 +225,13 @@ export const generateCode = async (req, res) => {
       return res.end();
     }
 
-    const reply = await groqService.chat({
+    const reply = await aiService.chat({
       messages: [{ role: 'user', content: userMessage }],
       systemPrompt: PROMPTS.CODE_GENERATOR,
-      ...groqOptions,
+      model: aiOptions.model,
+      temperature: aiOptions.temperature,
+      max_tokens: aiOptions.max_tokens,
+      apiKey: aiOptions.apiKey,
     });
 
     await incrementUsage(req.user._id, 'codeGen');
@@ -199,11 +255,16 @@ export const debugCode = async (req, res) => {
   try {
     const { error, code } = req.body;
     const content = `Error/Stack trace:\n${error || 'N/A'}\n\nCode:\n${code || 'N/A'}`;
-    const groqOptions = await getGroqOptions(req.user._id);
-    const reply = await groqService.chat({
+    const aiOptions = await getAIOptions(req.user._id);
+    const aiService = aiOptions.provider === 'gemini' ? geminiService : groqService;
+    
+    const reply = await aiService.chat({
       messages: [{ role: 'user', content }],
       systemPrompt: PROMPTS.DEBUG_ASSISTANT,
-      ...groqOptions,
+      model: aiOptions.model,
+      temperature: aiOptions.temperature,
+      max_tokens: aiOptions.max_tokens,
+      apiKey: aiOptions.apiKey,
     });
     
     await incrementUsage(req.user._id, 'chats');
@@ -238,11 +299,16 @@ export const explainCode = async (req, res) => {
   try {
     const { code } = req.body;
     if (!code) return res.status(400).json({ message: 'Code is required' });
-    const groqOptions = await getGroqOptions(req.user._id);
-    const reply = await groqService.chat({
+    const aiOptions = await getAIOptions(req.user._id);
+    const aiService = aiOptions.provider === 'gemini' ? geminiService : groqService;
+    
+    const reply = await aiService.chat({
       messages: [{ role: 'user', content: code }],
       systemPrompt: PROMPTS.EXPLAIN_CODE,
-      ...groqOptions,
+      model: aiOptions.model,
+      temperature: aiOptions.temperature,
+      max_tokens: aiOptions.max_tokens,
+      apiKey: aiOptions.apiKey,
     });
     await incrementUsage(req.user._id, 'chats');
     res.json({ explanation: reply });
@@ -256,9 +322,16 @@ export const generateProject = async (req, res) => {
     const { idea, type } = req.body;
     if (!idea) return res.status(400).json({ message: 'Project idea is required' });
     const prompt = `Project type: ${type || 'MERN FYP'}\nIdea: ${idea}`;
-    const reply = await groqService.chat({
+    const aiOptions = await getAIOptions(req.user._id);
+    const aiService = aiOptions.provider === 'gemini' ? geminiService : groqService;
+    
+    const reply = await aiService.chat({
       messages: [{ role: 'user', content: prompt }],
       systemPrompt: PROMPTS.PROJECT_GENERATOR,
+      model: aiOptions.model,
+      temperature: aiOptions.temperature,
+      max_tokens: aiOptions.max_tokens,
+      apiKey: aiOptions.apiKey,
     });
     const project = await Project.create({
       userId: req.user._id,
@@ -303,9 +376,16 @@ export const analyzeFile = async (req, res) => {
       userPrompt = `Based on this document, answer: ${question}\n\nDocument:\n${extractedText.slice(0, 12000)}`;
     }
 
-    const analysis = await groqService.chat({
+    const aiOptions = await getAIOptions(req.user._id);
+    const aiService = aiOptions.provider === 'gemini' ? geminiService : groqService;
+
+    const analysis = await aiService.chat({
       messages: [{ role: 'user', content: userPrompt }],
       systemPrompt: PROMPTS.FILE_ANALYZER,
+      model: aiOptions.model,
+      temperature: aiOptions.temperature,
+      max_tokens: aiOptions.max_tokens,
+      apiKey: aiOptions.apiKey,
     });
 
     const fileRecord = await File.create({
