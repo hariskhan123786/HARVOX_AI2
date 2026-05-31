@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { connectDB } from './config/db.js';
+import { connectDB, getDBHealth } from './config/db.js';
 import { isAIConfigured } from './services/groqService.js';
 import User from './models/User.js';
 
@@ -96,7 +96,24 @@ const startServer = async () => {
   }
 };
 
-app.use(helmet());
+// Comprehensive production-ready Helmet CSP headers (enabling WebSockets & dynamic frames)
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "blob:", "https:"],
+        connectSrc: ["'self'", "ws:", "wss:", "http:", "https:"],
+        frameSrc: ["'self'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+  })
+);
+
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
@@ -117,16 +134,32 @@ app.use(
 );
 app.use(express.json({ limit: '10mb' }));
 
+// Strict rate-limiting for auth routes to protect against dictionary attacks
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30, // Limit each IP to 30 requests per window
+  message: { message: 'Too many auth attempts, please try again after 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+
+// General api rate-limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
   message: { message: 'Too many requests, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 app.use('/api', limiter);
 
 app.get('/api/health', (_, res) => {
+  const dbHealth = getDBHealth();
   res.json({
-    status: 'ok',
+    status: dbHealth.status === 'ok' ? 'ok' : 'degraded',
+    database: dbHealth,
     ai: isAIConfigured(),
     timestamp: new Date().toISOString(),
   });
@@ -143,6 +176,18 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/fs', fsRoutes);
 app.use('/uploads', express.static(path.join(path.resolve(), 'uploads')));
+
+// Serve client assets in production
+if (process.env.NODE_ENV === 'production') {
+  const distPath = path.join(path.resolve(), 'client/dist');
+  app.use(express.static(distPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
 app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({ message: err.message || 'Server error' });

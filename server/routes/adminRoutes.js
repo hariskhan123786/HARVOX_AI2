@@ -9,15 +9,21 @@ const router = express.Router();
 router.use(protect);
 router.use(requireAdmin);
 
+// Helper to escape special regex characters to prevent ReDoS and NoSQL Injection
+const escapeRegex = (str) => {
+  return typeof str === 'string' ? str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') : '';
+};
+
 // Get all users
 router.get('/users', async (req, res) => {
   try {
     const { search, role, page = 1, limit = 20 } = req.query;
     const filter = {};
-    if (search) {
+    if (search && typeof search === 'string') {
+      const sanitizedSearch = escapeRegex(search.trim());
       filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
+        { name: { $regex: sanitizedSearch, $options: 'i' } },
+        { email: { $regex: sanitizedSearch, $options: 'i' } },
       ];
     }
     if (role) filter.role = role;

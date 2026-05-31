@@ -1,10 +1,29 @@
 import ptyManager from '../terminal/ptyManager.js';
+import jwt from 'jsonwebtoken';
 
 export function initializeTerminalSocket(io) {
   const terminalNamespace = io.of('/terminal');
 
+  // Secure connection with JWT Authentication middleware
+  terminalNamespace.use((socket, next) => {
+    const token = socket.handshake.auth?.token;
+    if (!token) {
+      console.warn(`[Socket Auth] Connection rejected for ${socket.id}: Token missing`);
+      return next(new Error('Authentication error: Token missing'));
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      socket.userId = decoded.id;
+      next();
+    } catch (err) {
+      console.warn(`[Socket Auth] Connection rejected for ${socket.id}: Invalid token`);
+      return next(new Error('Authentication error: Invalid token'));
+    }
+  });
+
   terminalNamespace.on('connection', (socket) => {
-    console.log(`Terminal connected: ${socket.id}`);
+    console.log(`Terminal connected: ${socket.id} (User: ${socket.userId})`);
     
     // Create a new PTY session for this connection
     const ptyProcess = ptyManager.createSession(socket.id);

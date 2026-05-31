@@ -40,10 +40,12 @@ const XTerm = () => {
       fitAddonRef.current.fit();
     }
 
-    // Connect to Socket.io terminal namespace
+    // Connect to Socket.io terminal namespace with JWT authentication
+    const token = localStorage.getItem('harvox_token');
     const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
     socketRef.current = io(`${socketUrl}/terminal`, {
       withCredentials: true,
+      auth: { token },
     });
 
     // Handle incoming data

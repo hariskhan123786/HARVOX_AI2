@@ -12,7 +12,7 @@ const userSettingsSchema = new mongoose.Schema(
     },
     ai: {
       provider: { type: String, enum: ['groq', 'gemini'], default: 'groq' },
-      model: { type: String, default: 'llama3-70b-8192' },
+      model: { type: String, default: 'llama-3.3-70b-versatile' },
       creativity: { type: Number, min: 0, max: 2, default: 0.7 },
       responseLength: { type: String, enum: ['short', 'medium', 'long'], default: 'medium' },
       codingMode: { type: String, enum: ['standard', 'strict', 'creative'], default: 'standard' },

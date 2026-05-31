@@ -30,7 +30,12 @@ const getAIOptions = async (userId) => {
       if (settings.ai?.provider) options.provider = settings.ai.provider;
       
       // Get model
-      if (settings.ai?.model) options.model = settings.ai.model;
+      if (settings.ai?.model) {
+        options.model = settings.ai.model;
+        if (options.model === 'llama3-70b-8192') {
+          options.model = 'llama-3.3-70b-versatile';
+        }
+      }
       
       // Get temperature (creativity)
       if (settings.ai?.creativity !== undefined) options.temperature = settings.ai.creativity;

@@ -15,7 +15,7 @@ const getClient = () => {
 export const chat = async ({ 
   messages, 
   systemPrompt, 
-  model = 'gemini-pro', 
+  model = 'gemini-2.0-flash', 
   temperature = 0.7, 
   max_tokens = 4096, 
   stream = false, 
@@ -29,38 +29,37 @@ export const chat = async ({
       client = getClient();
     }
 
-    const genAI = client;
-    const genModel = genAI.getGenerativeModel({ model });
+    // ✅ FIX 1: Pass systemInstruction here in getGenerativeModel, not in startChat
+    const genModel = client.getGenerativeModel({
+      model,
+      systemInstruction: systemPrompt || undefined,
+    });
 
-    // Convert chat history to Gemini format
-    const history = messages.map(msg => ({
+    // ✅ FIX 2: History = all messages EXCEPT the last user message
+    const history = messages.slice(0, -1).map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }],
     }));
 
-    const chat = genModel.startChat({
-      history: history,
+    // ✅ FIX 3: Last message is sent separately via sendMessage
+    const lastMessage = messages[messages.length - 1]?.content || '';
+
+    const chatSession = genModel.startChat({
+      history,
       generationConfig: {
         temperature,
         maxOutputTokens: max_tokens,
       },
-      systemInstruction: systemPrompt,
     });
 
     if (stream) {
-      // For streaming responses
-      const result = await chat.sendMessageStream(
-        history.length > 0 ? history[history.length - 1].parts[0].text : ''
-      );
+      const result = await chatSession.sendMessageStream(lastMessage);
       return result;
     }
 
-    // For non-streaming responses
-    const userMessage = history.length > 0 ? history[history.length - 1].parts[0].text : '';
-    const result = await chat.sendMessage(userMessage);
-    const response = result.response;
-    
-    return response.text() || 'No response generated.';
+    const result = await chatSession.sendMessage(lastMessage);
+    return result.response.text() || 'No response generated.';
+
   } catch (error) {
     if (error.message?.includes('429') || error.message?.includes('RESOURCE_EXHAUSTED')) {
       throw Object.assign(new Error('Rate limit exceeded. Please try again later.'), { code: 'RATE_LIMIT' });

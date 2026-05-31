@@ -5,14 +5,14 @@ import { chatAPI } from '../../services/api';
 import PromptBar from '../../components/dashboard/PromptBar';
 import QuickActionCards from '../../components/dashboard/QuickActionCards';
 import GlassCard from '../../components/ui/GlassCard';
-import HologramOrb from '../../components/ui/HologramOrb';
+import SplineComponent from '../../components/ui/spline';
 
 export default function Dashboard() {
   const user = useAuthStore((s) => s.user);
   const [chats, setChats] = useState([]);
 
   useEffect(() => {
-    chatAPI.list().then(({ data }) => setChats(data.chats?.slice(0, 5) || [])).catch(() => {});
+    chatAPI.list().then(({ data }) => setChats(data.chats?.slice(0, 5) || [])).catch(() => { });
   }, []);
 
   const firstName = user?.name?.split(' ')[0] || 'Developer';
@@ -30,8 +30,8 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="hidden shrink-0 lg:block mt-8">
-          <div className="h-48 w-48">
-            <HologramOrb />
+          <div className="h-48 w-48 rounded-full overflow-hidden border border-white/10 shadow-[0_0_20px_rgba(138,43,226,0.35)] bg-black/40 relative">
+            <SplineComponent scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" />
           </div>
         </div>
       </div>

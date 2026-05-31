@@ -12,6 +12,7 @@ const projectSchema = new mongoose.Schema({
   },
   description: String,
   framework: String,
+  content: { type: String, default: '' },
   path: String, // Server-side path if running locally
   fileTree: {
     type: Object, // Virtual tree if cloud

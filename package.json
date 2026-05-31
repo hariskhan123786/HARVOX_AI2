@@ -6,12 +6,17 @@
     "install:all": "cd server && npm install && cd ../client && npm install",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
-    "dev": "npm run dev:server & npm run dev:client",
-    "start": "cd server && npm start"
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "start": "cd server && npm start",
+    "test": "cd server && node tests/testRunner.js"
   },
   "description": "HARVOX AI - Premium AI SaaS Platform",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@studio-freight/lenis": "^1.0.42"
+    "@studio-freight/lenis": "^1.0.42",
+    "mongodb": "^7.2.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
   }
 }

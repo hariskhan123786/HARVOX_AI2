@@ -12,6 +12,7 @@ export default function AdminSettings() {
     easyPaisaName: '',
     announcement: '',
     groqKey: '',
+    geminiKey: '',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -103,10 +104,23 @@ export default function AdminSettings() {
                 <input 
                   type="password" 
                   name="groqKey" 
-                  value={settings.groqKey} 
+                  value={settings.groqKey || ''} 
                   onChange={handleChange} 
                   className="input-neon" 
                   placeholder="gsk_..."
+                />
+                <p className="text-xs text-muted mt-1">Used if user doesn't have their own key set.</p>
+              </div>
+
+              <div>
+                <label className="text-xs text-muted block mb-1">Global Gemini API Key (Fallback)</label>
+                <input 
+                  type="password" 
+                  name="geminiKey" 
+                  value={settings.geminiKey || ''} 
+                  onChange={handleChange} 
+                  className="input-neon" 
+                  placeholder="AIzaSy..."
                 />
                 <p className="text-xs text-muted mt-1">Used if user doesn't have their own key set.</p>
               </div>

@@ -266,6 +266,15 @@ export default function Settings() {
     }
   };
 
+  const saveApiKeys = async (gKey, gemKey) => {
+    try {
+      await settingsAPI.update({ apiKeys: { groq: gKey, gemini: gemKey } });
+      showToast('Neural API keys updated and secured.', 'success');
+    } catch (err) {
+      showToast('Failed to secure API credentials.', 'error');
+    }
+  };
+
   /* ── Identity save ─────────────────────────────────────── */
   const handleIdentitySave = async () => {
     setIdentitySaving(true);
@@ -668,10 +677,8 @@ export default function Settings() {
                             <input
                               type="password"
                               value={groqApiKey}
-                              onChange={(e) => {
-                                setGroqApiKey(e.target.value);
-                                saveSetting('apiKeys', { groq: e.target.value, gemini: geminiApiKey });
-                              }}
+                              onChange={(e) => setGroqApiKey(e.target.value)}
+                              onBlur={() => saveApiKeys(groqApiKey, geminiApiKey)}
                               placeholder="Leave empty to use admin's key"
                               className="input-neon text-xs font-mono"
                             />
@@ -682,10 +689,8 @@ export default function Settings() {
                             <input
                               type="password"
                               value={geminiApiKey}
-                              onChange={(e) => {
-                                setGeminiApiKey(e.target.value);
-                                saveSetting('apiKeys', { groq: groqApiKey, gemini: e.target.value });
-                              }}
+                              onChange={(e) => setGeminiApiKey(e.target.value)}
+                              onBlur={() => saveApiKeys(groqApiKey, geminiApiKey)}
                               placeholder="Leave empty to use admin's key"
                               className="input-neon text-xs font-mono"
                             />

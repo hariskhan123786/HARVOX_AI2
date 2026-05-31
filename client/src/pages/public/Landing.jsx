@@ -15,10 +15,13 @@ import {
 import BackgroundEffects from '../../components/background/BackgroundEffects';
 import NeonButton from '../../components/ui/NeonButton';
 import GlassCard from '../../components/ui/GlassCard';
+import Spotlight from '../../components/ui/spotlight';
+import SplineComponent from '../../components/ui/spline';
+import HologramCard from '../../components/ui/hologram-card';
+import { Card } from '../../components/ui/card';
 
 // Lazy load heavy 3D components
 const HologramOrb = lazy(() => import('../../components/ui/HologramOrb'));
-const Holographic3DCard = lazy(() => import('../../components/ui/Holographic3DCard'));
 
 /* ─── Lenis Smooth Scroll ───────────────────────────────────────────────── */
 function useLenis() {
@@ -57,12 +60,12 @@ function useLenis() {
 
 /* ─── Data ──────────────────────────────────────────────────────────────── */
 const features = [
-  { icon: MessageSquare, title: 'AI Chat',           desc: 'Intelligent conversations with syntax-highlighted code responses.',    color: 'text-neon-blue'   },
-  { icon: Code2,         title: 'Code Generator',    desc: 'Generate production-ready code in multiple languages instantly.',       color: 'text-neon-purple' },
-  { icon: Bug,           title: 'Debug Assistant',   desc: 'Paste errors and get explanations plus fixed code.',                   color: 'text-neon-pink'   },
-  { icon: FolderKanban,  title: 'Project Generator', desc: 'FYP ideas, MERN structures, and full documentation outlines.',         color: 'text-neon-blue'   },
-  { icon: Upload,        title: 'File Analyzer',     desc: 'Upload PDFs and code files for AI summarization and Q&A.',             color: 'text-neon-purple' },
-  { icon: Mic,           title: 'Voice Assistant',   desc: 'Speak naturally and hear AI responses aloud.',                         color: 'text-neon-pink'   },
+  { icon: MessageSquare, title: 'AI Chat', desc: 'Intelligent conversations with syntax-highlighted code responses.', color: 'text-neon-blue' },
+  { icon: Code2, title: 'Code Generator', desc: 'Generate production-ready code in multiple languages instantly.', color: 'text-neon-purple' },
+  { icon: Bug, title: 'Debug Assistant', desc: 'Paste errors and get explanations plus fixed code.', color: 'text-neon-pink' },
+  { icon: FolderKanban, title: 'Project Generator', desc: 'FYP ideas, MERN structures, and full documentation outlines.', color: 'text-neon-blue' },
+  { icon: Upload, title: 'File Analyzer', desc: 'Upload PDFs and code files for AI summarization and Q&A.', color: 'text-neon-purple' },
+  { icon: Mic, title: 'Voice Assistant', desc: 'Speak naturally and hear AI responses aloud.', color: 'text-neon-pink' },
 ];
 
 const articles = [
@@ -93,21 +96,21 @@ const articles = [
 ];
 
 const plans = [
-  { name: 'Free', price: 'PKR 0',    features: ['20 AI requests/day', 'Core AI tools', 'Chat history', 'Notes'],                                                cta: 'Get Started', highlight: false },
-  { name: 'Pro',  price: 'PKR 1500', features: ['500 AI requests/day', 'All AI tools', 'Priority responses', 'Export & bookmarks', 'Project generator'],         cta: 'Upgrade Now', highlight: true  },
+  { name: 'Free', price: 'PKR 0', features: ['20 AI requests/day', 'Core AI tools', 'Chat history', 'Notes'], cta: 'Get Started', highlight: false },
+  { name: 'Pro', price: 'PKR 1500', features: ['500 AI requests/day', 'All AI tools', 'Priority responses', 'Export & bookmarks', 'Project generator'], cta: 'Upgrade Now', highlight: true },
 ];
 
 const testimonials = [
-  { name: 'Sarah K.', role: 'CS Student',       text: 'HARVOX helped me debug my MERN stack FYP in hours instead of days.',             icon: '🎓' },
-  { name: 'Ahmed R.', role: 'Junior Developer',  text: 'The code generator is incredibly fast. It feels like having a senior dev beside you.', icon: '💻' },
-  { name: 'Priya M.', role: 'Bootcamp Graduate', text: 'Voice assistant + chat combo made learning React so much easier.',                icon: '🚀' },
+  { name: 'Sarah K.', role: 'CS Student', text: 'HARVOX helped me debug my MERN stack FYP in hours instead of days.', icon: '🎓' },
+  { name: 'Ahmed R.', role: 'Junior Developer', text: 'The code generator is incredibly fast. It feels like having a senior dev beside you.', icon: '💻' },
+  { name: 'Priya M.', role: 'Bootcamp Graduate', text: 'Voice assistant + chat combo made learning React so much easier.', icon: '🚀' },
 ];
 
 const faqs = [
-  { q: 'What is HARVOX AI?',            a: 'HARVOX AI is an intelligent developer and learning assistant platform for students, developers, and creators.' },
+  { q: 'What is HARVOX AI?', a: 'HARVOX AI is an intelligent developer and learning assistant platform for students, developers, and creators.' },
   { q: 'Which AI model powers HARVOX?', a: 'HARVOX uses state-of-the-art LLM models for high-quality code generation, debugging, and tutoring.' },
-  { q: 'Can I use it for my FYP?',      a: 'Yes! Project Generator and learning tools are designed specifically for final year projects.' },
-  { q: 'Is my data secure?',            a: 'Yes. Passwords are encrypted with bcrypt and all API communication is secured over HTTPS.' },
+  { q: 'Can I use it for my FYP?', a: 'Yes! Project Generator and learning tools are designed specifically for final year projects.' },
+  { q: 'Is my data secure?', a: 'Yes. Passwords are encrypted with bcrypt and all API communication is secured over HTTPS.' },
 ];
 
 /* ─── Shared viewport config ────────────────────────────────────────────── */
@@ -294,112 +297,150 @@ export default function Landing() {
           HARVOX AI
         </Link>
         <div className="hidden items-center gap-8 md:flex">
-          <a href="#features"  className="text-sm text-muted hover:text-white transition-colors">Features</a>
-          <a href="#articles"  className="text-sm text-muted hover:text-white transition-colors">Technology</a>
-          <a href="#pricing"   className="text-sm text-muted hover:text-white transition-colors">Pricing</a>
-          <Link to="/login"    className="text-sm text-muted hover:text-white transition-colors">Login</Link>
+          <a href="#features" className="text-sm text-muted hover:text-white transition-colors">Features</a>
+          <a href="#articles" className="text-sm text-muted hover:text-white transition-colors">Technology</a>
+          <a href="#pricing" className="text-sm text-muted hover:text-white transition-colors">Pricing</a>
+          <Link to="/login" className="text-sm text-muted hover:text-white transition-colors">Login</Link>
           <Link to="/register"><NeonButton className="text-sm py-2 px-5">Get Started</NeonButton></Link>
         </div>
       </nav>
 
       {/* ── Hero ── */}
-      <section ref={heroRef} className="relative z-10 overflow-hidden px-6 pt-20 pb-32 text-center lg:pt-36 lg:pb-48 lg:px-16">
-        <motion.div style={{ y: heroY, willChange: 'transform' }}>
+      <section ref={heroRef} className="relative z-10 overflow-hidden px-6 pt-20 pb-32 lg:pt-28 lg:pb-36 lg:px-16">
+        {/* Interactive Cyber Spotlight Overlay */}
+        <Spotlight interactive={true} size={450} className="opacity-90" />
 
-          {/* Floating bg orbs — pointer-events none so they never block mouse */}
-          <motion.div
-            animate={{ y: [0, -18, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ willChange: 'transform' }}
-            className="absolute left-1/4 top-10 h-64 w-64 rounded-full bg-neon-purple/10 blur-3xl pointer-events-none"
-          />
-          <motion.div
-            animate={{ y: [0, 18, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-            style={{ willChange: 'transform' }}
-            className="absolute right-1/4 top-20 h-80 w-80 rounded-full bg-neon-blue/10 blur-3xl pointer-events-none"
-          />
+        <motion.div style={{ y: heroY, willChange: 'transform' }} className="relative z-10 mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center text-left">
 
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55 }}
-            className="mb-4 inline-flex items-center gap-2 rounded-full border border-neon-blue/30 bg-neon-blue/10 px-4 py-1.5 font-orbitron text-xs tracking-widest text-neon-blue"
-          >
-            <Sparkles size={12} /> CODE SMARTER. LEARN FASTER. BUILD BETTER.
-          </motion.p>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.08 }}
-            className="mx-auto max-w-5xl font-orbitron text-5xl font-bold leading-tight lg:text-7xl"
-          >
-            Your Intelligent{' '}
-            <span className="relative inline-block gradient-text">
-              Development Companion
-              <motion.span
-                className="absolute -bottom-1 left-0 h-px w-full bg-gradient-to-r from-neon-purple via-neon-blue to-neon-pink"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.9, delay: 0.7 }}
-                style={{ transformOrigin: 'left', willChange: 'transform' }}
-              />
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.25 }}
-            className="mx-auto mt-8 max-w-2xl text-lg text-muted leading-relaxed"
-          >
-            AI-powered platform for code generation, debugging, project planning, voice assistance,
-            and learning — built for the next generation of developers.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-            className="mt-10 flex flex-wrap justify-center gap-4"
-          >
-            <Link to="/register"><NeonButton className="px-8 py-3 text-sm">Get Started Free</NeonButton></Link>
-            <Link to="/login"><NeonButton variant="secondary" className="px-8 py-3 text-sm">Sign In</NeonButton></Link>
-          </motion.div>
-
-          {/* Hero orb */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.55 }}
-            className="relative mx-auto mt-20 max-w-4xl"
-          >
-            <div className="relative flex items-end justify-center gap-6">
-              <motion.div
-                animate={{ y: [0, -12, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ willChange: 'transform' }}
-                className="flex flex-col items-center gap-4 group"
+            {/* Left Content Column */}
+            <div className="lg:col-span-7 flex flex-col space-y-6">
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55 }}
+                className="self-start inline-flex items-center gap-2 rounded-full border border-neon-blue/30 bg-neon-blue/10 px-4 py-1.5 font-orbitron text-xs tracking-widest text-neon-blue"
               >
-                <div className="h-48 w-48">
-                  <Suspense fallback={<div className="h-48 w-48 rounded-full bg-neon-purple/20 animate-pulse" />}>
-                    <HologramOrb />
-                  </Suspense>
+                <Sparkles size={12} className="animate-spinSlow" /> CODE SMARTER. LEARN FASTER. BUILD BETTER.
+              </motion.p>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.08 }}
+                className="font-orbitron text-4xl font-bold leading-tight md:text-5xl lg:text-6xl text-white"
+              >
+                Your Intelligent{' '}
+                <span className="relative inline-block gradient-text">
+                  Development Companion
+                  <motion.span
+                    className="absolute -bottom-1 left-0 h-px w-full bg-gradient-to-r from-neon-purple via-neon-blue to-neon-pink"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 0.9, delay: 0.7 }}
+                    style={{ transformOrigin: 'left', willChange: 'transform' }}
+                  />
+                </span>
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.7, delay: 0.25 }}
+                className="text-base md:text-lg text-muted leading-relaxed max-w-xl"
+              >
+                An immersive AI-powered operating system for code generation, debugging, project planning, voice assistance,
+                and interactive learning — crafted for modern developers.
+              </motion.p>
+
+              {/* Glowing CTA Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.4 }}
+                className="flex flex-wrap gap-4 pt-2"
+              >
+                <Link to="/register">
+                  <NeonButton className="px-8 py-3 text-sm shadow-neon-purple hover:scale-105 transition-all duration-300">
+                    Get Started Free
+                  </NeonButton>
+                </Link>
+                <Link to="/login">
+                  <NeonButton variant="secondary" className="px-8 py-3 text-sm hover:scale-105 transition-all duration-300">
+                    Sign In
+                  </NeonButton>
+                </Link>
+              </motion.div>
+
+              {/* Floating UI Widgets under CTA */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.5 }}
+                className="flex flex-wrap gap-4 items-center pt-6 border-t border-white/5"
+              >
+                <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 backdrop-blur-md">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-orbitron text-xs text-neutral-300">Neural Link Online</span>
                 </div>
-                <span className="font-orbitron text-xs tracking-widest text-muted">Neural Engine</span>
+                <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 backdrop-blur-md">
+                  <span className="font-orbitron text-xs text-neutral-400">Response Speed:</span>
+                  <span className="font-orbitron text-xs text-neon-blue font-bold">14ms</span>
+                </div>
+                <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 backdrop-blur-md">
+                  <span className="font-orbitron text-xs text-neutral-400">GPU Rendering:</span>
+                  <span className="font-orbitron text-xs text-neon-pink font-bold">ON</span>
+                </div>
               </motion.div>
             </div>
-            <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-neon-purple/40 to-transparent" />
-          </motion.div>
+
+            {/* Right Hologram Spline Column */}
+            <div className="lg:col-span-5 relative w-full h-[400px] lg:h-[500px] flex items-center justify-center">
+              {/* Ambient neon radial glow */}
+              <div className="absolute inset-0 bg-radial-gradient from-neon-purple/20 via-neon-blue/5 to-transparent blur-2xl pointer-events-none" />
+
+              {/* Animated Floating Neon Rings */}
+              <div className="absolute w-[280px] h-[280px] md:w-[350px] md:h-[350px] rounded-full border border-dashed border-neon-purple/20 animate-spinSlow pointer-events-none" />
+              <div className="absolute w-[320px] h-[320px] md:w-[400px] md:h-[400px] rounded-full border border-dotted border-neon-blue/10 animate-reverseSpin pointer-events-none" />
+
+              {/* Premium 3D Spline Scene Viewport */}
+              <div className="w-[300px] h-[300px] md:w-[380px] md:h-[380px] rounded-full overflow-hidden relative z-10 border border-white/10 shadow-[0_0_30px_rgba(138,43,226,0.3)] bg-black/40">
+                <SplineComponent scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" />
+              </div>
+
+              {/* Holographic float status overlays */}
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute top-8 right-0 md:right-4 z-20 rounded-xl border border-neon-pink/40 bg-black/85 p-3 backdrop-blur-md shadow-[0_0_15px_rgba(255,0,127,0.3)] pointer-events-none"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-neon-pink animate-pulse" />
+                  <span className="font-orbitron text-[10px] tracking-widest text-neon-pink">AI ASSISTANT</span>
+                </div>
+              </motion.div>
+
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+                className="absolute bottom-8 left-0 md:left-4 z-20 rounded-xl border border-neon-blue/40 bg-black/85 p-3 backdrop-blur-md shadow-[0_0_15px_rgba(0,240,255,0.3)] pointer-events-none"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-neon-blue animate-pulse" />
+                  <span className="font-orbitron text-[10px] tracking-widest text-neon-blue">NEURAL STREAM</span>
+                </div>
+              </motion.div>
+            </div>
+
+          </div>
 
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ repeat: Infinity, duration: 2 }}
             style={{ willChange: 'transform' }}
-            className="mt-16"
+            className="mt-16 text-center"
           >
-            <ChevronDown className="mx-auto text-muted" size={24} />
+            <ChevronDown className="mx-auto text-muted cursor-pointer hover:text-white transition-colors" size={24} />
           </motion.div>
         </motion.div>
       </section>
@@ -407,10 +448,10 @@ export default function Landing() {
       {/* ── Stats Bar ── */}
       <section className="relative z-10 border-y border-white/5 bg-white/[0.02] py-12 px-6 lg:px-16">
         <div className="mx-auto grid max-w-4xl grid-cols-2 gap-8 md:grid-cols-4">
-          <StatItem value="10K+"  label="Active Developers" delay={0}    />
-          <StatItem value="500K+" label="Code Generations"  delay={0.08} />
-          <StatItem value="99.9%" label="Uptime"            delay={0.16} />
-          <StatItem value="4.9★"  label="User Rating"       delay={0.24} />
+          <StatItem value="10K+" label="Active Developers" delay={0} />
+          <StatItem value="500K+" label="Code Generations" delay={0.08} />
+          <StatItem value="99.9%" label="Uptime" delay={0.16} />
+          <StatItem value="4.9★" label="User Rating" delay={0.24} />
         </div>
       </section>
 
@@ -522,33 +563,35 @@ export default function Landing() {
               transition={{ duration: 0.55, delay: i * 0.12 }}
               style={{ willChange: 'transform, opacity' }}
             >
-              <Suspense fallback={<div className="h-64 rounded-2xl bg-white/5 animate-pulse" />}>
-                <Holographic3DCard className={`h-full ${p.highlight ? 'ring-2 ring-neon-purple/50 shadow-neon-purple rounded-2xl' : ''}`}>
-                  {p.highlight && (
-                    <div className="absolute top-4 right-4 z-10">
-                      <span className="rounded-full bg-neon-purple/20 border border-neon-purple/40 px-2 py-0.5 font-orbitron text-[9px] tracking-widest text-neon-purple">
-                        POPULAR
-                      </span>
-                    </div>
-                  )}
-                  <h3 className="font-orbitron text-xl">{p.name}</h3>
-                  <p className="mt-3 font-orbitron text-5xl font-bold">
-                    {p.price}<span className="text-sm text-muted font-normal">/mo</span>
-                  </p>
-                  <ul className="mt-6 space-y-3">
-                    {p.features.map((f) => (
-                      <li key={f} className="flex items-center gap-2 text-sm text-muted">
-                        <Zap size={14} className="text-neon-blue shrink-0" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link to="/register" className="mt-8 block relative z-10">
-                    <NeonButton variant={p.highlight ? 'pro' : 'secondary'} className="w-full">
-                      {p.cta}
-                    </NeonButton>
-                  </Link>
-                </Holographic3DCard>
-              </Suspense>
+              <HologramCard
+                glowColor={p.highlight ? "from-neon-purple/40 via-neon-blue/20 to-neon-pink/40" : "from-white/5 to-white/5"}
+                borderColor={p.highlight ? "border-neon-purple/50" : "border-white/10"}
+                className="h-full"
+              >
+                {p.highlight && (
+                  <div className="absolute top-4 right-4 z-10">
+                    <span className="rounded-full bg-neon-purple/20 border border-neon-purple/40 px-2 py-0.5 font-orbitron text-[9px] tracking-widest text-neon-purple">
+                      POPULAR
+                    </span>
+                  </div>
+                )}
+                <h3 className="font-orbitron text-xl">{p.name}</h3>
+                <p className="mt-3 font-orbitron text-5xl font-bold">
+                  {p.price}<span className="text-sm text-muted font-normal">/mo</span>
+                </p>
+                <ul className="mt-6 space-y-3">
+                  {p.features.map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-sm text-muted">
+                      <Zap size={14} className="text-neon-blue shrink-0" /> {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/register" className="mt-8 block relative z-10">
+                  <NeonButton variant={p.highlight ? 'pro' : 'secondary'} className="w-full">
+                    {p.cta}
+                  </NeonButton>
+                </Link>
+              </HologramCard>
             </motion.div>
           ))}
         </div>
@@ -658,9 +701,9 @@ export default function Landing() {
             <div className="absolute inset-y-0 w-1/4 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-sweep" />
           </div>
           <div className="relative flex justify-center gap-6 mb-6">
-            <img src="/holo-brain.png"  alt="" loading="lazy" className="w-16 h-16 object-contain animate-float"     onError={(e) => e.target.style.display = 'none'} />
+            <img src="/holo-brain.png" alt="" loading="lazy" className="w-16 h-16 object-contain animate-float" onError={(e) => e.target.style.display = 'none'} />
             <img src="/award-badge.png" alt="" loading="lazy" className="w-16 h-16 object-contain animate-floatSlow" onError={(e) => e.target.style.display = 'none'} />
-            <img src="/ai-chat-3d.png"  alt="" loading="lazy" className="w-16 h-16 object-contain animate-float"     onError={(e) => e.target.style.display = 'none'} style={{ animationDelay: '1s' }} />
+            <img src="/ai-chat-3d.png" alt="" loading="lazy" className="w-16 h-16 object-contain animate-float" onError={(e) => e.target.style.display = 'none'} style={{ animationDelay: '1s' }} />
           </div>
           <h2 className="font-orbitron text-3xl font-bold lg:text-4xl mb-4">
             Ready to <span className="gradient-text">Level Up?</span>
@@ -679,16 +722,16 @@ export default function Landing() {
       {/* ── Footer ── */}
       <footer className="relative z-10 border-t border-white/10 px-6 py-12 text-center lg:px-16">
         <div className="flex justify-center gap-6 mb-6">
-          <img src="/holo-brain.png"  alt="" loading="lazy" className="w-8 h-8 object-contain opacity-60 hover:opacity-100 transition-opacity" onError={(e) => e.target.style.display = 'none'} />
+          <img src="/holo-brain.png" alt="" loading="lazy" className="w-8 h-8 object-contain opacity-60 hover:opacity-100 transition-opacity" onError={(e) => e.target.style.display = 'none'} />
           <img src="/award-badge.png" alt="" loading="lazy" className="w-8 h-8 object-contain opacity-60 hover:opacity-100 transition-opacity" onError={(e) => e.target.style.display = 'none'} />
-          <img src="/ai-chat-3d.png"  alt="" loading="lazy" className="w-8 h-8 object-contain opacity-60 hover:opacity-100 transition-opacity" onError={(e) => e.target.style.display = 'none'} />
+          <img src="/ai-chat-3d.png" alt="" loading="lazy" className="w-8 h-8 object-contain opacity-60 hover:opacity-100 transition-opacity" onError={(e) => e.target.style.display = 'none'} />
         </div>
         <p className="font-orbitron text-lg gradient-text">HARVOX AI</p>
         <p className="mt-2 text-sm text-muted">Code Smarter. Learn Faster. Build Better.</p>
         <div className="mt-4 flex justify-center gap-6 text-sm text-muted">
-          <Link to="/about"  className="hover:text-white transition-colors">About</Link>
+          <Link to="/about" className="hover:text-white transition-colors">About</Link>
           <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
-          <Link to="/login"  className="hover:text-white transition-colors">Login</Link>
+          <Link to="/login" className="hover:text-white transition-colors">Login</Link>
         </div>
         <p className="mt-6 text-xs text-muted/60">© {new Date().getFullYear()} HARVOX AI. All rights reserved.</p>
       </footer>
