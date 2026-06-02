@@ -20,6 +20,15 @@ export default function ProjectGenerator() {
   const { user } = useAuthStore();
   const isPro = user?.subscription === 'pro' || user?.role === 'admin';
 
+  // ✅ FIX 1 — ALL hooks must be declared BEFORE any conditional return
+  const [idea, setIdea] = useState('');
+  const [type, setType] = useState('MERN FYP (Standard)');
+  const [complexity, setComplexity] = useState('ADVANCED');
+  const [result, setResult] = useState('');
+  const [error, setError] = useState('');   // ✅ FIX 3 — dedicated error state
+  const [loading, setLoading] = useState(false);
+
+  // ✅ FIX 1 — gate moved BELOW all hook declarations
   if (!isPro) {
     return (
       <PremiumLockOverlay
@@ -29,40 +38,78 @@ export default function ProjectGenerator() {
     );
   }
 
-  const [idea, setIdea] = useState('');
-  const [type, setType] = useState('MERN FYP (Standard)');
-  const [complexity, setComplexity] = useState('ADVANCED');
-  const [result, setResult] = useState('');
-  const [loading, setLoading] = useState(false);
-
   const generate = async (e) => {
     e.preventDefault();
     if (!idea.trim()) return;
+
     setLoading(true);
     setResult('');
+    setError('');
+
     try {
       const { data } = await aiAPI.project({ idea, type, complexity });
-      setResult(data.content);
+
+      // ✅ FIX 2 — Anthropic API returns content as array of blocks:
+      // { content: [{ type: "text", text: "..." }, ...] }
+      // Extract the text correctly instead of using the raw array.
+      let text = '';
+
+      if (Array.isArray(data.content)) {
+        // Direct Anthropic API response shape
+        text = data.content
+          .filter((block) => block.type === 'text')
+          .map((block) => block.text)
+          .join('\n');
+      } else if (typeof data.content === 'string') {
+        // Backend already extracted the string for you
+        text = data.content;
+      } else if (typeof data.result === 'string') {
+        // Some backends send it as data.result
+        text = data.result;
+      } else if (typeof data.message === 'string') {
+        // Some backends send it as data.message
+        text = data.message;
+      }
+
+      if (!text.trim()) {
+        throw new Error('Received an empty response from the AI. Please try again.');
+      }
+
+      setResult(text);
     } catch (err) {
-      setResult(err.response?.data?.message || 'Generation failed.');
+      // ✅ FIX 3 — surface error visibly, not silently into result
+      const msg =
+        err.response?.data?.message ||
+        err.message ||
+        'Generation failed. Please check your connection and try again.';
+      setError(msg);
+      console.error('[ProjectGenerator] API error:', err);
     } finally {
       setLoading(false);
     }
   };
 
   const download = async () => {
+    if (!result) return;
     try {
       const zip = new JSZip();
       zip.file('README.md', result);
-      const fileRegex = /\*\*File:\s*(.+?)\*\*\s*\n*```[a-zA-Z0-9_\-+]*\s*\n([\s\S]*?)```/g;
+
+      const fileRegex =
+        /\*\*File:\s*(.+?)\*\*\s*\n*```[a-zA-Z0-9_\-+]*\s*\n([\s\S]*?)```/g;
       let match;
       while ((match = fileRegex.exec(result)) !== null) {
         zip.file(match[1].trim(), match[2].trim());
       }
+
       const blob = await zip.generateAsync({ type: 'blob' });
       saveAs(blob, `harvox-project-${Date.now()}.zip`);
     } catch {
-      saveAs(new Blob([result], { type: 'text/markdown' }), `harvox-project-${Date.now()}.md`);
+      // Fallback: download as plain markdown if ZIP fails
+      saveAs(
+        new Blob([result], { type: 'text/markdown' }),
+        `harvox-project-${Date.now()}.md`
+      );
     }
   };
 
@@ -106,6 +153,22 @@ export default function ProjectGenerator() {
           animation: pg-pulse 1.8s ease-in-out infinite;
         }
         @keyframes pg-pulse { 0%,100% { opacity:1; } 50% { opacity:0.35; } }
+
+        /* ── Error banner ── */
+        .pg-error {
+          display: flex; align-items: flex-start; gap: 10px;
+          padding: 14px 18px;
+          border-radius: 12px;
+          background: rgba(239,68,68,0.08);
+          border: 1px solid rgba(239,68,68,0.25);
+          color: #f87171;
+          font-family: 'Space Mono', monospace;
+          font-size: 12px;
+          line-height: 1.6;
+          animation: pg-fade-in 0.2s ease;
+        }
+        .pg-error-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+        @keyframes pg-fade-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
         /* ── Main card ── */
         .pg-card {
@@ -254,6 +317,7 @@ export default function ProjectGenerator() {
           background: rgba(13,19,35,0.9);
           border: 1px solid rgba(255,255,255,0.08);
           border-radius: 14px; overflow: hidden;
+          animation: pg-fade-in 0.3s ease;
         }
         .pg-result-header {
           display: flex; align-items: center; justify-content: space-between;
@@ -339,6 +403,14 @@ export default function ProjectGenerator() {
           </div>
         </div>
 
+        {/* ✅ FIX 3 — Visible error banner */}
+        {error && (
+          <div className="pg-error">
+            <span className="pg-error-icon">⚠</span>
+            <span>{error}</span>
+          </div>
+        )}
+
         {/* Main input card */}
         <div className="pg-card">
           <div className="pg-card-top">
@@ -361,9 +433,9 @@ export default function ProjectGenerator() {
                     <select
                       className="pg-select"
                       value={type}
-                      onChange={e => setType(e.target.value)}
+                      onChange={(e) => setType(e.target.value)}
                     >
-                      {STACKS.map(s => (
+                      {STACKS.map((s) => (
                         <option key={s} value={s} style={{ background: '#0f172a' }}>{s}</option>
                       ))}
                     </select>
@@ -374,9 +446,10 @@ export default function ProjectGenerator() {
                 <div>
                   <label className="pg-label">Complexity Vector</label>
                   <div className="pg-complexity">
-                    {COMPLEXITY.map(c => (
+                    {COMPLEXITY.map((c) => (
                       <button
-                        key={c} type="button"
+                        key={c}
+                        type="button"
                         className={`pg-cx-btn ${complexity === c ? 'active' : ''}`}
                         onClick={() => setComplexity(c)}
                       >
@@ -393,7 +466,7 @@ export default function ProjectGenerator() {
                 <textarea
                   className="pg-textarea"
                   value={idea}
-                  onChange={e => setIdea(e.target.value)}
+                  onChange={(e) => setIdea(e.target.value)}
                   placeholder="Describe your FYP idea… e.g., A decentralized mental health tracking app with AI-driven sentiment analysis and encrypted clinician messaging."
                   required
                 />
@@ -403,11 +476,17 @@ export default function ProjectGenerator() {
             {/* Action row */}
             <div className="pg-actions">
               <button type="button" className="pg-action-secondary">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
                 Add Reference PDF
               </button>
               <button type="button" className="pg-action-secondary">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
                 Import GitHub URL
               </button>
               <button
@@ -420,7 +499,9 @@ export default function ProjectGenerator() {
                 ) : (
                   <>
                     Generate Project Plan
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
                   </>
                 )}
               </button>
@@ -444,10 +525,10 @@ export default function ProjectGenerator() {
                 <div className="pg-modules">
                   {[
                     { icon: '▦', name: 'API Gateway Layer', stack: 'NODE.JS / EXPRESS' },
-                    { icon: '◈', name: 'Auth Service', stack: 'JWT / PASSPORT' },
-                    { icon: '⬡', name: 'Database Schema', stack: 'MONGODB / MONGOOSE' },
-                    { icon: '◎', name: 'Frontend Scaffold', stack: 'REACT / VITE' },
-                  ].map(m => (
+                    { icon: '◈', name: 'Auth Service',      stack: 'JWT / PASSPORT'   },
+                    { icon: '⬡', name: 'Database Schema',   stack: 'MONGODB / MONGOOSE'},
+                    { icon: '◎', name: 'Frontend Scaffold', stack: 'REACT / VITE'     },
+                  ].map((m) => (
                     <div className="pg-module" key={m.name}>
                       <div className="pg-module-icon">{m.icon}</div>
                       <div>
@@ -466,17 +547,21 @@ export default function ProjectGenerator() {
               <div className="pg-result-header">
                 <div className="pg-result-title">Execution Roadmap</div>
                 <button className="pg-download-btn" onClick={download}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
                   Download Plan
                 </button>
               </div>
               <div className="pg-result-body">
                 <div className="pg-timeline">
                   {[
-                    { label: 'Phase 01: Core Architecture', sub: 'Defining schema & engine logic.', done: true },
-                    { label: 'Phase 02: API Integration', sub: 'REST endpoints & middleware.', done: false },
-                    { label: 'Phase 03: Frontend Build', sub: 'Component tree & routing.', done: false },
-                    { label: 'Phase 04: Deployment', sub: 'CI/CD pipeline & hosting.', done: false },
+                    { label: 'Phase 01: Core Architecture', sub: 'Defining schema & engine logic.',  done: true  },
+                    { label: 'Phase 02: API Integration',   sub: 'REST endpoints & middleware.',     done: false },
+                    { label: 'Phase 03: Frontend Build',    sub: 'Component tree & routing.',        done: false },
+                    { label: 'Phase 04: Deployment',        sub: 'CI/CD pipeline & hosting.',        done: false },
                   ].map((phase, i, arr) => (
                     <div className="pg-phase" key={phase.label}>
                       <div className="pg-phase-dot-col">
@@ -498,7 +583,11 @@ export default function ProjectGenerator() {
               <div className="pg-result-header">
                 <div className="pg-result-title">Full Blueprint</div>
                 <button className="pg-download-btn" onClick={download}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
                   Download ZIP
                 </button>
               </div>
@@ -508,6 +597,7 @@ export default function ProjectGenerator() {
                 </div>
               </div>
             </div>
+
           </div>
         )}
       </div>

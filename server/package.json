@@ -23,9 +23,8 @@
     "nanoid": "^5.1.11",
     "node-pty": "^1.1.0",
     "pdf-parse": "^1.1.1",
-    "socket.io": "^4.8.3"
-  },
-  "devDependencies": {
+    "socket.io": "^4.8.3",
     "mongodb-memory-server": "^11.1.0"
-  }
+  },
+  "devDependencies": {}
 }

@@ -1,5 +1,14 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import dns from 'dns';
+
+// Fallback to Google DNS to prevent local DNS resolver from failing SRV record lookups
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4']);
+} catch (err) {
+  console.warn('Unable to set custom DNS servers:', err.message);
+}
+
 dotenv.config();
 
 class DatabaseManager {
