@@ -1,5 +1,12 @@
 import os from 'os';
-import pty from 'node-pty';
+
+// Lazy-load node-pty so a compilation failure doesn't crash the server on import.
+let pty = null;
+try {
+  pty = (await import('node-pty')).default;
+} catch (err) {
+  console.warn('[PTY] node-pty failed to load — terminal feature disabled:', err.message);
+}
 
 class PtyManager {
   constructor() {
@@ -7,8 +14,25 @@ class PtyManager {
   }
 
   createSession(id) {
+    if (!pty) {
+      console.warn('[PTY] node-pty not available; returning mock terminal session.');
+      const mockProcess = {
+        onData: (cb) => {
+          setTimeout(
+            () => cb('\r\n\x1b[31m[Error]\x1b[0m Terminal is not available on this server.\r\n'),
+            500
+          );
+        },
+        write: () => {},
+        resize: () => {},
+        kill: () => {},
+      };
+      this.sessions.set(id, mockProcess);
+      return mockProcess;
+    }
+
     const shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
-    
+
     try {
       const ptyProcess = pty.spawn(shell, [], {
         name: 'xterm-color',
@@ -22,15 +46,17 @@ class PtyManager {
       this.sessions.set(id, ptyProcess);
       return ptyProcess;
     } catch (err) {
-      console.error('Failed to spawn PTY:', err);
-      // Return a mock process so the server doesn't crash
+      console.error('[PTY] Failed to spawn PTY:', err);
       const mockProcess = {
         onData: (cb) => {
-          setTimeout(() => cb('\r\n\x1b[31m[Error]\x1b[0m Terminal is unavailable on this OS setup.\r\n'), 500);
+          setTimeout(
+            () => cb('\r\n\x1b[31m[Error]\x1b[0m Terminal is unavailable on this OS setup.\r\n'),
+            500
+          );
         },
         write: () => {},
         resize: () => {},
-        kill: () => {}
+        kill: () => {},
       };
       this.sessions.set(id, mockProcess);
       return mockProcess;
@@ -47,7 +73,7 @@ class PtyManager {
       try {
         ptyProcess.kill();
       } catch (err) {
-        console.error('Error killing PTY session:', err.message);
+        console.error('[PTY] Error killing PTY session:', err.message);
       }
       this.sessions.delete(id);
     }
@@ -66,7 +92,7 @@ class PtyManager {
       try {
         ptyProcess.resize(cols, rows);
       } catch (err) {
-        console.error('Error resizing pty:', err);
+        console.error('[PTY] Error resizing pty:', err);
       }
     }
   }

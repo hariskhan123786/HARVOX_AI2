@@ -5,10 +5,9 @@
     "dockerfilePath": "server/Dockerfile.railway"
   },
   "deploy": {
-    "startCommand": "node server.js",
     "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 5,
+    "restartPolicyMaxRetries": 3,
     "healthcheckPath": "/api/health",
-    "healthcheckTimeout": 30
+    "healthcheckTimeout": 60
   }
 }
