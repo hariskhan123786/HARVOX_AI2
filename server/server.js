@@ -120,14 +120,21 @@ const allowedOrigins = [
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
+// Allow all origins if CLIENT_URL is '*' (useful for initial Railway setup)
+const corsWildcard = process.env.CLIENT_URL === '*';
+
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
+      if (corsWildcard || !origin) return callback(null, true);
+      // Allow any Railway-hosted frontend automatically
+      if (origin.endsWith('.railway.app') || origin.endsWith('.up.railway.app')) {
+        return callback(null, true);
       }
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
   })
@@ -196,7 +203,14 @@ app.use((err, _req, res, _next) => {
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: allowedOrigins,
+    origin(origin, callback) {
+      if (corsWildcard || !origin) return callback(null, true);
+      if (origin.endsWith('.railway.app') || origin.endsWith('.up.railway.app')) {
+        return callback(null, true);
+      }
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   },
 });

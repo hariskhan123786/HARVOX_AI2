@@ -1,0 +1,27 @@
+# Ignore these from the Railway build context to keep image lean
+
+# Frontend (not needed for backend-only deploy)
+client/
+
+# Dev/local files
+.env
+.env.local
+server/.env
+
+# Git history
+.git/
+.github/
+
+# Logs & OS noise
+*.log
+.DS_Store
+Thumbs.db
+
+# Docs
+*.md
+GEMINI_*.md
+DEPLOYMENT.md
+
+# Local uploads (not needed in image)
+server/uploads/
+uploads/

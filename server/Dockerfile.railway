@@ -1,0 +1,39 @@
+# ── HARVOX AI — Backend-only Dockerfile for Railway ──────────────────────────
+# This builds ONLY the server, skipping the React client build.
+# Railway injects PORT automatically; server reads process.env.PORT.
+
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install native build tools required by node-pty
+RUN apk add --no-cache python3 make g++ bash
+
+# Copy package files and install production deps
+COPY package*.json ./
+RUN npm ci --omit=dev --silent
+
+# Copy all server source files
+COPY . ./
+
+# ── FINAL RUNNER ──────────────────────────────────────────────────────────────
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# Re-install native tooling in runner for node-pty
+RUN apk add --no-cache python3 make g++ bash
+
+# Copy built app from builder stage
+COPY --from=builder /app ./
+
+ENV NODE_ENV=production
+
+# Railway provides PORT at runtime — do NOT hardcode it
+EXPOSE 8080
+
+# Run as non-root for security
+RUN chown -R node:node /app
+USER node
+
+CMD ["node", "server.js"]
