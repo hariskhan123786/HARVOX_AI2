@@ -324,9 +324,9 @@ export const explainCode = async (req, res) => {
 
 export const generateProject = async (req, res) => {
   try {
-    const { idea, type } = req.body;
+    const { idea, type, complexity } = req.body;
     if (!idea) return res.status(400).json({ message: 'Project idea is required' });
-    const prompt = `Project type: ${type || 'MERN FYP'}\nIdea: ${idea}`;
+    const prompt = `Project type: ${type || 'MERN FYP'}\nComplexity: ${complexity || 'ADVANCED'}\nIdea: ${idea}`;
     const aiOptions = await getAIOptions(req.user._id);
     const aiService = aiOptions.provider === 'gemini' ? geminiService : groqService;
     
@@ -340,8 +340,8 @@ export const generateProject = async (req, res) => {
     });
     const project = await Project.create({
       userId: req.user._id,
-      projectName: idea.slice(0, 80),
-      stack: type || 'MERN',
+      name: idea.slice(0, 80),
+      framework: type || 'MERN',
       description: idea,
       content: reply,
     });

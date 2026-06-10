@@ -41,8 +41,8 @@ export default function Pricing() {
   return (
     <div className="min-h-screen pt-24 px-4 pb-12">
       <div className="text-center max-w-3xl mx-auto mb-16">
-        <h1 className="text-5xl font-bold gradient-text mb-6">Simple, Transparent Pricing</h1>
-        <p className="text-xl text-muted">Supercharge your development workflow today.</p>
+        <h1 className="font-hero text-fluid-title font-bold gradient-text mb-6">Simple, Transparent Pricing</h1>
+        <p className="font-body text-fluid-lead text-muted">Supercharge your development workflow today.</p>
       </div>
 
       <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
@@ -50,16 +50,16 @@ export default function Pricing() {
           <GlassCard key={plan.name} className={`p-8 relative ${plan.highlight ? 'border-neon-purple shadow-neon-purple' : ''}`}>
             {plan.highlight && (
               <div className="absolute top-0 right-8 transform -translate-y-1/2">
-                <span className="bg-gradient-to-r from-neon-purple to-neon-pink text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                <span className="bg-gradient-to-r from-neon-purple to-neon-pink text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider font-hero">
                   Most Popular
                 </span>
               </div>
             )}
             
-            <h2 className="text-2xl font-bold mb-2">{plan.name}</h2>
-            <p className="text-muted mb-6">{plan.description}</p>
+            <h2 className="font-hero text-fluid-heading font-bold mb-2">{plan.name}</h2>
+            <p className="font-body text-fluid-body text-muted mb-6">{plan.description}</p>
             
-            <div className="mb-8">
+            <div className="mb-8 font-hero">
               <span className="text-4xl font-bold">
                 {plan.currency && <span className="text-2xl mr-1">{plan.currency}</span>}
                 {plan.price}
@@ -67,7 +67,7 @@ export default function Pricing() {
               <span className="text-muted ml-2">{plan.period}</span>
             </div>
 
-            <ul className="space-y-4 mb-8">
+            <ul className="space-y-4 mb-8 font-body text-fluid-body">
               {plan.features.map((feature, i) => (
                 <li key={i} className="flex items-center text-muted">
                   <Check className="w-5 h-5 text-neon-blue mr-3 flex-shrink-0" />
@@ -79,6 +79,7 @@ export default function Pricing() {
             <Link to={plan.link}>
               <NeonButton 
                 variant={plan.highlight ? 'primary' : 'outline'} 
+                magnetic={true}
                 className="w-full justify-center"
               >
                 {plan.button}

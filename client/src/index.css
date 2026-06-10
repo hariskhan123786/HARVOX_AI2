@@ -2,6 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Foundation */
+  --clr-void:     #000000;   /* Pure black — main bg */
+  --clr-carbon:   #050505;   /* Near black — card bg */
+  --clr-graphite: #0D0D0D;   /* Section bg */
+  --clr-smoke:    #1A1A1A;   /* Border, divider */
+
+  /* Acid Accent Stack (Brutalist) */
+  --clr-acid:     #DFFF00;   /* Primary CTA — Acid Yellow */
+  --clr-lime:     #CCFF00;   /* Hover state */
+  --clr-volt:     #AAFF00;   /* Active / pressed */
+
+  /* Neon Accent Stack (3D / Vibe) */
+  --clr-cyan:     #00FFFF;   /* 3D highlight */
+  --clr-ice:      #E0F7FA;   /* Glass surface text */
+  --clr-plasma:   #BF5AF2;   /* Purple glow accent */
+  --clr-ember:    #FF6B35;   /* Warm contrast CTA */
+
+  /* Typography clamps for Fluid Typography */
+  --fs-hero:    clamp(2.5rem, 7vw, 5.5rem);
+  --fs-title:   clamp(1.8rem, 4vw, 3rem);
+  --fs-heading: clamp(1.2rem, 2.5vw, 2rem);
+  --fs-lead:    clamp(1rem, 1.8vw, 1.25rem);
+  --fs-body:    clamp(0.85rem, 1.2vw, 1.05rem);
+  --fs-caption: clamp(0.65rem, 0.9vw, 0.8rem);
+  --fs-mono:    clamp(0.7rem, 0.9vw, 0.85rem);
+
+  /* Apple-Grade Bezier Curves */
+  --ease-smooth:   cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-sharp:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-expo:     cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-brutal:   cubic-bezier(0.77, 0, 0.175, 1);
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -175,3 +210,237 @@ html {
 .depth-layer-3 {
   transform: translateZ(60px);
 }
+
+/* ── Grain Noise Overlay ───────────────────────────────────────────── */
+.noise {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+}
+
+/* ── CSS 3D Card Effect ────────────────────────────────────────────── */
+.card-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: transform 0.4s var(--ease-smooth);
+}
+.card-3d:hover {
+  transform: rotateY(-8deg) rotateX(4deg) translateZ(20px);
+}
+.card-3d::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent 60%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* ── Glassmorphism Presets ─────────────────────────────────────────── */
+.glass-acid {
+  border-color: rgba(223, 255, 0, 0.2);
+  box-shadow:
+    0 8px 32px rgba(223, 255, 0, 0.08),
+    inset 0 1px 0 rgba(223, 255, 0, 0.1);
+}
+.glass-cyan {
+  border-color: rgba(0, 255, 255, 0.2);
+  box-shadow:
+    0 0 40px rgba(0,255,255,0.08),
+    inset 0 1px 0 rgba(0,255,255,0.12);
+}
+.glass-plasma {
+  border-color: rgba(191, 90, 242, 0.2);
+  box-shadow:
+    0 8px 32px rgba(191, 90, 242, 0.08),
+    inset 0 1px 0 rgba(191, 90, 242, 0.1);
+}
+
+/* ── 3D Floating Orbs ──────────────────────────────────────────────── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
+  animation: orb-drift 8s ease-in-out infinite alternate;
+}
+.orb-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, #DFFF00, transparent 70%);
+  top: -200px; left: -100px;
+  animation-delay: 0s;
+}
+.orb-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, #BF5AF2, transparent 70%);
+  bottom: -100px; right: -50px;
+  animation-delay: -4s;
+}
+.orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, #00FFFF, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -2s;
+}
+@keyframes orb-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, -30px) scale(1.1); }
+}
+
+/* ── CSS-Only 3D Text & Chrome Text ────────────────────────────────── */
+.text-3d {
+  color: var(--clr-acid);
+  text-shadow:
+    1px 1px 0px #aacc00,
+    2px 2px 0px #88aa00,
+    3px 3px 0px #667700,
+    4px 4px 0px #445500,
+    5px 5px 15px rgba(223,255,0,0.3);
+  letter-spacing: -0.02em;
+}
+.text-chrome {
+  background: linear-gradient(180deg, #fff 0%, #888 50%, #fff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Entrance Animations ───────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s var(--ease-smooth), transform 0.7s var(--ease-smooth);
+}
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+.stagger > * {
+  transition-delay: calc(var(--i) * 80ms);
+}
+
+/* ── Texture Surfaces ──────────────────────────────────────────────── */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+}
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.bg-dots {
+  background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Logo Ticker / Marquee ────────────────────────────────────────── */
+.ticker {
+  overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1rem 0;
+  background: rgba(0,0,0,0.2);
+  backdrop-filter: blur(10px);
+}
+.ticker-track {
+  display: flex;
+  gap: 4rem;
+  width: max-content;
+  animation: ticker-loop 25s linear infinite;
+}
+.ticker-track span {
+  font-family: var(--font-hero);
+  font-size: var(--fs-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--clr-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+@keyframes ticker-loop {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ── FOMO Badge & Pulsing Dot ───────────────────────────────────────── */
+.fomo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(223, 255, 0, 0.08);
+  border: 1px solid rgba(223, 255, 0, 0.25);
+  border-radius: 100px;
+  padding: 0.4rem 1rem;
+  font-family: var(--font-hero);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--clr-acid);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.fomo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--clr-acid);
+  animation: fomo-pulse-dot 1.5s ease-in-out infinite;
+}
+@keyframes fomo-pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(223, 255, 0, 0.4);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.4);
+    box-shadow: 0 0 8px 2px rgba(223, 255, 0, 0.2);
+  }
+}
+
+/* ── Brutalist Acid Button ──────────────────────────────────────────── */
+.btn-acid {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--clr-acid);
+  color: #000;
+  font-family: var(--font-hero);
+  font-size: var(--fs-body);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 1.1rem 2.5rem;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s var(--ease-brutal), box-shadow 0.2s;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+.btn-acid:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 6px 6px 0 rgba(223, 255, 0, 0.4);
+}
+.btn-acid:active {
+  transform: translate(0, 0);
+  box-shadow: none;
+}
+

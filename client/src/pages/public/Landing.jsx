@@ -19,6 +19,7 @@ import Spotlight from '../../components/ui/spotlight';
 import SplineComponent from '../../components/ui/spline';
 import HologramCard from '../../components/ui/hologram-card';
 import { Card } from '../../components/ui/card';
+import FOMOBadge from '../../components/ui/FOMOBadge';
 
 // Lazy load heavy 3D components
 const HologramOrb = lazy(() => import('../../components/ui/HologramOrb'));
@@ -259,10 +260,56 @@ function FeatureCard({ feature, index }) {
   );
 }
 
+/* ─── CountUp ───────────────────────────────────────────────────────────── */
+function CountUp({ target, duration = 1.5, start = 0 }) {
+  const [count, setCount] = useState(start);
+
+  useEffect(() => {
+    const num = parseFloat(target);
+    if (isNaN(num)) return;
+
+    let startTime = null;
+
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+      const current = progress * (num - start) + start;
+      
+      if (target.includes('.')) {
+        setCount(current.toFixed(1));
+      } else {
+        setCount(Math.floor(current));
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [target, duration, start]);
+
+  return <>{count}</>;
+}
+
 /* ─── StatItem ──────────────────────────────────────────────────────────── */
 function StatItem({ value, label, delay }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.1 });
+  const [startCount, setStartCount] = useState(false);
+
+  useEffect(() => {
+    if (isInView) {
+      const timer = setTimeout(() => {
+        setStartCount(true);
+      }, delay * 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isInView, delay]);
+
+  const match = value.match(/^([\d.]+)(.*)$/);
+  const numStr = match ? match[1] : '';
+  const suffix = match ? match[2] : '';
 
   return (
     <motion.div
@@ -272,8 +319,11 @@ function StatItem({ value, label, delay }) {
       transition={{ duration: 0.5, delay }}
       className="text-center"
     >
-      <p className="font-orbitron text-4xl font-bold gradient-text">{value}</p>
-      <p className="mt-1 text-sm text-muted">{label}</p>
+      <p className="font-hero text-fluid-title font-bold gradient-text">
+        {startCount && numStr ? <CountUp target={numStr} /> : (numStr || value)}
+        {suffix}
+      </p>
+      <p className="mt-1 font-body text-fluid-caption text-muted tracking-wider uppercase">{label}</p>
     </motion.div>
   );
 }
@@ -293,7 +343,7 @@ export default function Landing() {
 
       {/* ── Navbar ── */}
       <nav className="relative z-20 flex items-center justify-between px-6 py-5 lg:px-16 border-b border-white/5 backdrop-blur-sm">
-        <Link to="/" className="font-orbitron text-xl font-bold gradient-text tracking-widest">
+        <Link to="/" className="font-hero text-fluid-heading font-bold gradient-text tracking-widest">
           HARVOX AI
         </Link>
         <div className="hidden items-center gap-8 md:flex">
@@ -301,7 +351,7 @@ export default function Landing() {
           <a href="#articles" className="text-sm text-muted hover:text-white transition-colors">Technology</a>
           <a href="#pricing" className="text-sm text-muted hover:text-white transition-colors">Pricing</a>
           <Link to="/login" className="text-sm text-muted hover:text-white transition-colors">Login</Link>
-          <Link to="/register"><NeonButton className="text-sm py-2 px-5">Get Started</NeonButton></Link>
+          <Link to="/register"><NeonButton magnetic={true} className="text-sm py-2 px-5">Get Started</NeonButton></Link>
         </div>
       </nav>
 
@@ -315,20 +365,23 @@ export default function Landing() {
 
             {/* Left Content Column */}
             <div className="lg:col-span-7 flex flex-col space-y-6">
-              <motion.p
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55 }}
-                className="self-start inline-flex items-center gap-2 rounded-full border border-neon-blue/30 bg-neon-blue/10 px-4 py-1.5 font-orbitron text-xs tracking-widest text-neon-blue"
-              >
-                <Sparkles size={12} className="animate-spinSlow" /> CODE SMARTER. LEARN FASTER. BUILD BETTER.
-              </motion.p>
+              <div className="flex flex-wrap items-center gap-3 self-start">
+                <FOMOBadge />
+                <motion.p
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55 }}
+                  className="inline-flex items-center gap-2 rounded-full border border-neon-blue/30 bg-neon-blue/10 px-4 py-1.5 font-hero text-[10px] tracking-widest text-neon-blue"
+                >
+                  <Sparkles size={12} className="animate-spinSlow" /> CODE SMARTER. LEARN FASTER. BUILD BETTER.
+                </motion.p>
+              </div>
 
               <motion.h1
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.08 }}
-                className="font-orbitron text-4xl font-bold leading-tight md:text-5xl lg:text-6xl text-white"
+                className="font-hero text-fluid-hero font-bold leading-tight text-white"
               >
                 Your Intelligent{' '}
                 <span className="relative inline-block gradient-text">
@@ -347,7 +400,7 @@ export default function Landing() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.7, delay: 0.25 }}
-                className="text-base md:text-lg text-muted leading-relaxed max-w-xl"
+                className="font-body text-fluid-lead text-muted leading-relaxed max-w-xl"
               >
                 An immersive AI-powered operating system for code generation, debugging, project planning, voice assistance,
                 and interactive learning — crafted for modern developers.
@@ -361,12 +414,12 @@ export default function Landing() {
                 className="flex flex-wrap gap-4 pt-2"
               >
                 <Link to="/register">
-                  <NeonButton className="px-8 py-3 text-sm shadow-neon-purple hover:scale-105 transition-all duration-300">
+                  <NeonButton magnetic={true} className="px-8 py-3 text-sm shadow-neon-purple hover:scale-105 transition-all duration-300">
                     Get Started Free
                   </NeonButton>
                 </Link>
                 <Link to="/login">
-                  <NeonButton variant="secondary" className="px-8 py-3 text-sm hover:scale-105 transition-all duration-300">
+                  <NeonButton variant="secondary" magnetic={true} className="px-8 py-3 text-sm hover:scale-105 transition-all duration-300">
                     Sign In
                   </NeonButton>
                 </Link>
@@ -445,6 +498,14 @@ export default function Landing() {
         </motion.div>
       </section>
 
+      {/* ── Logo Ticker / Marquee ── */}
+      <div className="ticker relative z-10" aria-hidden="true">
+        <div className="ticker-track">
+          <span>GYMS ★ CLINICS ★ REAL ESTATE ★ RESTAURANTS ★ TECH AGENCIES ★ SAAS STARTUPS ★ CREATIVE STUDIOS ★</span>
+          <span>GYMS ★ CLINICS ★ REAL ESTATE ★ RESTAURANTS ★ TECH AGENCIES ★ SAAS STARTUPS ★ CREATIVE STUDIOS ★</span>
+        </div>
+      </div>
+
       {/* ── Stats Bar ── */}
       <section className="relative z-10 border-y border-white/5 bg-white/[0.02] py-12 px-6 lg:px-16">
         <div className="mx-auto grid max-w-4xl grid-cols-2 gap-8 md:grid-cols-4">
@@ -464,11 +525,11 @@ export default function Landing() {
           transition={{ duration: 0.6 }}
           className="mb-20 text-center"
         >
-          <p className="mb-3 font-orbitron text-xs tracking-widest text-neon-purple">CORE TECHNOLOGY</p>
-          <h2 className="font-orbitron text-3xl font-bold lg:text-5xl">
+          <p className="mb-3 font-hero text-xs tracking-widest text-neon-purple">CORE TECHNOLOGY</p>
+          <h2 className="font-hero text-fluid-title font-bold">
             Built for the <span className="gradient-text">Future of Dev</span>
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted">
+          <p className="mx-auto mt-4 max-w-xl font-body text-fluid-body text-muted">
             Three pillars that make HARVOX AI the most advanced developer companion ever created.
           </p>
         </motion.div>
@@ -489,8 +550,8 @@ export default function Landing() {
           transition={{ duration: 0.6 }}
           className="mb-14 text-center"
         >
-          <p className="mb-3 font-orbitron text-xs tracking-widest text-neon-blue">CAPABILITIES</p>
-          <h2 className="font-orbitron text-3xl font-bold lg:text-4xl">
+          <p className="mb-3 font-hero text-xs tracking-widest text-neon-blue">CAPABILITIES</p>
+          <h2 className="font-hero text-fluid-title font-bold">
             Powerful <span className="gradient-text">AI Tools</span>
           </h2>
         </motion.div>
@@ -508,8 +569,8 @@ export default function Landing() {
           viewport={VP}
           transition={{ duration: 0.6 }}
         >
-          <p className="mb-3 font-orbitron text-xs tracking-widest text-neon-pink">VOICE INTERFACE</p>
-          <h2 className="mb-10 font-orbitron text-3xl font-bold lg:text-4xl">
+          <p className="mb-3 font-hero text-xs tracking-widest text-neon-pink">VOICE INTERFACE</p>
+          <h2 className="mb-10 font-hero text-fluid-title font-bold">
             Talk to <span className="gradient-text">HARVOX</span>
           </h2>
           <div className="mx-auto flex max-w-sm flex-col items-center gap-6">
@@ -527,11 +588,11 @@ export default function Landing() {
                 <Mic size={48} className="text-neon-blue" />
               </div>
             </div>
-            <p className="text-muted leading-relaxed">
+            <p className="font-body text-fluid-body text-muted leading-relaxed">
               Voice input and AI speech synthesis for hands-free coding help — powered by browser-native speech APIs.
             </p>
             <Link to="/register">
-              <NeonButton variant="secondary" className="flex items-center gap-2 text-sm">
+              <NeonButton variant="secondary" magnetic={true} className="flex items-center gap-2 text-sm">
                 Try Voice AI <Mic size={14} />
               </NeonButton>
             </Link>
@@ -548,8 +609,8 @@ export default function Landing() {
           transition={{ duration: 0.6 }}
           className="mb-14 text-center"
         >
-          <p className="mb-3 font-orbitron text-xs tracking-widest text-neon-blue">PRICING</p>
-          <h2 className="font-orbitron text-3xl font-bold lg:text-4xl">
+          <p className="mb-3 font-hero text-xs tracking-widest text-neon-blue">PRICING</p>
+          <h2 className="font-hero text-fluid-title font-bold">
             Simple <span className="gradient-text">Pricing</span>
           </h2>
         </motion.div>
@@ -570,16 +631,16 @@ export default function Landing() {
               >
                 {p.highlight && (
                   <div className="absolute top-4 right-4 z-10">
-                    <span className="rounded-full bg-neon-purple/20 border border-neon-purple/40 px-2 py-0.5 font-orbitron text-[9px] tracking-widest text-neon-purple">
+                    <span className="rounded-full bg-neon-purple/20 border border-neon-purple/40 px-2 py-0.5 font-hero text-[9px] tracking-widest text-neon-purple">
                       POPULAR
                     </span>
                   </div>
                 )}
-                <h3 className="font-orbitron text-xl">{p.name}</h3>
-                <p className="mt-3 font-orbitron text-5xl font-bold">
+                <h3 className="font-hero text-fluid-heading font-semibold">{p.name}</h3>
+                <p className="mt-3 font-hero text-4xl font-bold">
                   {p.price}<span className="text-sm text-muted font-normal">/mo</span>
                 </p>
-                <ul className="mt-6 space-y-3">
+                <ul className="mt-6 space-y-3 font-body text-fluid-body">
                   {p.features.map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-muted">
                       <Zap size={14} className="text-neon-blue shrink-0" /> {f}
@@ -587,13 +648,99 @@ export default function Landing() {
                   ))}
                 </ul>
                 <Link to="/register" className="mt-8 block relative z-10">
-                  <NeonButton variant={p.highlight ? 'pro' : 'secondary'} className="w-full">
+                  <NeonButton variant={p.highlight ? 'pro' : 'secondary'} magnetic={true} className="w-full">
                     {p.cta}
                   </NeonButton>
                 </Link>
               </HologramCard>
             </motion.div>
           ))}
+        </div>
+      </section>
+
+      {/* ── Creator Profile Section ── */}
+      <section id="creator" className="relative z-10 px-6 py-20 lg:px-16 overflow-hidden">
+        {/* Glow backdrop */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-neon-purple/20 to-neon-blue/10 blur-3xl opacity-60 pointer-events-none" />
+
+        <div className="mx-auto max-w-5xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VP}
+            transition={{ duration: 0.7 }}
+            className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 md:p-12 shadow-[0_0_50px_rgba(0,240,255,0.1)] relative"
+          >
+            {/* Design accents */}
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-neon-blue/10 to-transparent rounded-tr-3xl" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-neon-purple/10 to-transparent rounded-bl-3xl" />
+
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+              
+              {/* Image Column */}
+              <div className="md:col-span-5 flex justify-center">
+                <div className="relative group w-full max-w-[320px]">
+                  {/* Neon border glow */}
+                  <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-r from-neon-purple via-neon-blue to-neon-pink opacity-75 blur group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
+                  
+                  {/* Frame */}
+                  <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-neutral-950 aspect-[4/3] md:aspect-square flex items-center justify-center">
+                    <img 
+                      src="/creator.jpg" 
+                      alt="Haris Khan - Creator of HARVOX AI" 
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    {/* Scanlines / Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute bottom-4 left-4 font-orbitron text-[10px] tracking-widest text-neon-blue bg-black/60 px-3 py-1 rounded border border-neon-blue/30 backdrop-blur-sm">
+                      CHIEF ARCHITECT
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Text Column */}
+              <div className="md:col-span-7 flex flex-col space-y-6">
+                <div>
+                  <span className="font-orbitron text-xs tracking-widest text-neon-purple uppercase">THE BRAIN BEHIND HARVOX</span>
+                  <h2 className="mt-2 font-hero text-fluid-title font-bold text-white">
+                    Meet the <span className="gradient-text">Creator</span>
+                  </h2>
+                </div>
+
+                <div className="space-y-4 font-body text-fluid-body text-muted leading-relaxed">
+                  <p>
+                    Hi, I'm Haris Khan, the creator of <strong>HARVOX AI</strong>. Driven by a passion to democratize advanced developer tools, 
+                    I designed HARVOX AI to bridge the gap between complex full-stack engineering and intuitive AI assistance.
+                  </p>
+                  <p>
+                    Every line of the application was architected with a strict focus on visual excellence, performant engineering, 
+                    and premium user experience. HARVOX represents my vision for the future of developer workflows — a futuristic workspace OS 
+                    that turns coding, debugging, and building into an interactive playground.
+                  </p>
+                </div>
+
+                {/* Social badge/accent */}
+                <div className="flex flex-wrap gap-4 pt-2">
+                  <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/5 px-4 py-2.5 backdrop-blur-md">
+                    <span className="text-xl">🚀</span>
+                    <div>
+                      <p className="font-hero text-xs font-semibold text-white">Haris Khan</p>
+                      <p className="font-body text-[10px] text-neon-blue">Founder & Lead Developer</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/5 px-4 py-2.5 backdrop-blur-md">
+                    <span className="text-xl">🏆</span>
+                    <div>
+                      <p className="font-hero text-xs font-semibold text-white">All Rights Reserved</p>
+                      <p className="font-body text-[10px] text-neon-purple">HARVOX AI © 2026</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -606,7 +753,7 @@ export default function Landing() {
           transition={{ duration: 0.6 }}
           className="mb-12 text-center"
         >
-          <h2 className="font-orbitron text-2xl font-bold lg:text-3xl">
+          <h2 className="font-hero text-fluid-title font-bold">
             Loved by <span className="gradient-text">Developers</span>
           </h2>
         </motion.div>
@@ -622,14 +769,14 @@ export default function Landing() {
             >
               <GlassCard hover={false} className="h-full">
                 <div className="mb-3 text-2xl">{t.icon}</div>
-                <p className="text-sm text-muted leading-relaxed">"{t.text}"</p>
+                <p className="font-body text-fluid-body text-muted leading-relaxed">"{t.text}"</p>
                 <div className="mt-4 flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-neon-purple to-neon-blue font-orbitron text-xs font-bold">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-neon-purple to-neon-blue font-hero text-xs font-bold text-black">
                     {t.name[0]}
                   </div>
                   <div>
-                    <p className="font-orbitron text-xs font-semibold">{t.name}</p>
-                    <p className="text-[10px] text-neon-purple">{t.role}</p>
+                    <p className="font-hero text-xs font-semibold">{t.name}</p>
+                    <p className="font-body text-[10px] text-neon-purple">{t.role}</p>
                   </div>
                   <div className="ml-auto flex gap-0.5">
                     {[...Array(5)].map((_, si) => <Star key={si} size={10} className="fill-neon-blue text-neon-blue" />)}
@@ -647,7 +794,7 @@ export default function Landing() {
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={VP}
-          className="mb-10 text-center font-orbitron text-2xl font-bold"
+          className="mb-10 text-center font-hero text-fluid-title font-bold"
         >
           FAQ
         </motion.h2>
@@ -666,7 +813,7 @@ export default function Landing() {
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-orbitron text-sm font-semibold">{f.q}</span>
+                  <span className="font-hero text-sm font-semibold">{f.q}</span>
                   <motion.span
                     animate={{ rotate: openFaq === i ? 180 : 0 }}
                     transition={{ duration: 0.25 }}
@@ -680,13 +827,15 @@ export default function Landing() {
                   transition={{ duration: 0.25 }}
                   className="overflow-hidden"
                 >
-                  <p className="mt-3 text-sm text-muted leading-relaxed">{f.a}</p>
+                  <p className="mt-3 font-body text-fluid-body text-muted leading-relaxed">{f.a}</p>
                 </motion.div>
               </button>
             </motion.div>
           ))}
         </div>
       </section>
+
+      {/* ── FAQ End ── */}
 
       {/* ── CTA Banner ── */}
       <section className="relative z-10 px-6 py-16 lg:px-16">
@@ -705,14 +854,14 @@ export default function Landing() {
             <img src="/award-badge.png" alt="" loading="lazy" className="w-16 h-16 object-contain animate-floatSlow" onError={(e) => e.target.style.display = 'none'} />
             <img src="/ai-chat-3d.png" alt="" loading="lazy" className="w-16 h-16 object-contain animate-float" onError={(e) => e.target.style.display = 'none'} style={{ animationDelay: '1s' }} />
           </div>
-          <h2 className="font-orbitron text-3xl font-bold lg:text-4xl mb-4">
+          <h2 className="font-hero text-fluid-title font-bold mb-4">
             Ready to <span className="gradient-text">Level Up?</span>
           </h2>
-          <p className="mx-auto max-w-md text-muted mb-8">
+          <p className="mx-auto max-w-md font-body text-fluid-body text-muted mb-8">
             Join thousands of developers building smarter with HARVOX AI.
           </p>
           <Link to="/register">
-            <NeonButton className="px-10 py-3 text-sm flex items-center gap-2 mx-auto">
+            <NeonButton magnetic={true} className="px-10 py-3 text-sm flex items-center gap-2 mx-auto">
               Start For Free <ArrowRight size={16} />
             </NeonButton>
           </Link>

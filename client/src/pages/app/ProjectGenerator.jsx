@@ -389,6 +389,61 @@ export default function ProjectGenerator() {
         /* Content prose */
         .pg-prose { color: #64748b; font-size: 13px; line-height: 1.7; }
         .pg-prose pre { font-family: 'Space Mono', monospace; font-size: 11px; white-space: pre-wrap; word-break: break-word; }
+
+        /* ── Responsive adjustments ── */
+        .pg-form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+          .pg-result-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .pg-form-row {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .pg-title {
+            font-size: 28px;
+          }
+          .pg-card-top {
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px 20px 14px;
+          }
+          .pg-form-body {
+            padding: 16px 20px;
+          }
+          .pg-actions {
+            padding: 16px 20px;
+            flex-direction: column;
+            align-items: stretch;
+          }
+          .pg-action-secondary, .pg-generate-btn {
+            width: 100%;
+            justify-content: center;
+            margin-left: 0 !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .pg-complexity {
+            flex-direction: column;
+            width: 100%;
+          }
+          .pg-cx-btn {
+            width: 100%;
+            text-align: center;
+          }
+        }
       `}</style>
 
       <div className="pg-wrap">
@@ -426,7 +481,7 @@ export default function ProjectGenerator() {
           <form onSubmit={generate}>
             <div className="pg-form-body">
               {/* Row: stack + complexity */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+              <div className="pg-form-row">
                 <div>
                   <label className="pg-label">Tech Stack Architecture</label>
                   <div className="pg-select-wrap">

@@ -4,6 +4,7 @@ import CyberGrid from './CyberGrid';
 import HologramWaves from './HologramWaves';
 import AuroraBorealis from './AuroraBorealis';
 import Starfield3D from './Starfield3D';
+import WireframeBackground from './WireframeBackground';
 
 export default function BackgroundEffects() {
   return (
@@ -14,6 +15,7 @@ export default function BackgroundEffects() {
       <HologramWaves />
       <CyberGrid />
       <FloatingParticles />
+      <WireframeBackground />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#070B14]/50 to-[#070B14] z-0 pointer-events-none" />
     </div>
   );
