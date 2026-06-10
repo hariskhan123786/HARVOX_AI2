@@ -12,6 +12,7 @@ RUN npm run build
 # ── BUILD STAGE: SERVER ───────────────────────────────────────────────
 FROM node:20-alpine AS server-builder
 WORKDIR /app/server
+RUN apk add --no-cache python3 make g++ linux-headers
 COPY server/package*.json ./
 RUN npm ci --only=production --silent
 
@@ -21,8 +22,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=5000
 
-# Install dependencies needed for node-pty if compilation is needed, or fallbacks
-RUN apk add --no-cache python3 make g++ bash
+# Install runtime dependencies for node-pty (bash shell is required)
+RUN apk add --no-cache bash
 
 # Copy server production dependencies
 COPY --from=server-builder /app/server/node_modules ./server/node_modules

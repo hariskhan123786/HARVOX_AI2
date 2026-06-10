@@ -7,7 +7,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app/server
 
 # Install native build tools for node-pty
-RUN apk add --no-cache python3 make g++ bash
+RUN apk add --no-cache python3 make g++ bash linux-headers
 
 # ✅ Copy from server/ inside the root build context
 COPY server/package*.json ./
@@ -25,8 +25,8 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app/server
 
-# node-pty needs these at runtime too
-RUN apk add --no-cache python3 make g++ bash
+# node-pty needs bash at runtime to spawn shell sessions
+RUN apk add --no-cache bash
 
 # Copy everything from builder
 COPY --from=builder /app/server ./
