@@ -26,3 +26,10 @@ logs/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Ignore root-level markdown files (keeps them local but removes/excludes them from GitHub)
+/*.md
+
+# Ignore local agent configuration directory
+.agent/
+

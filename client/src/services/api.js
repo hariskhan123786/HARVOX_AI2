@@ -39,52 +39,106 @@ export const authAPI = {
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
 };
 
-const streamRequest = async (url, data, onChunk) => {
+const streamRequest = async (url, data, onChunk, signal) => {
   const token = localStorage.getItem('harvox_token');
-  const response = await fetch(`${API_URL}${url}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    },
-    body: JSON.stringify({ ...data, stream: true })
-  });
+  
+  // AbortController with 60s timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+  if (signal) {
+    signal.addEventListener('abort', () => {
+      controller.abort();
+    });
+    if (signal.aborted) {
+      controller.abort();
+    }
+  }
+
+  let response;
+  try {
+    response = await fetch(`${API_URL}${url}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify({ ...data, stream: true }),
+      signal: controller.signal,
+    });
+  } catch (fetchErr) {
+    clearTimeout(timeoutId);
+    if (fetchErr.name === 'AbortError') {
+      throw new Error('Request timed out. Please try again.');
+    }
+    throw new Error(fetchErr.message || 'Network error. Please check your connection.');
+  }
 
   if (!response.ok) {
-    const err = await response.json().catch(() => ({ message: 'Stream request failed' }));
-    throw new Error(err.message || 'Stream request failed');
+    clearTimeout(timeoutId);
+    let errMsg = 'Unable to generate response. Please try again.';
+    try {
+      const errBody = await response.json();
+      errMsg = errBody.message || errMsg;
+    } catch {
+      // Non-JSON error response — use status text
+      errMsg = response.statusText || errMsg;
+    }
+    throw new Error(errMsg);
+  }
+
+  if (!response.body) {
+    clearTimeout(timeoutId);
+    throw new Error('Empty response from server.');
   }
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '';
 
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split('\n');
-    buffer = lines.pop() || '';
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
 
-    for (const line of lines) {
-      if (line.startsWith('data: ')) {
-        const dataStr = line.substring(6).trim();
-        if (dataStr) {
-          try {
-            onChunk(JSON.parse(dataStr));
-          } catch (e) { }
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const dataStr = line.substring(6).trim();
+          if (dataStr) {
+            try {
+              const parsed = JSON.parse(dataStr);
+              // Surface server-side stream errors to the caller
+              if (parsed.error && !parsed.content) {
+                console.warn('[Stream] Server error:', parsed.error);
+              }
+              onChunk(parsed);
+            } catch (parseErr) {
+              // Skip malformed JSON chunks
+              console.warn('[Stream] Malformed chunk skipped:', dataStr);
+            }
+          }
         }
       }
     }
+  } catch (readErr) {
+    if (readErr.name === 'AbortError') {
+      throw new Error('Request timed out. Please try again.');
+    }
+    throw readErr;
+  } finally {
+    clearTimeout(timeoutId);
   }
 };
 
 export const aiAPI = {
   chat: (data) => api.post('/ai/chat', data),
-  streamChat: (data, onChunk) => streamRequest('/ai/chat', data, onChunk),
+  streamChat: (data, onChunk, signal) => streamRequest('/ai/chat', data, onChunk, signal),
   generateCode: (data) => api.post('/ai/generate-code', data),
-  streamGenerateCode: (data, onChunk) => streamRequest('/ai/generate-code', data, onChunk),
+  streamGenerateCode: (data, onChunk, signal) => streamRequest('/ai/generate-code', data, onChunk, signal),
   debug: (data) => api.post('/ai/debug', data),
   explain: (data) => api.post('/ai/explain', data),
   project: (data) => api.post('/ai/project', data),
@@ -154,6 +208,28 @@ export const adminAPI = {
   getAnalytics: () => api.get('/admin/analytics'),
   getSettings: () => api.get('/admin/settings'),
   updateSettings: (data) => api.put('/admin/settings', data),
+};
+
+export const memoryAPI = {
+  list: (params) => api.get('/memory', { params }),
+  create: (data) => api.post('/memory', data),
+  update: (id, data) => api.put(`/memory/${id}`, data),
+  togglePin: (id) => api.put(`/memory/${id}/pin`),
+  delete: (id) => api.delete(`/memory/${id}`),
+  summarizeIdentity: () => api.post('/memory/summarize-identity'),
+  detectConflicts: () => api.get('/memory/detect-conflicts'),
+  autoTag: (data) => api.post('/memory/auto-tag', data),
+  exportUrl: () => `${API_URL}/memory/export?token=${localStorage.getItem('harvox_token')}`,
+};
+
+export const automationAPI = {
+  executeStep: (step) => api.post('/automation/execute-step', { step }),
+  getDashboard: () => api.get('/automation/dashboard'),
+  createTask: (data) => api.post('/automation/tasks', data),
+  updateTask: (id, data) => api.put(`/automation/tasks/${id}`, data),
+  deleteTask: (id) => api.delete(`/automation/tasks/${id}`),
+  logLearning: (data) => api.post('/automation/learning', data),
+  getLearning: () => api.get('/automation/learning'),
 };
 
 export default api;

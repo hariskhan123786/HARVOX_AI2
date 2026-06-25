@@ -5,20 +5,36 @@ import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import RightPanel from './RightPanel';
 import { useAuthStore } from '../../store/authStore';
+import { useSidebarStore } from '../../store/sidebarStore';
+import { cn } from '../../utils/cn';
 
 export default function DashboardLayout() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const loadUser = useAuthStore((s) => s.loadUser);
+  const { isCollapsed } = useSidebarStore();
 
   useEffect(() => {
     loadUser();
   }, [loadUser]);
 
+  const isChatPage = location.pathname === '/app/chat';
+
+  if (isChatPage) {
+    return (
+      <div className="flex h-screen w-screen bg-transparent overflow-hidden">
+        <Outlet />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-transparent">
       <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
-      <div className="flex flex-1 flex-col lg:ml-64">
+      <div className={cn(
+        "flex flex-1 flex-col transition-all duration-300",
+        isCollapsed ? "lg:ml-[72px]" : "lg:ml-64"
+      )}>
         <TopBar onMenuClick={() => setMobileOpen(true)} />
         <div className="flex flex-1 overflow-hidden">
           <main className="flex-1 overflow-y-auto p-4 lg:p-6">

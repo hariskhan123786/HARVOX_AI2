@@ -11,6 +11,7 @@ import {
 import {
   MessageSquare, Code2, Bug, Mic, Upload, FolderKanban,
   Zap, Sparkles, ChevronDown, Star, ArrowRight,
+  Terminal, LayoutGrid, Cpu, Layers, Globe, Github, Linkedin, Twitter
 } from 'lucide-react';
 import BackgroundEffects from '../../components/background/BackgroundEffects';
 import NeonButton from '../../components/ui/NeonButton';
@@ -64,9 +65,12 @@ const features = [
   { icon: MessageSquare, title: 'AI Chat', desc: 'Intelligent conversations with syntax-highlighted code responses.', color: 'text-neon-blue' },
   { icon: Code2, title: 'Code Generator', desc: 'Generate production-ready code in multiple languages instantly.', color: 'text-neon-purple' },
   { icon: Bug, title: 'Debug Assistant', desc: 'Paste errors and get explanations plus fixed code.', color: 'text-neon-pink' },
-  { icon: FolderKanban, title: 'Project Generator', desc: 'FYP ideas, MERN structures, and full documentation outlines.', color: 'text-neon-blue' },
+  { icon: Layers, title: 'Multi-Project Scaffold', desc: 'Auto-scaffold Next.js, Node/Express, React, Vue, Python, Svelte, or Electron.', color: 'text-neon-blue' },
   { icon: Upload, title: 'File Analyzer', desc: 'Upload PDFs and code files for AI summarization and Q&A.', color: 'text-neon-purple' },
   { icon: Mic, title: 'Voice Assistant', desc: 'Speak naturally and hear AI responses aloud.', color: 'text-neon-pink' },
+  { icon: Cpu, title: 'Multi-Agent Orchestrator', desc: 'Execute steps using dedicated CEO, Dev, UI, Research, and Deployment agents.', color: 'text-neon-blue' },
+  { icon: Terminal, title: 'Local OS Automation', desc: 'Safely execute system shell commands, directory sorting, and project backups.', color: 'text-neon-purple' },
+  { icon: LayoutGrid, title: 'Command Center', desc: 'Futuristic telemetry dashboard featuring BSCS study hours and log terminal.', color: 'text-neon-pink' },
 ];
 
 const articles = [
@@ -176,7 +180,7 @@ function TiltCard3D({ image, badge, badgeColor, title, description, accent, reve
           >
             {/* Scan-line */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
-              <div className="absolute left-0 right-0 h-px bg-neon-blue/20 animate-scanLine" />
+              <div className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#00F0FF] to-transparent shadow-[0_0_8px_#00F0FF] animate-scanLine" />
             </div>
             {/* Shimmer */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -342,16 +346,28 @@ export default function Landing() {
       <BackgroundEffects />
 
       {/* ── Navbar ── */}
-      <nav className="relative z-20 flex items-center justify-between px-6 py-5 lg:px-16 border-b border-white/5 backdrop-blur-sm">
-        <Link to="/" className="font-hero text-fluid-heading font-bold gradient-text tracking-widest">
+      <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 lg:px-16 border-b border-white/5 bg-[#000000]/60 backdrop-blur-xl transition-all duration-300">
+        <Link to="/" className="font-hero text-fluid-heading font-black tracking-[0.2em] gradient-text-animated">
           HARVOX AI
         </Link>
         <div className="hidden items-center gap-8 md:flex">
-          <a href="#features" className="text-sm text-muted hover:text-white transition-colors">Features</a>
-          <a href="#articles" className="text-sm text-muted hover:text-white transition-colors">Technology</a>
-          <a href="#pricing" className="text-sm text-muted hover:text-white transition-colors">Pricing</a>
-          <Link to="/login" className="text-sm text-muted hover:text-white transition-colors">Login</Link>
-          <Link to="/register"><NeonButton magnetic={true} className="text-sm py-2 px-5">Get Started</NeonButton></Link>
+          {['features', 'articles', 'pricing', 'creator'].map((link) => (
+            <a 
+              key={link}
+              href={`#${link}`} 
+              className="text-xs font-orbitron font-bold tracking-widest text-muted hover:text-neon-blue transition-all duration-300 relative group uppercase"
+            >
+              {link}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-neon-blue transition-all duration-300 group-hover:w-full shadow-[0_0_8px_#00F0FF]" />
+            </a>
+          ))}
+          <div className="h-4 w-px bg-white/10" />
+          <Link to="/login" className="text-xs font-orbitron font-bold tracking-widest text-muted hover:text-white transition-colors uppercase">Login</Link>
+          <Link to="/register">
+            <NeonButton magnetic={true} className="text-[10px] font-bold tracking-wider py-2 px-5 uppercase" variant="pro">
+              Get Started
+            </NeonButton>
+          </Link>
         </div>
       </nav>
 
@@ -574,18 +590,35 @@ export default function Landing() {
             Talk to <span className="gradient-text">HARVOX</span>
           </h2>
           <div className="mx-auto flex max-w-sm flex-col items-center gap-6">
-            <div className="relative">
-              {[1, 2, 3].map(i => (
+            <div className="relative w-36 h-36 flex items-center justify-center">
+              {/* Outer pulsing neon rings */}
+              {[1, 2, 3, 4].map(i => (
                 <motion.div
                   key={i}
-                  animate={{ scale: [1, 1 + i * 0.15, 1], opacity: [0.5, 0, 0.5] }}
-                  transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.5 }}
-                  style={{ willChange: 'transform, opacity', margin: `-${i * 16}px` }}
-                  className="absolute inset-0 rounded-full border border-neon-purple pointer-events-none"
+                  animate={{ 
+                    scale: [0.9, 1.2 + i * 0.25, 0.9], 
+                    opacity: [0.7, 0, 0.7],
+                    rotate: i % 2 === 0 ? [0, 360] : [360, 0]
+                  }}
+                  transition={{ 
+                    duration: 3 + i * 0.5, 
+                    repeat: Infinity, 
+                    ease: "easeInOut" 
+                  }}
+                  style={{ 
+                    width: `${80 + i * 40}px`,
+                    height: `${80 + i * 40}px`,
+                    willChange: 'transform, opacity'
+                  }}
+                  className={`absolute rounded-full border border-dashed pointer-events-none ${
+                    i % 3 === 0 ? 'border-neon-pink/30 shadow-[0_0_12px_rgba(255,0,200,0.15)]' :
+                    i % 3 === 1 ? 'border-neon-blue/30 shadow-[0_0_12px_rgba(0,240,255,0.15)]' :
+                    'border-neon-purple/30 shadow-[0_0_12px_rgba(138,43,226,0.15)]'
+                  }`}
                 />
               ))}
-              <div className="relative h-32 w-32 animate-pulseNeon rounded-full border-2 border-neon-purple bg-gradient-to-br from-neon-purple/30 to-neon-blue/20 flex items-center justify-center shadow-neon-purple">
-                <Mic size={48} className="text-neon-blue" />
+              <div className="relative h-28 w-28 animate-pulseNeon rounded-full border border-neon-pink bg-gradient-to-br from-neon-purple/30 via-neon-blue/20 to-neon-pink/30 flex items-center justify-center shadow-[0_0_30px_rgba(255,0,200,0.4)]">
+                <Mic size={40} className="text-neon-blue drop-shadow-[0_0_8px_rgba(0,240,255,0.6)] animate-pulse" />
               </div>
             </div>
             <p className="font-body text-fluid-body text-muted leading-relaxed">
@@ -623,7 +656,16 @@ export default function Landing() {
               viewport={VP}
               transition={{ duration: 0.55, delay: i * 0.12 }}
               style={{ willChange: 'transform, opacity' }}
+              className="relative group/card"
             >
+              {p.highlight && (
+                <>
+                  {/* Outer spinning gradient ring 1 */}
+                  <div className="absolute -inset-1 rounded-[2.5rem] bg-gradient-to-r from-neon-purple via-neon-blue to-neon-pink opacity-75 blur-md animate-spinSlow group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  {/* Inner spinning gradient ring 2 (reverse) */}
+                  <div className="absolute -inset-0.5 rounded-[2.5rem] bg-gradient-to-r from-neon-pink via-neon-blue to-neon-purple opacity-90 blur-sm animate-reverseSpin pointer-events-none" />
+                </>
+              )}
               <HologramCard
                 glowColor={p.highlight ? "from-neon-purple/40 via-neon-blue/20 to-neon-pink/40" : "from-white/5 to-white/5"}
                 borderColor={p.highlight ? "border-neon-purple/50" : "border-white/10"}
@@ -708,35 +750,55 @@ export default function Landing() {
                   </h2>
                 </div>
 
+                <div className="border-l-2 border-neon-purple pl-4 italic text-xs text-neutral-300 font-body leading-relaxed">
+                  "The best way to predict the future is to build it. HARVOX is my vision of an intelligence-driven development cockpit, turning full-stack engineering and learning tracking into a beautiful, immersive, host-native ecosystem." — Haris Khan
+                </div>
+
                 <div className="space-y-4 font-body text-fluid-body text-muted leading-relaxed">
                   <p>
                     Hi, I'm Haris Khan, the creator of <strong>HARVOX AI</strong>. Driven by a passion to democratize advanced developer tools, 
                     I designed HARVOX AI to bridge the gap between complex full-stack engineering and intuitive AI assistance.
                   </p>
-                  <p>
-                    Every line of the application was architected with a strict focus on visual excellence, performant engineering, 
-                    and premium user experience. HARVOX represents my vision for the future of developer workflows — a futuristic workspace OS 
-                    that turns coding, debugging, and building into an interactive playground.
-                  </p>
                 </div>
 
-                {/* Social badge/accent */}
-                <div className="flex flex-wrap gap-4 pt-2">
-                  <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/5 px-4 py-2.5 backdrop-blur-md">
-                    <span className="text-xl">🚀</span>
-                    <div>
-                      <p className="font-hero text-xs font-semibold text-white">Haris Khan</p>
-                      <p className="font-body text-[10px] text-neon-blue">Founder & Lead Developer</p>
-                    </div>
+                {/* Core Pillars Sub-grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                  <div className="p-3.5 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-md hover:border-neon-purple/20 transition-colors">
+                    <span className="text-neon-purple font-orbitron text-[10px] tracking-wide font-bold block mb-1">Visual Perfection</span>
+                    <span className="text-[9px] text-gray-400 leading-relaxed block">High-density typography, glowing neon interfaces, and premium glassmorphic cards.</span>
                   </div>
-                  <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/5 px-4 py-2.5 backdrop-blur-md">
-                    <span className="text-xl">🏆</span>
-                    <div>
-                      <p className="font-hero text-xs font-semibold text-white">All Rights Reserved</p>
-                      <p className="font-body text-[10px] text-neon-purple">HARVOX AI © 2026</p>
+                  <div className="p-3.5 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-md hover:border-neon-blue/20 transition-colors">
+                    <span className="text-neon-blue font-orbitron text-[10px] tracking-wide font-bold block mb-1">Host-Native Power</span>
+                    <span className="text-[9px] text-gray-400 leading-relaxed block">Runs Node/Express, Vite dev servers, system tasks, and directories directly on your OS.</span>
+                  </div>
+                  <div className="p-3.5 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-md hover:border-neon-pink/20 transition-colors">
+                    <span className="text-neon-pink font-orbitron text-[10px] tracking-wide font-bold block mb-1">Safety First</span>
+                    <span className="text-[9px] text-gray-400 leading-relaxed block">Built-in execution guards that intercept and protect against malicious terminal commands.</span>
+                  </div>
+                </div>
+
+                {/* Social links & Credits */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pt-4 border-t border-white/5">
+                  <div className="flex flex-wrap gap-2.5">
+                    <a href="https://github.com/hariskhan123786" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 hover:bg-white/10 hover:border-neon-purple/40 text-[10px] font-orbitron font-bold transition-all">
+                      <Github size={12} className="text-neon-purple" /> GitHub
+                    </a>
+                    <a href="https://linkedin.com/in/hariskhan" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 hover:bg-white/10 hover:border-neon-blue/40 text-[10px] font-orbitron font-bold transition-all">
+                      <Linkedin size={12} className="text-neon-blue" /> LinkedIn
+                    </a>
+                    <a href="https://twitter.com/hariskhan" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 hover:bg-white/10 hover:border-neon-pink/40 text-[10px] font-orbitron font-bold transition-all">
+                      <Twitter size={12} className="text-neon-pink" /> Twitter
+                    </a>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5 rounded-lg border border-white/5 bg-white/5 px-3 py-1.5">
+                      <span className="text-xs">🏆</span>
+                      <p className="font-orbitron text-[9px] text-neon-purple tracking-widest uppercase">HARVOX AI © 2026</p>
                     </div>
                   </div>
                 </div>
+
               </div>
 
             </div>

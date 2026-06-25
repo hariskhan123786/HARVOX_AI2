@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import AdminRoute from './components/auth/AdminRoute';
@@ -26,6 +26,7 @@ const VoiceAssistant = lazy(() => import('./pages/app/VoiceAssistant'));
 const FileAnalyzer = lazy(() => import('./pages/app/FileAnalyzer'));
 const ProjectGenerator = lazy(() => import('./pages/app/ProjectGenerator'));
 const WorkspaceOS = lazy(() => import('./pages/app/WorkspaceOS'));
+const BrainCore = lazy(() => import('./pages/app/BrainCore'));
 
 // Dynamic route split loading for administration modules
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
@@ -39,6 +40,33 @@ import CommandPalette from './components/ui/CommandPalette';
 
 export default function App() {
   const { token, loadUser } = useAuthStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleGlobalShortcuts = (e) => {
+      if (e.ctrlKey && e.altKey) {
+        const key = e.key.toLowerCase();
+        if (key === 'h') {
+          e.preventDefault();
+          navigate('/app/dashboard');
+        } else if (key === 'c') {
+          e.preventDefault();
+          navigate('/app/chat');
+        } else if (key === 'b') {
+          e.preventDefault();
+          navigate('/app/brain');
+        } else if (key === 'v') {
+          e.preventDefault();
+          navigate('/app/voice');
+        } else if (key === 's') {
+          e.preventDefault();
+          navigate('/app/settings');
+        }
+      }
+    };
+    window.addEventListener('keydown', handleGlobalShortcuts);
+    return () => window.removeEventListener('keydown', handleGlobalShortcuts);
+  }, [navigate]);
 
   useEffect(() => {
     if (token) {
@@ -91,6 +119,7 @@ export default function App() {
             <Route path="file-analyzer" element={<FileAnalyzer />} />
             <Route path="notes" element={<Notes />} />
             <Route path="voice" element={<VoiceAssistant />} />
+            <Route path="brain" element={<BrainCore />} />
             <Route path="profile" element={<Profile />} />
             <Route path="billing" element={<Billing />} />
             <Route path="settings" element={<Settings />} />

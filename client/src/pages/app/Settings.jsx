@@ -6,11 +6,12 @@ import { settingsAPI, authAPI } from '../../services/api';
 import GlassCard from '../../components/ui/GlassCard';
 import NeonButton from '../../components/ui/NeonButton';
 import { AI_PROVIDERS, GROQ_MODELS, GEMINI_MODELS, getModelsByProvider } from '../../config/aiModels';
+import BrainMemorySettings from '../../components/settings/BrainMemorySettings';
 import {
   Paintbrush, Cpu, Volume2, Shield,
   Bell, Layout, Database, LogOut, Check, User,
   Github, Linkedin, Twitter, Globe, Plus, X,
-  CheckCircle2, AlertCircle, Loader2
+  CheckCircle2, AlertCircle, Loader2, Brain
 } from 'lucide-react';
 
 /* ─── Neon Toast Component ─────────────────────────────────────────── */
@@ -66,12 +67,16 @@ function NeonToast({ toast, onDismiss }) {
 
 /* ─── Toggle Switch ─────────────────────────────────────────────────── */
 function Toggle({ value, onChange, color = 'bg-neon-blue' }) {
+  const glowStyle = value
+    ? { boxShadow: color === 'bg-neon-blue' ? '0 0 10px rgba(0, 240, 255, 0.4)' : color === 'bg-neon-pink' ? '0 0 10px rgba(255, 0, 200, 0.4)' : '0 0 10px rgba(138, 43, 226, 0.4)' }
+    : {};
   return (
     <button
       onClick={() => onChange(!value)}
-      className={`relative w-10 h-5 rounded-full transition-all duration-300 flex items-center px-1 shrink-0 ${value ? color : 'bg-secondary'}`}
+      style={glowStyle}
+      className={`relative w-10 h-5 rounded-full transition-all duration-300 flex items-center px-1 shrink-0 ${value ? color : 'bg-[#111118] border border-white/10'}`}
     >
-      <motion.div layout className="w-3.5 h-3.5 bg-white rounded-full shadow" />
+      <motion.div layout className="w-3 h-3 bg-white rounded-full shadow" />
     </button>
   );
 }
@@ -171,6 +176,7 @@ export default function Settings() {
   const [voiceSpeed, setVoiceSpeed] = useState(1.0);
   const [autoVoiceReplies, setAutoVoiceReplies] = useState(false);
   const [wakeWord, setWakeWord] = useState('Hey Harvox');
+  const [voiceLanguage, setVoiceLanguage] = useState('en-US');
   const [tfa, setTfa] = useState(false);
   const [apiKeys, setApiKeys] = useState('gsk_idHqe...xxxx');
   const [aiAlerts, setAiAlerts] = useState(true);
@@ -238,10 +244,11 @@ export default function Settings() {
             setGeminiApiKey(s.apiKeys.gemini || '');
           }
           if (s.voice) {
-            setVoiceGender(s.voice.voiceSelection);
-            setVoiceSpeed(s.voice.speed);
-            setAutoVoiceReplies(s.voice.autoReplies);
-            setWakeWord(s.voice.wakeWord);
+            setVoiceGender(s.voice.voiceSelection || 'female');
+            setVoiceSpeed(s.voice.speed || 1.0);
+            setAutoVoiceReplies(s.voice.autoReplies || false);
+            setWakeWord(s.voice.wakeWord || 'Hey Harvox');
+            setVoiceLanguage(s.voice.language || 'en-US');
           }
           if (s.notifications) {
             setAiAlerts(s.notifications.aiAlerts);
@@ -261,8 +268,10 @@ export default function Settings() {
   const saveSetting = async (category, updates) => {
     try {
       await settingsAPI.update({ [category]: updates });
+      showToast(`${category.charAt(0).toUpperCase() + category.slice(1)} setting updated.`, 'success');
     } catch (err) {
       console.error('Failed to save settings', err);
+      showToast(`Failed to update ${category} settings.`, 'error');
     }
   };
 
@@ -339,6 +348,7 @@ export default function Settings() {
     { id: 'identity', label: 'Identity', icon: User },
     { id: 'appearance', label: 'Appearance', icon: Paintbrush },
     { id: 'ai', label: 'AI Engine', icon: Cpu },
+    { id: 'memory', label: 'Brain & Memory', icon: Brain },
     { id: 'voice', label: 'Voice Link', icon: Volume2 },
     { id: 'security', label: 'Security', icon: Shield },
     { id: 'notifications', label: 'Notifications', icon: Bell },
@@ -367,34 +377,36 @@ export default function Settings() {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
-                <button
+                <motion.button
                   key={tab.id}
                   id={`settings-tab-${tab.id}`}
                   onClick={() => setActiveTab(tab.id)}
+                  whileHover={{ scale: 1.02, x: 4 }}
+                  whileTap={{ scale: 0.98 }}
                   className={`relative w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-orbitron text-xs font-semibold tracking-wider transition-all border ${
                     isActive
-                      ? 'border-neon-purple/30 text-neon-blue bg-neon-purple/5 shadow-neon-purple/10'
+                      ? 'border-neon-purple/40 text-neon-blue bg-neon-purple/5 shadow-[0_0_15px_rgba(138,43,226,0.15)]'
                       : 'border-white/5 text-muted hover:border-white/10 hover:bg-white/5'
                   }`}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="activeTabGlow"
-                      className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-neon-blue"
+                      className="absolute left-0 top-1 bottom-1 w-1 rounded-full bg-gradient-to-b from-neon-blue via-neon-purple to-neon-pink shadow-[0_0_10px_#00F0FF]"
                     />
                   )}
                   <Icon className={`w-4 h-4 ${isActive ? 'text-neon-blue' : 'text-muted'}`} />
                   {tab.label}
-                </button>
+                </motion.button>
               );
             })}
 
             <div className="pt-4 border-t border-white/5 mt-2">
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-orbitron text-xs font-semibold tracking-wider text-rose-500 border border-rose-950/20 hover:bg-rose-950/20 transition-all"
+                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-orbitron text-xs font-semibold tracking-wider text-rose-400 border border-rose-500/20 hover:border-rose-500/40 bg-rose-950/10 hover:bg-rose-950/30 transition-all duration-300"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4 h-4 text-rose-400" />
                 Sever Connection
               </button>
             </div>
@@ -525,7 +537,7 @@ export default function Settings() {
                             { key: 'twitter', icon: Twitter, placeholder: 'twitter.com/username', color: 'text-sky-400' },
                             { key: 'website', icon: Globe, placeholder: 'https://yoursite.com', color: 'text-neon-blue' },
                           ].map(({ key, icon: Icon, placeholder, color }) => (
-                            <div key={key} className="flex items-center gap-2 px-3 py-2 rounded-xl border border-white/5 bg-secondary/20">
+                            <div key={key} className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-white/5 bg-secondary/20 focus-within:border-neon-blue/45 focus-within:shadow-[0_0_15px_rgba(0,240,255,0.15)] transition-all">
                               <Icon className={`w-4 h-4 shrink-0 ${color}`} />
                               <input
                                 id={`identity-social-${key}`}
@@ -533,7 +545,7 @@ export default function Settings() {
                                 value={identityForm.socialLinks[key]}
                                 onChange={(e) => setSocial(key, e.target.value)}
                                 placeholder={placeholder}
-                                className="bg-transparent text-xs font-mono text-white placeholder:text-muted/50 outline-none flex-1 w-0"
+                                className="bg-transparent text-xs font-mono text-white placeholder:text-muted/40 outline-none flex-1 w-0"
                               />
                             </div>
                           ))}
@@ -591,7 +603,7 @@ export default function Settings() {
                                 key={t.key}
                                 onClick={() => { 
                                   setTheme(t.key); 
-                                  saveSetting('appearance', { theme: t.label }); 
+                                  saveSetting('appearance', { theme: t.key }); 
                                   document.body.className = t.key;
                                 }}
                                 className={`p-4 rounded-xl border cursor-pointer flex items-center justify-between transition-all ${theme === t.key ? t.border : 'border-white/5 bg-secondary/10'}`}
@@ -730,6 +742,11 @@ export default function Settings() {
                     </div>
                   )}
 
+                  {/* ── 2b. BRAIN & MEMORY ─────────────────────────── */}
+                  {activeTab === 'memory' && (
+                    <BrainMemorySettings showToast={showToast} />
+                  )}
+
                   {/* ── 3. VOICE LINK ────────────────────────────────── */}
                   {activeTab === 'voice' && (
                     <div className="space-y-6">
@@ -754,9 +771,13 @@ export default function Settings() {
                               onClick={() => {
                                 if ('speechSynthesis' in window) {
                                   window.speechSynthesis.cancel();
-                                  const utter = new SpeechSynthesisUtterance('Neural voice telemetry uplink stabilized. HARVOX AI online.');
+                                  const text = voiceLanguage === 'ur-PK' 
+                                    ? 'ہاروکس آواز کا رابطہ بحال ہو گیا ہے۔ میں آپ کی خدمت کے لیے تیار ہوں۔'
+                                    : 'Neural voice telemetry uplink stabilized. HARVOX AI online.';
+                                  const utter = new SpeechSynthesisUtterance(text);
                                   utter.rate = voiceSpeed;
-                                  const matched = voices.find(v => v.name === voiceGender);
+                                  if (voiceLanguage === 'ur-PK') utter.lang = 'ur-PK';
+                                  const matched = voices.find(v => v.name === voiceGender || (voiceLanguage === 'ur-PK' && v.lang.startsWith('ur')));
                                   if (matched) utter.voice = matched;
                                   window.speechSynthesis.speak(utter);
                                 }
@@ -765,6 +786,31 @@ export default function Settings() {
                             >
                               TEST
                             </button>
+                          </div>
+                        </div>
+                        <div className="space-y-2 pt-2">
+                          <label className="text-xs font-semibold font-orbitron tracking-wider text-muted">VOICE LINK LANGUAGE</label>
+                          <div className="grid grid-cols-2 gap-3">
+                            {[
+                              { id: 'en-US', label: 'English 🇬🇧', desc: 'Standard English recognition & voice' },
+                              { id: 'ur-PK', label: 'Urdu 🇵🇰', desc: 'اردو آواز اور بولنے کی پہچان' }
+                            ].map((l) => (
+                              <button
+                                key={l.id}
+                                onClick={() => {
+                                  setVoiceLanguage(l.id);
+                                  saveSetting('voice', { language: l.id });
+                                }}
+                                className={`p-3 rounded-xl border text-left transition-all ${
+                                  voiceLanguage === l.id
+                                    ? 'border-neon-pink/50 bg-neon-pink/10'
+                                    : 'border-white/5 bg-secondary/10 hover:border-white/10'
+                                }`}
+                              >
+                                <p className="font-orbitron text-xs font-bold text-white tracking-wider">{l.label}</p>
+                                <p className="text-[9px] text-muted">{l.desc}</p>
+                              </button>
+                            ))}
                           </div>
                         </div>
                         <div className="space-y-2">
@@ -776,7 +822,15 @@ export default function Settings() {
                         </div>
                         <div className="space-y-2">
                           <label className="text-xs font-semibold font-orbitron tracking-wider text-muted">WAKE WORD PROTOCOL</label>
-                          <input type="text" value={wakeWord} onChange={(e) => { setWakeWord(e.target.value); saveSetting('voice', { wakeWord: e.target.value }); }} className="input-neon text-xs font-mono" placeholder="e.g. Hey Harvox" />
+                          <input 
+                            type="text" 
+                            value={wakeWord} 
+                            onChange={(e) => setWakeWord(e.target.value)} 
+                            onBlur={() => saveSetting('voice', { wakeWord })}
+                            onKeyDown={(e) => e.key === 'Enter' && saveSetting('voice', { wakeWord })}
+                            className="input-neon text-xs font-mono" 
+                            placeholder="e.g. Hey Harvox" 
+                          />
                         </div>
                         <div className="flex items-center justify-between pt-4 border-t border-white/5">
                           <div>
@@ -811,7 +865,14 @@ export default function Settings() {
                         </div>
                         <div className="space-y-2 pt-2 border-t border-white/5">
                           <label className="text-xs font-semibold font-orbitron tracking-wider text-muted">EXTERNAL API KEY PROTOCOLS</label>
-                          <input type="text" value={apiKeys} onChange={(e) => { setApiKeys(e.target.value); saveSetting('apiKeys', e.target.value); }} className="input-neon text-xs font-mono" />
+                          <input 
+                            type="text" 
+                            value={apiKeys} 
+                            onChange={(e) => setApiKeys(e.target.value)} 
+                            onBlur={() => saveSetting('apiKeys', apiKeys)}
+                            onKeyDown={(e) => e.key === 'Enter' && saveSetting('apiKeys', apiKeys)}
+                            className="input-neon text-xs font-mono" 
+                          />
                         </div>
                       </div>
                     </div>
@@ -893,13 +954,20 @@ export default function Settings() {
                           </div>
                           <NeonButton onClick={handleExportData} variant="secondary" className="text-xs py-1.5 px-3">Export JSON</NeonButton>
                         </div>
-                        <div className="flex justify-between items-center p-3 rounded-xl border border-rose-950/20 bg-rose-950/5">
-                          <div>
-                            <p className="font-orbitron text-xs font-bold text-rose-500">DESTRUCT CHAT HISTORY WIPE</p>
-                            <p className="text-[10px] text-rose-400/80">Wipe all AI chat buffers, note memories, and session tokens</p>
+                        <div className="flex justify-between items-center p-4 rounded-xl border border-rose-500/30 bg-rose-950/15 shadow-[0_0_20px_rgba(239,68,68,0.15)] relative overflow-hidden">
+                          {/* Danger diagonal stripes on the left border */}
+                          <div className="absolute left-0 top-0 bottom-0 w-1.5" style={{
+                            backgroundImage: 'repeating-linear-gradient(45deg, #ef4444, #ef4444 4px, #000 4px, #000 8px)'
+                          }} />
+                          <div className="pl-2">
+                            <p className="font-orbitron text-xs font-black text-rose-500 tracking-widest uppercase">DESTRUCT CHAT HISTORY WIPE</p>
+                            <p className="text-[10px] text-rose-300/80 mt-1 leading-normal">Irreversibly wipe all AI chat buffers, operator note memory caches, and session credentials.</p>
                           </div>
-                          <button onClick={handleWipeData} className="text-xs font-orbitron font-bold text-white bg-rose-600 hover:bg-rose-700 transition-all rounded-lg px-3 py-2">
-                            WIPE DATA
+                          <button
+                            onClick={handleWipeData}
+                            className="text-xs font-orbitron font-black text-white bg-rose-600 hover:bg-rose-500 transition-all duration-300 rounded-xl px-4 py-2 shadow-lg shadow-rose-600/30 active:scale-95 shrink-0"
+                          >
+                            DESTROY SYSTEM MEMORY
                           </button>
                         </div>
                       </div>

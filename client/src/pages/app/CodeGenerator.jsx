@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Download, Code2, Zap, Settings, ChevronDown, AlertTriangle } from 'lucide-react';
+import { Download, Code2, Zap, Settings, ChevronDown, AlertTriangle, Eye, Sparkles, RefreshCw } from 'lucide-react';
 import { saveAs } from 'file-saver';
 import Editor from '@monaco-editor/react';
 import { aiAPI } from '../../services/api';
 import { AI_PROVIDERS, GROQ_MODELS, GEMINI_MODELS, getModelsByProvider } from '../../config/aiModels';
+import GlassCard from '../../components/ui/GlassCard';
+import NeonButton from '../../components/ui/NeonButton';
 
 const languages = ['JavaScript', 'React', 'Python', 'HTML', 'CSS', 'Node.js', 'C++', 'SQL'];
 
@@ -14,41 +16,24 @@ const extMap = {
 
 function NeonSelect({ label, value, onChange, options, disabled }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-      <span style={{
-        fontSize: 9, fontFamily: 'Orbitron, sans-serif',
-        letterSpacing: '0.18em', color: '#475569', textTransform: 'uppercase',
-      }}>
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[9px] font-orbitron font-bold tracking-widest text-muted/50 uppercase">
         {label}
       </span>
-      <div style={{ position: 'relative' }}>
+      <div className="relative">
         <select
           value={value}
           onChange={onChange}
           disabled={disabled}
-          style={{
-            width: '100%', appearance: 'none',
-            background: 'rgba(8,12,20,0.9)',
-            border: '1px solid rgba(56,189,248,0.18)',
-            borderRadius: 8, color: '#cbd5e1',
-            fontFamily: '"Fira Code", monospace',
-            fontSize: 13, padding: '8px 34px 8px 11px',
-            cursor: 'pointer', outline: 'none',
-            transition: 'border-color 0.2s',
-          }}
-          onFocus={e => e.currentTarget.style.borderColor = 'rgba(56,189,248,0.5)'}
-          onBlur={e => e.currentTarget.style.borderColor = 'rgba(56,189,248,0.18)'}
+          className="w-full bg-[#050911]/80 border border-white/10 rounded-xl text-white font-mono text-xs px-3.5 py-2.5 outline-none transition-all duration-300 focus:border-neon-blue/50 focus:shadow-neon-blue/20 cursor-pointer appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {options.map(o => (
-            <option key={o.value} value={o.value} style={{ background: '#0f172a' }}>
+            <option key={o.value} value={o.value} className="bg-[#070b14] text-white">
               {o.label}
             </option>
           ))}
         </select>
-        <ChevronDown size={13} style={{
-          position: 'absolute', right: 10, top: '50%',
-          transform: 'translateY(-50%)', color: '#38bdf8', pointerEvents: 'none',
-        }} />
+        <ChevronDown size={13} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neon-blue pointer-events-none" />
       </div>
     </div>
   );
@@ -114,327 +99,214 @@ export default function CodeGenerator() {
   const monacoLang = { 'Node.js': 'javascript', 'C++': 'cpp', React: 'javascript' }[language] ?? language.toLowerCase();
 
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Fira+Code:wght@400;500&display=swap');
+    <div className="flex flex-col gap-6">
+      {/* Heading */}
+      <div>
+        <h1 className="font-orbitron text-2xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-neon flex items-center gap-3">
+          <Code2 className="w-7 h-7 text-neon-blue animate-[spin_40s_linear_infinite]" />
+          AI CODE GENERATOR
+        </h1>
+        <p className="text-xs text-muted">
+          Describe what you want to build and HARVOX will generate production-ready code instantly.
+        </p>
+      </div>
 
-        .cg-wrap { display: flex; flex-direction: column; gap: 20px; }
-
-        /* ── Page heading ── */
-        .cg-heading { display: flex; flex-direction: column; gap: 4px; }
-        .cg-title {
-          font-family: Orbitron, sans-serif; font-weight: 800;
-          font-size: 22px; letter-spacing: 0.07em;
-          background: linear-gradient(90deg, #38bdf8 0%, #818cf8 100%);
-          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .cg-subtitle { color: #475569; font-size: 13px; }
-
-        /* ── Two-column grid ── */
-        .cg-grid {
-          display: grid;
-          grid-template-columns: 300px 1fr;
-          gap: 18px;
-          align-items: start;
-        }
-
-        /* ── Shared card shell ── */
-        .cg-card {
-          background: rgba(13,19,35,0.85);
-          border: 1px solid rgba(56,189,248,0.1);
-          border-radius: 14px;
-          overflow: hidden;
-        }
-        .cg-card-header {
-          display: flex; align-items: center; gap: 7px;
-          padding: 11px 16px;
-          background: rgba(56,189,248,0.04);
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-        .cg-card-label {
-          font-family: Orbitron, sans-serif; font-size: 9px;
-          letter-spacing: 0.2em; color: #38bdf8; text-transform: uppercase;
-        }
-
-        /* ── Config form ── */
-        .cg-form { padding: 16px; display: flex; flex-direction: column; gap: 13px; }
-        .cg-field-label {
-          display: block; margin-bottom: 5px;
-          font-size: 9px; font-family: Orbitron, sans-serif;
-          letter-spacing: 0.18em; color: #475569; text-transform: uppercase;
-        }
-        .cg-textarea {
-          width: 100%; min-height: 170px;
-          background: rgba(8,12,20,0.9);
-          border: 1px solid rgba(56,189,248,0.18);
-          border-radius: 8px; color: #cbd5e1;
-          font-size: 13px; line-height: 1.6;
-          padding: 10px 12px; resize: vertical; outline: none;
-          transition: border-color 0.2s; box-sizing: border-box;
-          font-family: inherit;
-        }
-        .cg-textarea::placeholder { color: #334155; }
-        .cg-textarea:focus { border-color: rgba(56,189,248,0.45); }
-
-        /* ── Generate button ── */
-        .cg-btn {
-          width: 100%; padding: 11px;
-          border-radius: 9px; border: none; cursor: pointer;
-          font-family: Orbitron, sans-serif; font-size: 11px;
-          font-weight: 700; letter-spacing: 0.12em; color: #fff;
-          background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
-          display: flex; align-items: center; justify-content: center; gap: 7px;
-          box-shadow: 0 0 22px rgba(14,165,233,0.28);
-          transition: opacity 0.18s, transform 0.1s;
-        }
-        .cg-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
-        .cg-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-        /* ── Tips ── */
-        .cg-tips {
-          padding: 12px 16px;
-          border-top: 1px solid rgba(255,255,255,0.04);
-          background: rgba(56,189,248,0.025);
-          display: flex; flex-direction: column; gap: 5px;
-        }
-        .cg-tips-label {
-          font-size: 9px; font-family: Orbitron, sans-serif;
-          letter-spacing: 0.2em; color: #38bdf8; opacity: 0.55;
-          text-transform: uppercase; margin-bottom: 2px;
-        }
-        .cg-tip { color: #334155; font-size: 11px; line-height: 1.45; }
-
-        /* ── Output card ── */
-        .cg-output { display: flex; flex-direction: column; }
-        .cg-output-toolbar {
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 10px 16px;
-          background: rgba(56,189,248,0.04);
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-        .cg-toolbar-left { display: flex; align-items: center; gap: 10px; }
-        .cg-lang-pill {
-          padding: 2px 9px; border-radius: 99px;
-          background: rgba(56,189,248,0.1);
-          border: 1px solid rgba(56,189,248,0.22);
-          color: #38bdf8; font-size: 10px;
-          font-family: "Fira Code", monospace;
-        }
-        .cg-tabs { display: flex; gap: 2px; }
-        .cg-tab {
-          padding: 5px 13px; border-radius: 6px; font-size: 11px;
-          background: transparent; border: none; cursor: pointer; color: #64748b;
-          transition: all 0.15s;
-        }
-        .cg-tab.active { background: rgba(56,189,248,0.12); color: #38bdf8; }
-        .cg-tab:hover:not(.active) { color: #94a3b8; background: rgba(255,255,255,0.04); }
-        .cg-export-btn {
-          display: flex; align-items: center; gap: 5px;
-          padding: 6px 12px; border-radius: 7px; cursor: pointer;
-          font-size: 11px; border: 1px solid rgba(56,189,248,0.22);
-          background: rgba(56,189,248,0.08); color: #38bdf8;
-          transition: all 0.15s;
-        }
-        .cg-export-btn:hover:not(:disabled) { background: rgba(56,189,248,0.18); }
-        .cg-export-btn:disabled { opacity: 0.38; cursor: not-allowed; }
-
-        /* ── Empty / loading states ── */
-        .cg-empty {
-          display: flex; flex-direction: column;
-          align-items: center; justify-content: center; gap: 12px;
-          padding: 70px 20px; opacity: 0.22;
-        }
-        .cg-empty-label {
-          font-family: Orbitron, sans-serif; font-size: 12px; letter-spacing: 0.08em;
-          color: #94a3b8;
-        }
-        .cg-loading-wrap {
-          display: flex; flex-direction: column;
-          align-items: center; justify-content: center;
-          padding: 70px 20px; gap: 14px;
-        }
-        .cg-spinner {
-          width: 34px; height: 34px; border-radius: 99px;
-          border: 2px solid rgba(56,189,248,0.15);
-          border-top-color: #38bdf8;
-          animation: cg-spin 0.75s linear infinite;
-        }
-        @keyframes cg-spin { to { transform: rotate(360deg); } }
-        .cg-loading-text {
-          color: #38bdf8; font-size: 13px;
-          font-family: "Fira Code", monospace;
-        }
-
-        /* ── Error banner ── */
-        .cg-error {
-          display: flex; align-items: center; gap: 8px;
-          padding: 11px 15px; border-radius: 9px;
-          background: rgba(239,68,68,0.07);
-          border: 1px solid rgba(239,68,68,0.22);
-          color: #f87171; font-size: 13px;
-          font-family: "Fira Code", monospace;
-        }
-
-        /* ── Preview ── */
-        .cg-preview-bar {
-          display: flex; align-items: center; gap: 8px;
-          padding: 7px 14px; background: #111827;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .cg-preview-dots { display: flex; gap: 5px; }
-        .cg-preview-dot { width: 10px; height: 10px; border-radius: 99px; }
-        .cg-url-bar {
-          flex: 1; height: 20px; border-radius: 4px;
-          background: rgba(0,0,0,0.45);
-          display: flex; align-items: center; justify-content: center;
-          color: #475569; font-size: 10px;
-          font-family: "Fira Code", monospace;
-        }
-      `}</style>
-
-      <div className="cg-wrap">
-
-        {/* Heading */}
-        <div className="cg-heading">
-          <h1 className="cg-title">AI CODE GENERATOR</h1>
-          <p className="cg-subtitle">
-            Describe what you want to build and HARVOX will generate production-ready code instantly.
-          </p>
+      {/* Error Banner */}
+      {error && (
+        <div className="flex items-center gap-2.5 p-4 rounded-xl border border-rose-500/30 bg-rose-500/5 text-rose-400 font-mono text-xs">
+          <AlertTriangle size={15} className="shrink-0" /> 
+          <span>{error}</span>
         </div>
+      )}
 
-        {/* Error */}
-        {error && (
-          <div className="cg-error">
-            <AlertTriangle size={14} /> {error}
-          </div>
-        )}
-
-        {/* Main grid */}
-        <div className="cg-grid">
-
-          {/* ── Left: Configure ── */}
-          <div className="cg-card">
-            <div className="cg-card-header">
-              <Settings size={12} style={{ color: '#38bdf8' }} />
-              <span className="cg-card-label">Configure</span>
-            </div>
-
-            <form className="cg-form" onSubmit={handleGenerate}>
-              <NeonSelect
-                label="AI Provider"
-                value={provider}
-                onChange={e => {
-                  setProvider(e.target.value);
-                  setModel(
-                    e.target.value === AI_PROVIDERS.GEMINI
-                      ? GEMINI_MODELS[0].id
-                      : GROQ_MODELS[0].id
-                  );
-                }}
-                options={[
-                  { value: AI_PROVIDERS.GROQ, label: 'Groq' },
-                  { value: AI_PROVIDERS.GEMINI, label: 'Google Gemini' },
-                ]}
-                disabled={loading}
-              />
-
-              <NeonSelect
-                label="AI Model"
-                value={model}
-                onChange={e => setModel(e.target.value)}
-                options={getModelsByProvider(provider).map(m => ({ value: m.id, label: m.name }))}
-                disabled={loading}
-              />
-
-              <NeonSelect
-                label="Language / Framework"
-                value={language}
-                onChange={e => setLanguage(e.target.value)}
-                options={languages.map(l => ({ value: l, label: l }))}
-                disabled={loading}
-              />
-
-              <div>
-                <label className="cg-field-label">Your Prompt</label>
-                <textarea
-                  className="cg-textarea"
-                  value={prompt}
-                  onChange={e => setPrompt(e.target.value)}
-                  placeholder="e.g. Create a modern login form in React with Tailwind CSS, validation and error states..."
-                  disabled={loading}
-                  required
-                />
-              </div>
-
-              <button className="cg-btn" type="submit" disabled={loading || !prompt.trim()}>
-                {loading ? (
-                  <>
-                    <div className="cg-spinner" style={{ width: 13, height: 13, borderWidth: 2 }} />
-                    Synthesizing...
-                  </>
-                ) : (
-                  <>
-                    <Zap size={14} /> GENERATE CODE
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="cg-tips">
-              <span className="cg-tips-label">Tips</span>
-              <span className="cg-tip">• Be specific: mention framework, styling, and features</span>
-              <span className="cg-tip">• For HTML/CSS/JS: Live Preview appears automatically</span>
-              <span className="cg-tip">• Use Export to download the file instantly</span>
-            </div>
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start">
+        
+        {/* Left Configure Card */}
+        <GlassCard hover={false} className="border-white/10 p-0 overflow-hidden flex flex-col justify-between">
+          <div className="flex items-center gap-2 px-4 py-3.5 bg-secondary/80 border-b border-white/5 select-none">
+            <Settings size={14} className="text-neon-blue" />
+            <span className="font-orbitron text-[10px] font-bold tracking-widest text-neon-blue uppercase">Configure</span>
           </div>
 
-          {/* ── Right: Output ── */}
-          <div className="cg-card cg-output">
-            <div className="cg-output-toolbar">
-              <div className="cg-toolbar-left">
-                <span className="cg-card-label">Output</span>
-                {result && <span className="cg-lang-pill">{language}</span>}
-                {canPreview && (
-                  <div className="cg-tabs">
-                    <button
-                      className={`cg-tab ${activeTab === 'code' ? 'active' : ''}`}
-                      onClick={() => setActiveTab('code')}
-                    >Code</button>
-                    <button
-                      className={`cg-tab ${activeTab === 'preview' ? 'active' : ''}`}
-                      onClick={() => setActiveTab('preview')}
-                    >Preview</button>
-                  </div>
-                )}
+          <form className="p-4 flex flex-col gap-4" onSubmit={handleGenerate}>
+            <NeonSelect
+              label="AI Provider"
+              value={provider}
+              onChange={e => {
+                setProvider(e.target.value);
+                setModel(
+                  e.target.value === AI_PROVIDERS.GEMINI
+                    ? GEMINI_MODELS[0].id
+                    : GROQ_MODELS[0].id
+                );
+              }}
+              options={[
+                { value: AI_PROVIDERS.GROQ, label: 'Groq' },
+                { value: AI_PROVIDERS.GEMINI, label: 'Google Gemini' },
+              ]}
+              disabled={loading}
+            />
+
+            <NeonSelect
+              label="AI Model"
+              value={model}
+              onChange={e => setModel(e.target.value)}
+              options={getModelsByProvider(provider).map(m => ({ value: m.id, label: m.name }))}
+              disabled={loading}
+            />
+
+            <NeonSelect
+              label="Language / Framework"
+              value={language}
+              onChange={e => setLanguage(e.target.value)}
+              options={languages.map(l => ({ value: l, label: l }))}
+              disabled={loading}
+            />
+
+            <div className="space-y-1.5">
+              <label className="text-[9px] font-orbitron font-bold tracking-widest text-muted/50 uppercase block">Your Prompt</label>
+              <textarea
+                className="w-full min-h-[160px] bg-[#050911]/80 border border-white/10 rounded-xl text-white text-xs leading-relaxed p-3.5 resize-none outline-none focus:border-neon-blue/50 focus:shadow-neon-blue/20 transition-all font-poppins placeholder-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                value={prompt}
+                onChange={e => setPrompt(e.target.value)}
+                placeholder="e.g. Create a modern login form in React with Tailwind CSS, validation and error states..."
+                disabled={loading}
+                required
+              />
+            </div>
+
+            <NeonButton variant="acid" className="w-full text-xs font-bold font-orbitron tracking-widest" type="submit" disabled={loading || !prompt.trim()}>
+              {loading ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                  Synthesizing...
+                </>
+              ) : (
+                <>
+                  <Zap size={14} className="mr-1.5 text-black" /> GENERATE CODE
+                </>
+              )}
+            </NeonButton>
+          </form>
+
+          {/* Guidelines Box */}
+          <div className="p-4 border-t border-white/5 bg-white/[0.01] flex flex-col gap-2.5">
+            <span className="text-[9px] font-orbitron font-bold tracking-widest text-neon-blue/50 uppercase">Active AI Guidance</span>
+            <div className="space-y-2 text-[10px] text-muted leading-relaxed font-poppins">
+              <div className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-neon-blue mt-1 shrink-0 animate-pulse" />
+                <p>Be specific: mention framework requirements, styling, and animations.</p>
               </div>
+              <div className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-neon-purple mt-1 shrink-0 animate-pulse" />
+                <p>For HTML/CSS/JS: Live Preview will become active automatically.</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-neon-pink mt-1 shrink-0 animate-pulse" />
+                <p>Use the Export button to save the file onto your local filesystem.</p>
+              </div>
+            </div>
+          </div>
+        </GlassCard>
+
+        {/* Right Output Card */}
+        <div className="rounded-xl border border-white/10 bg-[#03060d]/80 overflow-hidden shadow-2xl font-mono text-sm relative flex flex-col min-h-[500px]">
+          {/* Mock IDE Window Header */}
+          <div className="flex items-center justify-between px-4 py-2.5 bg-secondary/80 border-b border-white/5 select-none">
+            <div className="flex items-center space-x-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500/80 inline-block" />
+              <span className="text-[10px] text-muted/60 font-semibold pl-2 flex items-center gap-1.5">
+                <Code2 className="w-3.5 h-3.5 text-neon-blue" />
+                {result && activeTab === 'preview' ? 'preview.html' : `generated_source.${extMap[language] || 'txt'}`}
+              </span>
+            </div>
+            
+            {/* Toolbar Buttons */}
+            <div className="flex items-center gap-3">
+              {result && (
+                <div className="flex items-center gap-2">
+                  {canPreview && (
+                    <div className="flex items-center gap-1 p-0.5 rounded-lg bg-white/5 border border-white/5 select-none">
+                      <button
+                        className={`px-2.5 py-1 rounded-md text-[9px] font-orbitron font-bold tracking-wider uppercase transition-all flex items-center gap-1 ${
+                          activeTab === 'code'
+                            ? 'bg-neon-blue/10 border border-neon-blue/20 text-neon-blue'
+                            : 'border border-transparent text-muted/40 hover:text-white'
+                        }`}
+                        onClick={() => setActiveTab('code')}
+                      >
+                        <Code2 className="w-3 h-3" />
+                        Code
+                      </button>
+                      <button
+                        className={`px-2.5 py-1 rounded-md text-[9px] font-orbitron font-bold tracking-wider uppercase transition-all flex items-center gap-1 ${
+                          activeTab === 'preview'
+                            ? 'bg-neon-blue/10 border border-neon-blue/20 text-neon-blue'
+                            : 'border border-transparent text-muted/40 hover:text-white'
+                        }`}
+                        onClick={() => setActiveTab('preview')}
+                      >
+                        <Eye className="w-3 h-3" />
+                        Preview
+                      </button>
+                    </div>
+                  )}
+                  {result && (
+                    <span className="px-2 py-0.5 rounded text-[8px] font-orbitron font-bold uppercase tracking-wider bg-neon-blue/10 border border-neon-blue/20 text-neon-blue">
+                      {language}
+                    </span>
+                  )}
+                </div>
+              )}
+
               <button
-                className="cg-export-btn"
                 onClick={exportCode}
                 disabled={!editedCode}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-lg border border-white/10 bg-secondary hover:border-neon-blue hover:text-neon-blue transition-all text-[10px] font-orbitron font-bold tracking-wider uppercase disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
               >
                 <Download size={11} /> Export
               </button>
             </div>
+          </div>
 
+          {/* Output Content Area */}
+          <div className="flex-1 flex flex-col justify-center relative min-h-[440px]">
             {/* Empty state */}
             {!result && !loading && (
-              <div className="cg-empty">
-                <Code2 size={46} style={{ color: '#38bdf8' }} />
-                <span className="cg-empty-label">Your generated code will appear here</span>
+              <div className="flex flex-col items-center justify-center gap-4 py-20 text-center opacity-85 select-none">
+                <div className="w-14 h-14 rounded-2xl bg-primary border border-white/5 flex items-center justify-center mb-1 text-neon-blue/40 shadow-inner">
+                  <Code2 size={28} />
+                </div>
+                <h3 className="font-orbitron font-bold text-white tracking-widest text-xs uppercase">Editor Offline</h3>
+                <p className="text-[10px] text-muted max-w-[240px] leading-relaxed font-poppins">
+                  Configure your system parameters on the left and invoke the generator to compile code outputs.
+                </p>
               </div>
             )}
 
-            {/* Loading state */}
+            {/* Scanning / Loading state */}
             {loading && !result && (
-              <div className="cg-loading-wrap">
-                <div className="cg-spinner" />
-                <span className="cg-loading-text">AI is synthesizing your code...</span>
+              <div className="absolute inset-0 bg-[#070b14]/90 z-20 flex flex-col items-center justify-center p-6 rounded-b-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-grid opacity-15 pointer-events-none" />
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-neon-blue to-transparent animate-scanLine" />
+                <div className="relative w-20 h-20 flex items-center justify-center mb-6">
+                  <div className="absolute inset-0 rounded-full border border-neon-blue/20 border-dashed animate-[spin_10s_linear_infinite]" />
+                  <div className="absolute inset-2 rounded-full border border-neon-purple/15 border-dotted animate-[spin_5s_linear_infinite_reverse]" />
+                  <Zap className="w-8 h-8 text-neon-blue animate-pulse" />
+                </div>
+                <h3 className="font-orbitron font-bold text-neon-blue tracking-widest text-xs uppercase animate-pulse">Synthesizing Code Matrix</h3>
+                <p className="text-[11px] text-muted max-w-xs leading-relaxed font-mono text-center mt-2">
+                  Consulting language rules, scaffolding folder layout, and streaming variables...
+                </p>
               </div>
             )}
 
             {/* Monaco Editor */}
             {result && activeTab === 'code' && (
-              <div style={{ background: '#0a0a0f' }}>
+              <div className="flex-1 w-full bg-[#0a0a0f] text-left">
                 <Editor
                   height="460px"
                   language={monacoLang}
@@ -457,26 +329,29 @@ export default function CodeGenerator() {
 
             {/* Live preview */}
             {result && activeTab === 'preview' && canPreview && (
-              <>
-                <div className="cg-preview-bar">
-                  <div className="cg-preview-dots">
-                    <div className="cg-preview-dot" style={{ background: '#ef4444' }} />
-                    <div className="cg-preview-dot" style={{ background: '#eab308' }} />
-                    <div className="cg-preview-dot" style={{ background: '#22c55e' }} />
+              <div className="flex-grow flex flex-col bg-[#111827] min-h-[460px]">
+                <div className="flex items-center gap-2.5 px-4 py-2 bg-[#111827] border-b border-white/5 select-none shrink-0 font-mono text-xs">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#ef4444' }} />
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#eab308' }} />
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#22c55e' }} />
                   </div>
-                  <div className="cg-url-bar">preview://harvox.local</div>
+                  <div className="flex-1 h-5 rounded-md bg-black/45 flex items-center justify-center text-gray-500 text-[10px] font-medium font-mono select-none px-3">
+                    preview://harvox.local
+                  </div>
                 </div>
                 <iframe
                   title="preview"
                   sandbox="allow-scripts"
-                  style={{ width: '100%', height: 450, border: 'none', background: '#fff' }}
+                  className="w-full flex-grow border-none bg-white"
                   srcDoc={getPreviewHtml()}
                 />
-              </>
+              </div>
             )}
           </div>
         </div>
+
       </div>
-    </>
+    </div>
   );
 }

@@ -20,11 +20,15 @@ import profileRoutes from './routes/profileRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import fsRoutes from './routes/fs.js';
+import memoryRoutes from './routes/memoryRoutes.js';
+import automationRoutes from './routes/automationRoutes.js';
 import SystemSettings from './models/SystemSettings.js';
 import UserSettings from './models/UserSettings.js';
 import UserAnalytics from './models/UserAnalytics.js';
 import Achievements from './models/Achievements.js';
 import Subscription from './models/Subscription.js';
+import Task from './models/Task.js';
+import LearningTrack from './models/LearningTrack.js';
 import path from 'path';
 
 dotenv.config();
@@ -182,6 +186,8 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/fs', fsRoutes);
+app.use('/api/memory', memoryRoutes);
+app.use('/api/automation', automationRoutes);
 app.use('/uploads', express.static(path.join(path.resolve(), 'uploads')));
 
 // Serve client assets in production

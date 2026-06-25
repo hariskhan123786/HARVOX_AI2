@@ -6,8 +6,122 @@ import GlassCard from '../../components/ui/GlassCard';
 import NeonButton from '../../components/ui/NeonButton';
 import { 
   Award, Shield, Terminal, Zap, Cpu, BarChart2, 
-  Activity, Star, User, History, CheckCircle, Flame, Target, Lock, Crown, HelpCircle
+  Activity, Star, User, History, CheckCircle, Flame, Target, Lock, Crown, Info
 } from 'lucide-react';
+
+function RadarChart({ level }) {
+  // Center (100, 100), radius 60
+  // Categories: Logic, Speed, Debugging, Security, Subagents
+  const stats = [
+    { name: 'LOGIC', val: 0.90 },
+    { name: 'SPEED', val: 0.85 },
+    { name: 'DEBUG', val: 0.75 },
+    { name: 'SECURE', val: 0.70 },
+    { name: 'AGENT', val: 0.60 }
+  ];
+
+  const cx = 100;
+  const cy = 100;
+  const r = 58;
+
+  // Helper to get coordinates
+  const getCoords = (index, val = 1) => {
+    const angle = (Math.PI * 2 * index) / 5 - Math.PI / 2;
+    return {
+      x: cx + r * val * Math.cos(angle),
+      y: cy + r * val * Math.sin(angle)
+    };
+  };
+
+  // Outer grid ring coordinates
+  const gridCoords = [0.25, 0.5, 0.75, 1].map((scale) => {
+    return Array.from({ length: 5 }).map((_, i) => getCoords(i, scale));
+  });
+
+  // Skill polygon points
+  const points = stats.map((s, i) => {
+    const { x, y } = getCoords(i, s.val);
+    return `${x},${y}`;
+  }).join(' ');
+
+  return (
+    <div className="flex flex-col items-center justify-center p-3 bg-[#050811]/60 rounded-xl border border-white/5 relative overflow-hidden">
+      <div className="absolute inset-0 bg-dots opacity-10 pointer-events-none" />
+      <svg viewBox="0 0 200 200" className="w-full max-w-[155px] drop-shadow-[0_0_8px_rgba(0,240,255,0.15)] overflow-visible">
+        {/* Draw background grid lines */}
+        {gridCoords.map((ring, idx) => (
+          <polygon
+            key={idx}
+            points={ring.map(p => `${p.x},${p.y}`).join(' ')}
+            fill="none"
+            stroke="rgba(255,255,255,0.06)"
+            strokeWidth="0.75"
+          />
+        ))}
+        
+        {/* Draw axis lines from center */}
+        {Array.from({ length: 5 }).map((_, i) => {
+          const outer = getCoords(i, 1);
+          return (
+            <line
+              key={i}
+              x1={cx}
+              y1={cy}
+              x2={outer.x}
+              y2={outer.y}
+              stroke="rgba(255,255,255,0.06)"
+              strokeWidth="0.75"
+            />
+          );
+        })}
+
+        {/* Skill Area Polygon */}
+        <polygon
+          points={points}
+          fill="rgba(0, 240, 255, 0.12)"
+          stroke="url(#radarGrad)"
+          strokeWidth="1.5"
+          className="animate-[pulse_3s_ease-in-out_infinite]"
+        />
+
+        {/* Categories Labels */}
+        {stats.map((s, i) => {
+          const labelCoords = getCoords(i, 1.22);
+          // Adjust position offsets based on angle
+          let textAnchor = 'middle';
+          let dy = '0.35em';
+          if (i === 1 || i === 2) textAnchor = 'start';
+          if (i === 3 || i === 4) textAnchor = 'end';
+          if (i === 0) dy = '-0.3em';
+          if (i === 2 || i === 3) dy = '0.9em';
+
+          return (
+            <text
+              key={i}
+              x={labelCoords.x}
+              y={labelCoords.y}
+              textAnchor={textAnchor}
+              dy={dy}
+              fill="rgba(184, 192, 204, 0.65)"
+              fontSize="8"
+              fontWeight="bold"
+              className="font-orbitron tracking-wider text-[8px]"
+            >
+              {s.name}
+            </text>
+          );
+        })}
+
+        <defs>
+          <linearGradient id="radarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#8A2BE2" />
+            <stop offset="100%" stopColor="#00F0FF" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  );
+}
 
 export default function Profile() {
   const { user } = useAuthStore();
@@ -56,8 +170,7 @@ export default function Profile() {
   const userXP = profileData?.achievements?.xp !== undefined ? profileData.achievements.xp : 86400;
   const userLevel = profileData?.achievements?.level !== undefined ? profileData.achievements.level : 42;
   
-  // Calculate level based on XP (if XP is custom, say, level up every 2000 XP, or keep it simple)
-  // Let's say XP to next level = 1000 - (XP % 1000)
+  // Calculate level based on XP
   const xpInCurrentLevel = userXP % 1000;
   const xpNeededForNextLevel = 1000 - xpInCurrentLevel;
   const progressionPercent = (xpInCurrentLevel / 1000) * 100;
@@ -66,31 +179,25 @@ export default function Profile() {
   const generatedCodeCount = profileData?.analytics?.generatedCodeCount !== undefined ? profileData.analytics.generatedCodeCount : 452;
   const debuggingSessions = profileData?.analytics?.debuggingSessions !== undefined ? profileData.analytics.debuggingSessions : 9;
   
-  // Custom formula for mock stats inside the screen for aesthetic realism:
-  // e.g. show chats, and show code lines as K, time saved as hours
   const codeLinesFormatted = generatedCodeCount > 999 ? `${(generatedCodeCount / 1000).toFixed(1)}M` : `${generatedCodeCount}K`;
   const timeSavedHours = debuggingSessions * 15 > 0 ? `${debuggingSessions * 15}h` : '142h';
 
-  // Dynamic user role pill selection
   const userRolePill = user?.role === 'admin' ? 'ELITE ADMIN' : user?.subscription === 'pro' ? 'PRO ARCHITECT' : 'ELITE ARCHITECT';
 
-  // Dynamic badges list from database, or fallback to the screenshot badges
   const dbBadges = profileData?.achievements?.badges || [];
   
-  // Custom badges list
   const achievements = [
-    { title: 'Debug Master', desc: 'Resolved 20+ runtime crashes', icon: Shield, color: 'text-neon-pink', bg: 'rgba(255, 0, 200, 0.1)', border: 'border-neon-pink/30', unlocked: true },
-    { title: 'AI Explorer', desc: 'Used all models in AI Chat', icon: Zap, color: 'text-neon-blue', bg: 'rgba(0, 240, 255, 0.1)', border: 'border-neon-blue/30', unlocked: true },
-    { title: 'Coding Pro', desc: 'Generated 1000+ lines of React', icon: Terminal, color: 'text-neon-purple', bg: 'rgba(138, 43, 226, 0.1)', border: 'border-neon-purple/30', unlocked: true },
-    { title: 'Productivity King', desc: 'Active for 7 consecutive days', icon: Award, color: 'text-amber-400', bg: 'rgba(251, 191, 36, 0.1)', border: 'border-amber-400/30', unlocked: true },
+    { title: 'Debug Master', desc: 'Resolved 20+ runtime crashes', progress: '20/20', icon: Shield, color: 'text-neon-pink', border: 'border-neon-pink/30', unlocked: true },
+    { title: 'AI Explorer', desc: 'Used all models in AI Chat', progress: '5/5', icon: Zap, color: 'text-neon-blue', border: 'border-neon-blue/30', unlocked: true },
+    { title: 'Coding Pro', desc: 'Generated 1000+ lines of React', progress: '1k/1k', icon: Terminal, color: 'text-neon-purple', border: 'border-neon-purple/30', unlocked: true },
+    { title: 'Productivity King', desc: 'Active for 7 consecutive days', progress: '7/7', icon: Award, color: 'text-amber-400', border: 'border-amber-400/30', unlocked: true },
     // Locked badges
-    { title: 'Agent Overlord', desc: 'Deploy 5 autonomous subagents', icon: Cpu, color: 'text-muted/40', bg: 'rgba(255,255,255,0.02)', border: 'border-white/5', unlocked: false },
-    { title: 'Voice Commander', desc: 'Speak for 2 hours with Aura link', icon: Lock, color: 'text-muted/40', bg: 'rgba(255,255,255,0.02)', border: 'border-white/5', unlocked: false },
-    { title: 'Project Master', desc: 'Download 10 custom MERN setups', icon: Lock, color: 'text-muted/40', bg: 'rgba(255,255,255,0.02)', border: 'border-white/5', unlocked: false },
-    { title: 'Elite Contributor', desc: 'Unlock all 60 cognitive honors', icon: Lock, color: 'text-muted/40', bg: 'rgba(255,255,255,0.02)', border: 'border-white/5', unlocked: false },
+    { title: 'Agent Overlord', desc: 'Deploy 5 autonomous subagents', progress: '2/5', icon: Cpu, color: 'text-muted/40', border: 'border-white/5', unlocked: false },
+    { title: 'Voice Commander', desc: 'Speak for 2 hours with Aura link', progress: '0.4/2h', icon: Lock, color: 'text-muted/40', border: 'border-white/5', unlocked: false },
+    { title: 'Project Master', desc: 'Download 10 custom MERN setups', progress: '3/10', icon: Lock, color: 'text-muted/40', border: 'border-white/5', unlocked: false },
+    { title: 'Elite Contributor', desc: 'Unlock all 60 cognitive honors', progress: '24/60', icon: Lock, color: 'text-muted/40', border: 'border-white/5', unlocked: false },
   ];
 
-  // Map dbBadges onto achievements if user has custom ones unlocked
   dbBadges.forEach((dbBadge, index) => {
     if (index < 4) {
       achievements[index].title = dbBadge.name || achievements[index].title;
@@ -98,7 +205,6 @@ export default function Profile() {
     }
   });
 
-  // Dynamic activity log from database, fallback to screenshot logs
   const dbActivityLog = profileData?.analytics?.activityLog || [];
   const activities = dbActivityLog.length > 0 
     ? dbActivityLog.map(log => {
@@ -146,7 +252,7 @@ export default function Profile() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Center / Left 2-Column Section */}
+        {/* Left Column (2-Span on Desktop) */}
         <div className="lg:col-span-2 space-y-6">
           
           {/* Holographic User identity header card */}
@@ -157,10 +263,14 @@ export default function Profile() {
             
             <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
               
-              {/* Glowing Avatar */}
+              {/* Glowing Avatar with Laser Scanning Effect */}
               <div className="relative group shrink-0">
                 <div className="absolute -inset-1 rounded-2xl bg-gradient-neon blur opacity-40 group-hover:opacity-60 transition duration-500"></div>
                 <div className="relative w-24 h-24 rounded-2xl border border-neon-blue/30 bg-[#070b14]/90 p-1 flex items-center justify-center overflow-hidden">
+                  
+                  {/* Cyber Laser Scanner */}
+                  <div className="absolute left-0 w-full h-[2px] bg-neon-blue/80 shadow-[0_0_8px_rgba(0,240,255,0.8)] animate-scanLine pointer-events-none z-10" />
+
                   {user?.avatar ? (
                     <img 
                       src={user.avatar} 
@@ -177,7 +287,7 @@ export default function Profile() {
                   <div className="absolute inset-0 border border-white/5 border-dashed rounded-xl animate-[spin_40s_linear_infinite]" />
                   
                   {/* Hover Overlay for Upload */}
-                  <label className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-xl">
+                  <label className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-xl z-20">
                     <span className="text-[9px] font-orbitron font-bold text-white uppercase tracking-widest text-center whitespace-pre-line">
                       {uploadingAvatar ? 'UPLOADING...' : 'CHANGE\nAVATAR'}
                     </span>
@@ -201,8 +311,11 @@ export default function Profile() {
                   {user?.bio || 'Mastering the nebula of code and logic since v1.2. Currently ranked in the top 0.4% of global developers.'}
                 </p>
 
-                {/* Level / XP Mini badges */}
-                <div className="flex items-center justify-center md:justify-start gap-3 pt-1">
+                {/* Neural Address & Badges */}
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-1">
+                  <div className="font-mono text-[9px] text-muted/50 bg-black/40 border border-white/5 rounded-lg px-2.5 py-1 select-none">
+                    NEURAL ADDR: <span className="text-neon-blue">HN-{userXP.toString(16).substring(0, 6).toUpperCase()}</span>
+                  </div>
                   <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg border border-neon-purple/30 bg-neon-purple/10 text-neon-purple font-orbitron text-[10px] font-bold">
                     <Zap size={11} className="text-neon-pink" />
                     LVL {userLevel}
@@ -217,7 +330,7 @@ export default function Profile() {
             </div>
           </GlassCard>
 
-          {/* Performance Stats Cards */}
+          {/* Performance Stats Cards with Vector Sparklines */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             
             {/* Stat 1 */}
@@ -228,14 +341,20 @@ export default function Profile() {
                   <Terminal size={14} />
                 </div>
               </div>
-              <div className="mt-4">
-                <p className="font-orbitron text-2xl font-bold tracking-wider text-white">
-                  {totalChats.toLocaleString()}
-                </p>
-                <span className="text-[9px] font-mono font-bold text-emerald-400 flex items-center gap-1 mt-1">
-                  <Flame size={10} />
-                  +12% vs last week
-                </span>
+              <div className="mt-4 flex items-end justify-between">
+                <div>
+                  <p className="font-orbitron text-2xl font-bold tracking-wider text-white">
+                    {totalChats.toLocaleString()}
+                  </p>
+                  <span className="text-[9px] font-mono font-bold text-emerald-400 flex items-center gap-1 mt-1">
+                    <Flame size={10} />
+                    +12% vs last week
+                  </span>
+                </div>
+                {/* SVG Sparkline */}
+                <svg className="w-16 h-8 text-neon-blue opacity-50 pr-1 shrink-0" viewBox="0 0 60 20">
+                  <path d="M0,15 Q10,5 20,12 T40,6 T60,10" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
               </div>
             </GlassCard>
 
@@ -247,14 +366,20 @@ export default function Profile() {
                   <Cpu size={14} />
                 </div>
               </div>
-              <div className="mt-4">
-                <p className="font-orbitron text-2xl font-bold tracking-wider text-white">
-                  {codeLinesFormatted}
-                </p>
-                <span className="text-[9px] font-mono font-bold text-emerald-400 flex items-center gap-1 mt-1">
-                  <CheckCircle size={10} />
-                  Top 1% Global
-                </span>
+              <div className="mt-4 flex items-end justify-between">
+                <div>
+                  <p className="font-orbitron text-2xl font-bold tracking-wider text-white">
+                    {codeLinesFormatted}
+                  </p>
+                  <span className="text-[9px] font-mono font-bold text-emerald-400 flex items-center gap-1 mt-1">
+                    <CheckCircle size={10} />
+                    Top 1% Global
+                  </span>
+                </div>
+                {/* SVG Sparkline */}
+                <svg className="w-16 h-8 text-neon-purple opacity-50 pr-1 shrink-0" viewBox="0 0 60 20">
+                  <path d="M0,18 Q15,8 30,14 T60,2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
               </div>
             </GlassCard>
 
@@ -266,14 +391,20 @@ export default function Profile() {
                   <BarChart2 size={14} />
                 </div>
               </div>
-              <div className="mt-4">
-                <p className="font-orbitron text-2xl font-bold tracking-wider text-white">
-                  {timeSavedHours}
-                </p>
-                <span className="text-[9px] font-mono font-bold text-amber-400 flex items-center gap-1 mt-1">
-                  <Activity size={10} />
-                  98.4 Efficiency
-                </span>
+              <div className="mt-4 flex items-end justify-between">
+                <div>
+                  <p className="font-orbitron text-2xl font-bold tracking-wider text-white">
+                    {timeSavedHours}
+                  </p>
+                  <span className="text-[9px] font-mono font-bold text-amber-400 flex items-center gap-1 mt-1">
+                    <Activity size={10} />
+                    98.4 Efficiency
+                  </span>
+                </div>
+                {/* SVG Sparkline */}
+                <svg className="w-16 h-8 text-amber-400 opacity-50 pr-1 shrink-0" viewBox="0 0 60 20">
+                  <path d="M0,16 Q10,12 25,6 T45,14 T60,8" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
               </div>
             </GlassCard>
 
@@ -285,7 +416,7 @@ export default function Profile() {
               <h3 className="font-orbitron text-sm font-semibold tracking-wider flex items-center gap-2">
                 <History className="w-4 h-4 text-neon-blue animate-pulse" /> Recent Pulse
               </h3>
-              <button className="text-[10px] font-orbitron font-semibold tracking-widest text-neon-blue hover:text-neon-pink transition-all uppercase">
+              <button className="text-[10px] font-orbitron font-semibold tracking-widest text-neon-blue hover:text-neon-pink transition-all uppercase cursor-pointer">
                 View All
               </button>
             </div>
@@ -325,16 +456,18 @@ export default function Profile() {
         {/* Right Column Section */}
         <div className="lg:col-span-1 space-y-6">
           
-          {/* Card 1: Progression */}
-          <GlassCard hover={false} className="border-white/5 p-6">
-            <h3 className="font-orbitron text-xs font-semibold tracking-widest text-muted mb-4 uppercase">
-              Current Progression
-            </h3>
+          {/* Combined Progression & Skill Radar Matrix */}
+          <GlassCard hover={false} className="border-white/5 p-6 space-y-5">
+            <div>
+              <h3 className="font-orbitron text-xs font-semibold tracking-widest text-muted uppercase">
+                Operator Progression
+              </h3>
+            </div>
             
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               <div className="flex justify-between items-end">
-                <span className="font-orbitron text-sm font-bold text-white">Level {userLevel}</span>
-                <span className="text-[10px] font-mono text-muted">{xpNeededForNextLevel.toLocaleString()} XP to Level {userLevel + 1}</span>
+                <span className="font-orbitron text-xs font-bold text-white">Level {userLevel}</span>
+                <span className="text-[9px] font-mono text-muted">{xpNeededForNextLevel.toLocaleString()} XP to Lvl {userLevel + 1}</span>
               </div>
               
               {/* Cyber Progress Bar */}
@@ -346,45 +479,45 @@ export default function Profile() {
                   className="h-full bg-gradient-to-r from-neon-blue to-neon-purple rounded-full"
                 />
               </div>
+            </div>
 
-              {/* Prog Rows */}
-              <div className="pt-2 space-y-3 border-t border-white/5 mt-2">
-                
-                {/* Row 1 */}
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-lg bg-neon-purple/10 flex items-center justify-center border border-neon-purple/20 text-neon-purple shrink-0">
-                      <Target size={13} />
-                    </div>
-                    <div>
-                      <p className="font-orbitron text-[10px] font-bold text-white">Weekly Goal</p>
-                      <p className="text-[9px] text-muted">50 AI Chats</p>
-                    </div>
+            {/* SVG Skills Radar Chart */}
+            <div className="pt-2">
+              <p className="text-[9px] font-orbitron tracking-widest text-muted/40 uppercase mb-3 text-center">Neural Skill Matrix</p>
+              <RadarChart level={userLevel} />
+            </div>
+
+            {/* Progression details */}
+            <div className="pt-3 border-t border-white/5 space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-neon-purple/10 flex items-center justify-center border border-neon-purple/20 text-neon-purple shrink-0">
+                    <Target size={13} />
                   </div>
-                  <span className="font-mono text-xs font-bold text-neon-blue">42/50</span>
-                </div>
-
-                {/* Row 2 */}
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-lg bg-amber-400/10 flex items-center justify-center border border-amber-400/20 text-amber-400 shrink-0">
-                      <Flame size={13} />
-                    </div>
-                    <div>
-                      <p className="font-orbitron text-[10px] font-bold text-white">Streak</p>
-                      <p className="text-[9px] text-muted">Daily login bonus</p>
-                    </div>
+                  <div>
+                    <p className="font-orbitron text-[9px] font-bold text-white leading-normal">Weekly Goal</p>
+                    <p className="text-[8px] text-muted leading-none">50 AI Chats</p>
                   </div>
-                  <span className="font-mono text-xs font-bold text-amber-400 flex items-center gap-0.5">
-                    14 Days
-                  </span>
                 </div>
+                <span className="font-mono text-xs font-bold text-neon-blue">42/50</span>
+              </div>
 
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-amber-400/10 flex items-center justify-center border border-amber-400/20 text-amber-400 shrink-0">
+                    <Flame size={13} />
+                  </div>
+                  <div>
+                    <p className="font-orbitron text-[9px] font-bold text-white leading-normal">Streak</p>
+                    <p className="text-[8px] text-muted leading-none">Daily login index</p>
+                  </div>
+                </div>
+                <span className="font-mono text-xs font-bold text-amber-400">14 Days</span>
               </div>
             </div>
           </GlassCard>
 
-          {/* Card 2: Achievements Grid */}
+          {/* Achievements Grid with Interactive Progress */}
           <GlassCard hover={false} className="border-white/5 p-6">
             <div className="flex justify-between items-end mb-4">
               <h3 className="font-orbitron text-xs font-semibold tracking-widest text-muted uppercase">
@@ -402,28 +535,37 @@ export default function Profile() {
                       ? `${ach.border} bg-[#0c101a] shadow-[inset_0_0_10px_rgba(255,255,255,0.02)]`
                       : 'border-white/5 bg-secondary/35 text-white/10'
                   }`}
-                  title={`${ach.title}: ${ach.desc}`}
                 >
                   <ach.icon size={18} className={ach.unlocked ? ach.color : 'text-muted/20'} />
                   
-                  {/* Mini Hover Tooltip */}
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-28 bg-[#0c101a] border border-white/10 rounded px-1.5 py-1 text-[9px] text-center hidden group-hover:block z-20 shadow-xl pointer-events-none">
-                    <p className="font-bold text-white leading-tight">{ach.title}</p>
-                    <p className="text-muted leading-tight mt-0.5">{ach.desc}</p>
+                  {/* Glowing core indicator for unlocked items */}
+                  {ach.unlocked && (
+                    <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_4px_#34d399]" />
+                  )}
+                  
+                  {/* Cybernetic Tooltip on hover */}
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-32 bg-[#050811]/95 border border-white/15 rounded-xl p-2.5 text-[9px] text-center hidden group-hover:block z-20 shadow-2xl pointer-events-none">
+                    <p className="font-orbitron font-bold text-white leading-tight uppercase tracking-wider">{ach.title}</p>
+                    <p className="text-muted/80 leading-normal mt-1 font-poppins">{ach.desc}</p>
+                    <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-white/5 font-mono text-[8px]">
+                      <span className="text-muted/40 uppercase">Index</span>
+                      <span className={ach.unlocked ? 'text-emerald-400' : 'text-neon-pink'}>{ach.progress}</span>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
 
             <div className="mt-4 pt-3 border-t border-white/5">
-              <button className="w-full text-center py-2 rounded-xl border border-white/10 bg-secondary/20 font-orbitron text-[10px] font-bold tracking-widest text-muted hover:text-white hover:border-white/20 transition-all uppercase">
+              <button className="w-full text-center py-2.5 rounded-xl border border-white/10 bg-secondary/20 font-orbitron text-[10px] font-bold tracking-widest text-muted hover:text-white hover:border-white/20 transition-all uppercase cursor-pointer">
                 Show All Rewards
               </button>
             </div>
           </GlassCard>
 
-          {/* Card 3: Cyber Asset Card */}
+          {/* Cyber Asset Card with Animated Hologram Core */}
           <GlassCard hover={true} className="border-neon-blue/20 bg-gradient-to-b from-[#0e1424] to-[#0c0f17] p-6 text-center relative overflow-hidden">
+            
             {/* Animated glowing core */}
             <div className="relative mx-auto w-24 h-24 flex items-center justify-center mb-4">
               {/* Outer holographic ring */}
@@ -431,14 +573,14 @@ export default function Profile() {
               <div className="absolute inset-2 rounded-full border border-neon-purple/20 border-dotted animate-[spin_15s_linear_infinite_reverse]" />
               
               {/* Inner glowing cyber sphere */}
-              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-neon-purple to-neon-blue p-[2px] shadow-[0_0_20px_rgba(0,240,255,0.4)] animate-pulse flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-neon-purple to-neon-blue p-[2px] shadow-[0_0_20px_rgba(0,240,255,0.4)] animate-[pulse_2s_ease-in-out_infinite] flex items-center justify-center">
                 <div className="w-full h-full bg-[#070b14] rounded-full flex items-center justify-center">
                   <Crown size={18} className="text-neon-blue" />
                 </div>
               </div>
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 relative z-10">
               <h4 className="font-orbitron text-xs font-bold text-white tracking-widest uppercase">
                 Architect of the Void
               </h4>
@@ -449,7 +591,7 @@ export default function Profile() {
               <div className="pt-2">
                 <button 
                   onClick={handleClaimTrophy}
-                  className="font-orbitron text-[10px] font-bold tracking-widest text-neon-blue hover:text-neon-pink hover:underline transition-all uppercase"
+                  className="font-orbitron text-[10px] font-bold tracking-widest text-neon-blue hover:text-neon-pink hover:underline transition-all uppercase cursor-pointer"
                 >
                   CLAIM DIGITAL ASSET
                 </button>

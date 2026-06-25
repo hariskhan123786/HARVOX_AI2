@@ -22,9 +22,10 @@ const userSettingsSchema = new mongoose.Schema(
     voice: {
       enabled: { type: Boolean, default: false },
       speed: { type: Number, min: 0.5, max: 2, default: 1 },
-      voiceSelection: { type: String, default: 'default' },
+      voiceSelection: { type: String, default: 'female' },
       wakeWord: { type: String, default: 'Hey Harvox' },
       autoReplies: { type: Boolean, default: false },
+      language: { type: String, default: 'en-US' },
     },
     notifications: {
       email: { type: Boolean, default: true },

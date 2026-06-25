@@ -13,11 +13,12 @@ import fs from 'fs/promises';
 import path from 'path';
 import pdfParse from 'pdf-parse';
 import mammoth from 'mammoth';
+import { getContextPrompt, logActivity } from '../services/memoryService.js';
 
-const getAIOptions = async (userId) => {
+export const getAIOptions = async (userId, overrideProvider = null, overrideModel = null) => {
   const options = {
-    provider: 'groq', // Default provider
-    model: 'llama-3.3-70b-versatile',
+    provider: overrideProvider || 'groq', // Default provider
+    model: overrideModel || (overrideProvider === 'gemini' ? 'gemini-2.0-flash' : 'llama-3.3-70b-versatile'),
     temperature: 0.7,
     max_tokens: 2048,
     apiKey: null,
@@ -27,14 +28,16 @@ const getAIOptions = async (userId) => {
     const settings = await UserSettings.findOne({ userId }).select('+apiKeys.groq +apiKeys.gemini');
     if (settings) {
       // Get provider preference
-      if (settings.ai?.provider) options.provider = settings.ai.provider;
+      if (!overrideProvider && settings.ai?.provider) options.provider = settings.ai.provider;
       
       // Get model
-      if (settings.ai?.model) {
+      if (!overrideModel && settings.ai?.model) {
         options.model = settings.ai.model;
-        if (options.model === 'llama3-70b-8192') {
-          options.model = 'llama-3.3-70b-versatile';
-        }
+      }
+      
+      // Map deprecated model names
+      if (options.model === 'llama3-70b-8192') {
+        options.model = 'llama-3.3-70b-versatile';
       }
       
       // Get temperature (creativity)
@@ -79,7 +82,7 @@ const getAIOptions = async (userId) => {
 
 export const chatAI = async (req, res) => {
   try {
-    const { message, chatId, stream } = req.body;
+    const { message, chatId, stream, provider, model } = req.body;
     if (!message) return res.status(400).json({ message: 'Message is required' });
 
     let chat = chatId ? await Chat.findOne({ _id: chatId, userId: req.user._id }) : null;
@@ -94,58 +97,108 @@ export const chatAI = async (req, res) => {
     const history = chat.messages.map((m) => ({ role: m.role, content: m.content }));
     history.push({ role: 'user', content: message });
 
-    const aiOptions = await getAIOptions(req.user._id);
+    const aiOptions = await getAIOptions(req.user._id, provider, model);
     const aiService = aiOptions.provider === 'gemini' ? geminiService : groqService;
 
+    // Retrieve Operator Memories and append to the system prompt
+    const memoryContext = await getContextPrompt(req.user._id);
+    const systemPrompt = PROMPTS.CHAT_ASSISTANT + memoryContext;
+
+    // Log this operator AI chat interaction
+    await logActivity(req.user._id, 'ai_interaction', `Chat query: "${message.slice(0, 50)}"`, { chatId: chat._id });
+
     if (stream) {
-      const responseStream = await aiService.chat({
-        messages: history,
-        systemPrompt: PROMPTS.CHAT_ASSISTANT,
-        stream: true,
-        model: aiOptions.model,
-        temperature: aiOptions.temperature,
-        max_tokens: aiOptions.max_tokens,
-        apiKey: aiOptions.apiKey,
-      });
+      let responseStream;
+      try {
+        responseStream = await aiService.chat({
+          messages: history,
+          systemPrompt,
+          stream: true,
+          model: aiOptions.model,
+          temperature: aiOptions.temperature,
+          max_tokens: aiOptions.max_tokens,
+          apiKey: aiOptions.apiKey,
+        });
+      } catch (initErr) {
+        return res.status(500).json({
+          message: initErr.message || 'Failed to initialize AI stream',
+          code: initErr.code || 'STREAM_INIT_ERROR',
+        });
+      }
 
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
 
       let fullReply = '';
-      
-      if (aiOptions.provider === 'gemini') {
-        // Gemini streaming
-        for await (const chunk of responseStream.stream) {
-          const content = chunk.text();
-          if (content) {
-            fullReply += content;
-            res.write(`data: ${JSON.stringify({ content })}\n\n`);
+      let clientDisconnected = false;
+
+      // Handle client disconnect to avoid writing to closed response
+      req.on('close', () => {
+        clientDisconnected = true;
+      });
+
+      try {
+        if (aiOptions.provider === 'gemini') {
+          // Gemini streaming
+          for await (const chunk of responseStream.stream) {
+            if (clientDisconnected) break;
+            try {
+              const content = chunk.text();
+              if (content) {
+                fullReply += content;
+                res.write(`data: ${JSON.stringify({ content })}\n\n`);
+              }
+            } catch (chunkErr) {
+              console.error('Gemini chunk error:', chunkErr);
+            }
+          }
+        } else {
+          // Groq streaming
+          for await (const chunk of responseStream) {
+            if (clientDisconnected) break;
+            try {
+              const content = chunk.choices[0]?.delta?.content || '';
+              if (content) {
+                fullReply += content;
+                res.write(`data: ${JSON.stringify({ content })}\n\n`);
+              }
+            } catch (chunkErr) {
+              console.error('Groq chunk error:', chunkErr);
+            }
           }
         }
-      } else {
-        // Groq streaming
-        for await (const chunk of responseStream) {
-          const content = chunk.choices[0]?.delta?.content || '';
-          if (content) {
-            fullReply += content;
-            res.write(`data: ${JSON.stringify({ content })}\n\n`);
+      } catch (streamErr) {
+        console.error('Stream iteration error:', streamErr);
+        if (!clientDisconnected) {
+          const errMsg = streamErr.message || 'Stream interrupted';
+          if (!fullReply) {
+            fullReply = 'Unable to generate response. Please try again.';
           }
+          res.write(`data: ${JSON.stringify({ error: errMsg })}\n\n`);
         }
       }
 
-      chat.messages.push({ role: 'user', content: message });
-      chat.messages.push({ role: 'assistant', content: fullReply });
-      await chat.save();
-      await incrementUsage(req.user._id, 'chats');
+      // Save whatever we received, even partial responses
+      if (!clientDisconnected) {
+        try {
+          chat.messages.push({ role: 'user', content: message });
+          chat.messages.push({ role: 'assistant', content: fullReply || 'Unable to generate response.' });
+          await chat.save();
+          await incrementUsage(req.user._id, 'chats');
 
-      res.write(`data: ${JSON.stringify({ done: true, chat })}\n\n`);
-      return res.end();
+          res.write(`data: ${JSON.stringify({ done: true, chat })}\n\n`);
+        } catch (saveErr) {
+          console.error('Chat save error:', saveErr);
+          res.write(`data: ${JSON.stringify({ error: 'Failed to save conversation', done: true })}\n\n`);
+        }
+        return res.end();
+      }
     }
 
     const reply = await aiService.chat({
       messages: history,
-      systemPrompt: PROMPTS.CHAT_ASSISTANT,
+      systemPrompt,
       model: aiOptions.model,
       temperature: aiOptions.temperature,
       max_tokens: aiOptions.max_tokens,
