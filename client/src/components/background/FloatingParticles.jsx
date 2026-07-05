@@ -1,18 +1,21 @@
-import { useEffect, useState, useCallback } from 'react';
-import Particles from 'react-tsparticles';
-import { loadSlim } from 'tsparticles-slim';
+import { useEffect, useState } from 'react';
+import Particles, { initParticlesEngine } from '@tsparticles/react';
+import { loadSlim } from '@tsparticles/slim';
 
 export default function FloatingParticles() {
   const [init, setInit] = useState(false);
 
-  const particlesInit = useCallback(async (engine) => {
-    await loadSlim(engine);
+  useEffect(() => {
+    initParticlesEngine(async (engine) => {
+      await loadSlim(engine);
+    }).then(() => setInit(true));
   }, []);
+
+  if (!init) return null;
 
   return (
     <Particles
       id="tsparticles"
-      init={particlesInit}
       options={{
         background: { color: { value: 'transparent' } },
         fpsLimit: 60,

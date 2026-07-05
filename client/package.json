@@ -12,6 +12,9 @@
     "@monaco-editor/react": "^4.7.0",
     "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.12.95",
+    "@tsparticles/engine": "^3.9.1",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.9.1",
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/xterm": "^6.0.0",
     "axios": "^1.7.9",
@@ -31,12 +34,9 @@
     "react-rnd": "^10.5.3",
     "react-router-dom": "^7.1.1",
     "react-syntax-highlighter": "^15.6.1",
-    "react-tsparticles": "^2.12.2",
     "recharts": "^3.8.1",
     "socket.io-client": "^4.8.3",
     "tailwind-merge": "^2.6.0",
-    "tsparticles": "^4.0.4",
-    "tsparticles-slim": "^2.12.0",
     "zustand": "^5.0.2"
   },
   "devDependencies": {
