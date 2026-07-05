@@ -1,0 +1,1 @@
+{"nodes": [{"id": "client_index_html", "label": "Client Entry Point", "file_type": "code", "source_file": "client/index.html"}], "edges": [{"source": "client_index_html", "target": "client_src_main_jsx", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "client/index.html"}], "hyperedges": []}

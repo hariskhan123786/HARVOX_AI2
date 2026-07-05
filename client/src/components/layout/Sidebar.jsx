@@ -19,6 +19,7 @@ const NAV_GROUPS = [
       { to: '/app/dashboard',        icon: LayoutDashboard, label: 'Dashboard',        neon: '#8A2BE2' },
       { to: '/app/chat',             icon: MessageSquare,   label: 'AI Chat',           neon: '#00F0FF' },
       { to: '/app/brain',            icon: Brain,           label: 'Brain Core',        neon: '#be5cf6' },
+      { to: '/app/automation',       icon: Zap,             label: 'Automation Engine',  neon: '#22C55E' },
     ],
   },
   {

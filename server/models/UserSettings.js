@@ -11,13 +11,14 @@ const userSettingsSchema = new mongoose.Schema(
       uiDensity: { type: String, default: 'comfortable' },
     },
     ai: {
-      provider: { type: String, enum: ['groq', 'gemini'], default: 'groq' },
+      provider: { type: String, enum: ['groq', 'gemini', 'openrouter', 'openai', 'ollama', 'huggingface', 'cerebras', 'auto'], default: 'cerebras' },
       model: { type: String, default: 'llama-3.3-70b-versatile' },
       creativity: { type: Number, min: 0, max: 2, default: 0.7 },
       responseLength: { type: String, enum: ['short', 'medium', 'long'], default: 'medium' },
       codingMode: { type: String, enum: ['standard', 'strict', 'creative'], default: 'standard' },
       expertiseLevel: { type: String, enum: ['beginner', 'intermediate', 'expert'], default: 'intermediate' },
       streaming: { type: Boolean, default: true },
+      personalityMode: { type: String, enum: ['professional', 'friendly', 'mentor', 'playful', 'flirty', 'fun'], default: 'professional' },
     },
     voice: {
       enabled: { type: Boolean, default: false },
@@ -48,6 +49,11 @@ const userSettingsSchema = new mongoose.Schema(
     apiKeys: {
       groq: { type: String, default: '', select: false },
       gemini: { type: String, default: '', select: false },
+      openrouter: { type: String, default: '', select: false },
+      openai: { type: String, default: '', select: false },
+      huggingface: { type: String, default: '', select: false },
+      ollamaUrl: { type: String, default: '', select: false },
+      cerebras: { type: String, default: '', select: false },
     }
   },
   { timestamps: true }

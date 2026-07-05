@@ -32,7 +32,12 @@ export default function Billing() {
   const [feedback, setFeedback] = useState({ show: false, message: '', type: 'info' });
   const [modalOpen, setModalOpen] = useState(false);
 
-  const getPlanPrice = (plan) => (plan === 'monthly' ? 999 : 8999);
+  const getPlanPrice = (plan) => {
+    if (plan === 'monthly') {
+      return paymentSettings.proPriceMonthly || 999;
+    }
+    return paymentSettings.proPriceYearly || 8999;
+  };
 
   const fetchStatusAndSettings = async () => {
     try {
@@ -45,15 +50,16 @@ export default function Billing() {
     }
   };
 
+  const fetchProfileData = async () => {
+    try {
+      const { data } = await profileAPI.getData();
+      setProfileData(data);
+    } catch (error) {
+      console.error('Failed to fetch profile data', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const { data } = await profileAPI.getData();
-        setProfileData(data);
-      } catch (error) {
-        console.error('Failed to fetch profile data', error);
-      }
-    };
     fetchProfileData();
     fetchStatusAndSettings();
   }, []);
@@ -84,11 +90,17 @@ export default function Billing() {
       formData.append('screenshot', screenshotFile);
       const { data } = await paymentsAPI.submitRequest(formData);
       showFeedback(data.message || 'Payment request submitted successfully!', 'success');
+      
+      if (data.user) {
+        updateUser(data.user);
+      }
+
       setTransactionId('');
       setScreenshotFile(null);
       setScreenshotPreview(null);
       setModalOpen(false);
       await fetchStatusAndSettings();
+      await fetchProfileData();
     } catch (err) {
       showFeedback(err.response?.data?.message || 'Submission failed. Please try again.', 'error');
     } finally {

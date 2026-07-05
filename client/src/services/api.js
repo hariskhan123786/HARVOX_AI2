@@ -146,6 +146,9 @@ export const aiAPI = {
     api.post('/ai/analyze-file', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
+  getMetrics: () => api.get('/ai/metrics'),
+  tts: (data) => api.post('/ai/voice/tts', data),
+  transcribe: (formData) => api.post('/ai/voice/stt', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 };
 
 export const chatAPI = {
@@ -230,6 +233,13 @@ export const automationAPI = {
   deleteTask: (id) => api.delete(`/automation/tasks/${id}`),
   logLearning: (data) => api.post('/automation/learning', data),
   getLearning: () => api.get('/automation/learning'),
+  getModules: () => api.get('/automation/modules'),
+  getHistory: (params) => api.get('/automation/history', { params }),
+  quickAction: (action, args) => api.post('/automation/quick-action', { action, args }),
+  getPreferences: () => api.get('/automation/memory/preferences'),
+  savePreferences: (data) => api.post('/automation/memory/preferences', data),
+  getWorkflows: () => api.get('/automation/workflows'),
+  saveWorkflow: (data) => api.post('/automation/workflows', data),
 };
 
 export default api;

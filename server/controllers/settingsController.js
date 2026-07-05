@@ -2,7 +2,7 @@ import UserSettings from '../models/UserSettings.js';
 
 export const getSettings = async (req, res) => {
   try {
-    let settings = await UserSettings.findOne({ userId: req.user._id }).select('+apiKeys.groq +apiKeys.gemini');
+    let settings = await UserSettings.findOne({ userId: req.user._id }).select('+apiKeys.groq +apiKeys.gemini +apiKeys.openrouter +apiKeys.openai +apiKeys.huggingface +apiKeys.ollamaUrl +apiKeys.cerebras');
     if (!settings) {
       settings = await UserSettings.create({ userId: req.user._id });
     }
@@ -15,7 +15,7 @@ export const getSettings = async (req, res) => {
 export const updateSettings = async (req, res) => {
   try {
     const { appearance, ai, voice, notifications, memory, workspace, apiKeys } = req.body;
-    let settings = await UserSettings.findOne({ userId: req.user._id }).select('+apiKeys.groq +apiKeys.gemini');
+    let settings = await UserSettings.findOne({ userId: req.user._id }).select('+apiKeys.groq +apiKeys.gemini +apiKeys.openrouter +apiKeys.openai +apiKeys.huggingface +apiKeys.ollamaUrl +apiKeys.cerebras');
     
     if (!settings) {
       settings = new UserSettings({ userId: req.user._id });

@@ -27,6 +27,7 @@ const FileAnalyzer = lazy(() => import('./pages/app/FileAnalyzer'));
 const ProjectGenerator = lazy(() => import('./pages/app/ProjectGenerator'));
 const WorkspaceOS = lazy(() => import('./pages/app/WorkspaceOS'));
 const BrainCore = lazy(() => import('./pages/app/BrainCore'));
+const AutomationCenter = lazy(() => import('./pages/app/AutomationCenter'));
 
 // Dynamic route split loading for administration modules
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
@@ -123,6 +124,7 @@ export default function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="billing" element={<Billing />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="automation" element={<AutomationCenter />} />
             <Route path="workspace/:workspaceId" element={<WorkspaceOS />} />
           </Route>
 

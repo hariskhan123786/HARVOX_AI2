@@ -5,13 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { settingsAPI, authAPI } from '../../services/api';
 import GlassCard from '../../components/ui/GlassCard';
 import NeonButton from '../../components/ui/NeonButton';
-import { AI_PROVIDERS, GROQ_MODELS, GEMINI_MODELS, getModelsByProvider } from '../../config/aiModels';
+import { AI_PROVIDERS, AI_PROVIDER_META, getDefaultModelForProvider, getModelsByProvider, GROQ_MODELS, GEMINI_MODELS } from '../../config/aiModels';
 import BrainMemorySettings from '../../components/settings/BrainMemorySettings';
 import {
   Paintbrush, Cpu, Volume2, Shield,
   Bell, Layout, Database, LogOut, Check, User,
   Github, Linkedin, Twitter, Globe, Plus, X,
-  CheckCircle2, AlertCircle, Loader2, Brain
+  CheckCircle2, AlertCircle, Loader2, Brain, Key
 } from 'lucide-react';
 
 /* ─── Neon Toast Component ─────────────────────────────────────────── */
@@ -170,8 +170,16 @@ export default function Settings() {
   const [responseLength, setResponseLength] = useState(2048);
   const [expertMode, setExpertMode] = useState(false);
   const [codingMode, setCodingMode] = useState(true);
-  const [groqApiKey, setGroqApiKey] = useState('');
-  const [geminiApiKey, setGeminiApiKey] = useState('');
+  const [groqApiKey, setGroqApiKey]           = useState('');
+  const [geminiApiKey, setGeminiApiKey]       = useState('');
+  const [openrouterApiKey, setOpenrouterApiKey] = useState('');
+  const [openaiApiKey, setOpenaiApiKey]       = useState('');
+  const [huggingfaceApiKey, setHuggingfaceApiKey] = useState('');
+  const [ollamaUrl, setOllamaUrl]             = useState('');
+  const [contextLength, setContextLength]     = useState(4096);
+  const [reasoningMode, setReasoningMode]     = useState(false);
+  const [systemPrompt, setSystemPrompt]       = useState('');
+  const [personalityMode, setPersonalityMode] = useState('professional');
   const [voiceGender, setVoiceGender] = useState('female');
   const [voiceSpeed, setVoiceSpeed] = useState(1.0);
   const [autoVoiceReplies, setAutoVoiceReplies] = useState(false);
@@ -238,10 +246,18 @@ export default function Settings() {
             setCreativity(s.ai.creativity);
             setExpertMode(s.ai.expertiseLevel === 'expert');
             setCodingMode(s.ai.codingMode !== 'standard');
+            setPersonalityMode(s.ai.personalityMode || 'professional');
+            if (s.ai.contextLength) setContextLength(s.ai.contextLength);
+            if (s.ai.reasoningMode !== undefined) setReasoningMode(s.ai.reasoningMode);
+            if (s.ai.systemPrompt !== undefined) setSystemPrompt(s.ai.systemPrompt);
           }
           if (s.apiKeys) {
             setGroqApiKey(s.apiKeys.groq || '');
             setGeminiApiKey(s.apiKeys.gemini || '');
+            setOpenrouterApiKey(s.apiKeys.openrouter || '');
+            setOpenaiApiKey(s.apiKeys.openai || '');
+            setHuggingfaceApiKey(s.apiKeys.huggingface || '');
+            setOllamaUrl(s.apiKeys.ollamaUrl || '');
           }
           if (s.voice) {
             setVoiceGender(s.voice.voiceSelection || 'female');
@@ -275,9 +291,9 @@ export default function Settings() {
     }
   };
 
-  const saveApiKeys = async (gKey, gemKey) => {
+  const saveApiKeys = async (gKey, gemKey, orKey, oaiKey, hfKey, oUrl) => {
     try {
-      await settingsAPI.update({ apiKeys: { groq: gKey, gemini: gemKey } });
+      await settingsAPI.update({ apiKeys: { groq: gKey, gemini: gemKey, openrouter: orKey, openai: oaiKey, huggingface: hfKey, ollamaUrl: oUrl } });
       showToast('Neural API keys updated and secured.', 'success');
     } catch (err) {
       showToast('Failed to secure API credentials.', 'error');
@@ -636,20 +652,23 @@ export default function Settings() {
                     <div className="space-y-6">
                       <h3 className="font-orbitron font-semibold text-sm text-white tracking-widest uppercase border-b border-white/5 pb-2">AI Configuration Panel</h3>
                       <div className="space-y-5">
-                        <div className="space-y-2">
+                      <div className="space-y-2">
                           <label className="text-xs font-semibold font-orbitron tracking-wider text-muted">AI PROVIDER SELECTION</label>
                           <div className="grid grid-cols-2 gap-3">
                             {[
                               { id: AI_PROVIDERS.GROQ, label: 'Groq AI', desc: 'Fast & Reliable' },
-                              { id: AI_PROVIDERS.GEMINI, label: 'Google Gemini', desc: 'Advanced & Capable' }
+                              { id: AI_PROVIDERS.GEMINI, label: 'Google Gemini', desc: 'Advanced & Capable' },
+                              { id: AI_PROVIDERS.OPENROUTER, label: 'OpenRouter', desc: 'Free OSS Models' },
+                              { id: AI_PROVIDERS.OPENAI, label: 'OpenAI', desc: 'GPT-4o & more' },
+                              { id: AI_PROVIDERS.OLLAMA, label: 'Ollama (Local)', desc: 'Run locally offline' },
+                              { id: AI_PROVIDERS.HUGGINGFACE, label: 'Hugging Face', desc: 'Open source hub' },
+                              { id: AI_PROVIDERS.AUTO, label: '⚡ Auto Routing', desc: 'AI-powered routing' },
                             ].map((p) => (
                               <button
                                 key={p.id}
                                 onClick={() => {
                                   setProvider(p.id);
-                                  const defaultModel = p.id === AI_PROVIDERS.GEMINI 
-                                    ? GEMINI_MODELS[0].id 
-                                    : GROQ_MODELS[0].id;
+                                  const defaultModel = getDefaultModelForProvider(p.id);
                                   setModel(defaultModel);
                                   saveSetting('ai', { provider: p.id, model: defaultModel });
                                 }}
@@ -683,6 +702,24 @@ export default function Settings() {
                           <p className="text-[9px] text-muted/60">Switching providers will automatically select the recommended model</p>
                         </div>
 
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold font-orbitron tracking-wider text-muted">AI PERSONALITY MODE</label>
+                          <select 
+                            value={personalityMode} 
+                            onChange={(e) => { 
+                              setPersonalityMode(e.target.value); 
+                              saveSetting('ai', { personalityMode: e.target.value }); 
+                            }} 
+                            className="input-neon text-xs font-mono w-full"
+                          >
+                            <option value="professional">Professional Mode — Technical & Concise</option>
+                            <option value="friendly">Friendly Mode — Relaxed & Supportive</option>
+                            <option value="mentor">Mentor Mode — Explains & Teaches Step-by-Step</option>
+                            <option value="playful">Playful Mode — Witty Banter & Humorous</option>
+                          </select>
+                          <p className="text-[9px] text-muted/60">Adjusts the assistant's tone, pacing, and pedagogical style</p>
+                        </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-white/5">
                           <div className="space-y-2">
                             <label className="text-[10px] font-orbitron font-bold tracking-widest text-muted uppercase">Groq API Key (Optional)</label>
@@ -690,7 +727,7 @@ export default function Settings() {
                               type="password"
                               value={groqApiKey}
                               onChange={(e) => setGroqApiKey(e.target.value)}
-                              onBlur={() => saveApiKeys(groqApiKey, geminiApiKey)}
+                              onBlur={() => saveApiKeys(groqApiKey, geminiApiKey, openrouterApiKey, openaiApiKey, huggingfaceApiKey, ollamaUrl)}
                               placeholder="Leave empty to use admin's key"
                               className="input-neon text-xs font-mono"
                             />
@@ -702,12 +739,82 @@ export default function Settings() {
                               type="password"
                               value={geminiApiKey}
                               onChange={(e) => setGeminiApiKey(e.target.value)}
-                              onBlur={() => saveApiKeys(groqApiKey, geminiApiKey)}
+                              onBlur={() => saveApiKeys(groqApiKey, geminiApiKey, openrouterApiKey, openaiApiKey, huggingfaceApiKey, ollamaUrl)}
                               placeholder="Leave empty to use admin's key"
                               className="input-neon text-xs font-mono"
                             />
                             <p className="text-[9px] text-muted/60">Add your personal Gemini API key for priority access</p>
                           </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-orbitron font-bold tracking-widest text-muted uppercase">OpenRouter API Key</label>
+                            <input
+                              type="password"
+                              value={openrouterApiKey}
+                              onChange={(e) => setOpenrouterApiKey(e.target.value)}
+                              onBlur={() => saveApiKeys(groqApiKey, geminiApiKey, openrouterApiKey, openaiApiKey, huggingfaceApiKey, ollamaUrl)}
+                              placeholder="sk-or-…"
+                              className="input-neon text-xs font-mono"
+                            />
+                            <p className="text-[9px] text-muted/60">Required for free OpenRouter models</p>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-orbitron font-bold tracking-widest text-muted uppercase">OpenAI API Key</label>
+                            <input
+                              type="password"
+                              value={openaiApiKey}
+                              onChange={(e) => setOpenaiApiKey(e.target.value)}
+                              onBlur={() => saveApiKeys(groqApiKey, geminiApiKey, openrouterApiKey, openaiApiKey, huggingfaceApiKey, ollamaUrl)}
+                              placeholder="sk-…"
+                              className="input-neon text-xs font-mono"
+                            />
+                            <p className="text-[9px] text-muted/60">For GPT-4o and other OpenAI models</p>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-orbitron font-bold tracking-widest text-muted uppercase">Hugging Face API Key</label>
+                            <input
+                              type="password"
+                              value={huggingfaceApiKey}
+                              onChange={(e) => setHuggingfaceApiKey(e.target.value)}
+                              onBlur={() => saveApiKeys(groqApiKey, geminiApiKey, openrouterApiKey, openaiApiKey, huggingfaceApiKey, ollamaUrl)}
+                              placeholder="hf_…"
+                              className="input-neon text-xs font-mono"
+                            />
+                            <p className="text-[9px] text-muted/60">For Hugging Face inference API</p>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-orbitron font-bold tracking-widest text-muted uppercase">Ollama URL</label>
+                            <input
+                              type="text"
+                              value={ollamaUrl}
+                              onChange={(e) => setOllamaUrl(e.target.value)}
+                              onBlur={() => saveApiKeys(groqApiKey, geminiApiKey, openrouterApiKey, openaiApiKey, huggingfaceApiKey, ollamaUrl)}
+                              placeholder="http://localhost:11434"
+                              className="input-neon text-xs font-mono"
+                            />
+                            <p className="text-[9px] text-muted/60">Custom Ollama server URL (default: localhost:11434)</p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2 pt-2 border-t border-white/5">
+                          <div className="flex justify-between text-xs font-semibold font-orbitron tracking-wider">
+                            <span className="text-muted">CONTEXT LENGTH</span>
+                            <span className="text-neon-blue font-mono">{contextLength.toLocaleString()} tokens</span>
+                          </div>
+                          <input type="range" min="1024" max="32768" step="1024" value={contextLength} onChange={(e) => { setContextLength(Number(e.target.value)); saveSetting('ai', { contextLength: Number(e.target.value) }); }} className="w-full h-1 bg-secondary rounded-lg appearance-none cursor-pointer accent-neon-blue" />
+                          <p className="text-[9px] text-muted/60">Maximum context window for conversations</p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-orbitron font-bold tracking-widest text-muted uppercase">Default System Prompt</label>
+                          <textarea
+                            rows={3}
+                            value={systemPrompt}
+                            onChange={(e) => setSystemPrompt(e.target.value)}
+                            onBlur={() => saveSetting('ai', { systemPrompt })}
+                            placeholder="You are a helpful assistant. You respond concisely and accurately…"
+                            className="input-neon text-xs font-mono resize-none"
+                          />
+                          <p className="text-[9px] text-muted/60">Custom instructions prepended to every AI session</p>
                         </div>
 
                         <div className="space-y-2">

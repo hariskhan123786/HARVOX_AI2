@@ -17,6 +17,7 @@ const subscriptionSchema = new mongoose.Schema(
         amount: Number,
         method: String,
         transactionId: String,
+        plan: String,
         date: { type: Date, default: Date.now },
         status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
         screenshotUrl: String,

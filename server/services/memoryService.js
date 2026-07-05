@@ -1,4 +1,21 @@
 import Memory from '../models/Memory.js';
+import { eventBus } from '../utils/eventBus.js';
+
+// Setup asynchronous listener for central activity logs
+eventBus.on('activity', async ({ userId, actionKey, description, details }) => {
+  try {
+    await Memory.create({
+      userId,
+      category: 'activity',
+      key: actionKey,
+      value: description,
+      metadata: details
+    });
+  } catch (err) {
+    console.error('[Memory Core Listener] Failed to log activity memory:', err.message);
+  }
+});
+
 
 /**
  * Ensures default memories are seeded for the user (specifically matching Haris Khan identity).
@@ -130,18 +147,8 @@ export async function getContextPrompt(userId) {
 }
 
 /**
- * Save or update activity log in Memory Core.
+ * Save or update activity log in Memory Core (Emits event to Central Event Bus).
  */
 export async function logActivity(userId, actionKey, description, details = {}) {
-  try {
-    await Memory.create({
-      userId,
-      category: 'activity',
-      key: actionKey,
-      value: description,
-      metadata: details
-    });
-  } catch (err) {
-    console.error('[Memory Core] Failed to log activity memory:', err.message);
-  }
+  eventBus.emitActivity(userId, actionKey, description, details);
 }

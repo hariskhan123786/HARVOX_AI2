@@ -9,6 +9,7 @@ const systemSettingsSchema = new mongoose.Schema(
     announcement: { type: String, default: '' },
     groqKey: { type: String, default: '' },
     geminiKey: { type: String, default: '' },
+    cerebrasKey: { type: String, default: '' },
     maintenanceMode: { type: Boolean, default: false },
     proPriceMonthly: { type: Number, default: 500 },
     proPriceYearly: { type: Number, default: 5000 },

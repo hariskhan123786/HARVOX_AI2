@@ -3,6 +3,7 @@ import { ensureDefaultMemories } from '../services/memoryService.js';
 import { getAIOptions } from './aiController.js';
 import * as groqService from '../services/groqService.js';
 import * as geminiService from '../services/geminiService.js';
+import { analyzeActivityAndLearn } from '../services/learningEngine.js';
 
 export const getMemories = async (req, res) => {
   try {
@@ -301,5 +302,25 @@ Ensure you return ONLY a valid JSON object, with no other text, conversational f
     res.json(suggestions);
   } catch (err) {
     res.status(500).json({ message: 'Error auto-tagging memory', error: err.message });
+  }
+};
+
+/**
+ * POST /memory/learn
+ * Run the Machine Learning pipeline on user activity logs to discover and record preferences.
+ */
+export const triggerLearning = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const insights = await analyzeActivityAndLearn(userId);
+    res.json({
+      success: true,
+      message: insights.length > 0
+        ? `Compiled ${insights.length} new preference profile(s).`
+        : 'Telemetry checked. No new operator pattern updates detected.',
+      insights
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Machine learning pipeline run failed', error: err.message });
   }
 };

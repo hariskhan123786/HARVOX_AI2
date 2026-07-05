@@ -13,6 +13,17 @@ const AGENT_BADGES = {
   dev: { label: 'DEVELOPER AGENT', style: 'border-[#00f0ff] text-[#00f0ff] bg-[#00f0ff]/5 shadow-[0_0_8px_rgba(0,240,255,0.15)]' },
   research: { label: 'RESEARCH AGENT', style: 'border-[#34d399] text-[#34d399] bg-[#34d399]/5 shadow-[0_0_8px_rgba(52,211,153,0.15)]' },
   deploy: { label: 'DEPLOYMENT AGENT', style: 'border-[#f87171] text-[#f87171] bg-[#f87171]/5 shadow-[0_0_8px_rgba(248,113,113,0.15)]' },
+  // Phase 10 Engines
+  media: { label: 'MEDIA ENGINE', style: 'border-[#be5cf6] text-[#be5cf6] bg-[#be5cf6]/5 shadow-[0_0_8px_rgba(190,92,246,0.15)]' },
+  browser: { label: 'BROWSER ENGINE', style: 'border-[#00f0ff] text-[#00f0ff] bg-[#00f0ff]/5 shadow-[0_0_8px_rgba(0,240,255,0.15)]' },
+  whatsapp: { label: 'COMMUNICATIONS', style: 'border-[#25D366] text-[#25D366] bg-[#25D366]/5 shadow-[0_0_8px_rgba(37,211,102,0.15)]' },
+  email: { label: 'EMAIL AGENT', style: 'border-[#ea4335] text-[#ea4335] bg-[#ea4335]/5 shadow-[0_0_8px_rgba(234,67,53,0.15)]' },
+  file: { label: 'FILE AGENT', style: 'border-[#f59e0b] text-[#f59e0b] bg-[#f59e0b]/5 shadow-[0_0_8px_rgba(245,158,11,0.15)]' },
+  developer: { label: 'DEV ENGINE', style: 'border-[#00f0ff] text-[#00f0ff] bg-[#00f0ff]/5 shadow-[0_0_8px_rgba(0,240,255,0.15)]' },
+  productivity: { label: 'PRODUCTIVITY', style: 'border-[#34d399] text-[#34d399] bg-[#34d399]/5 shadow-[0_0_8px_rgba(52,211,153,0.15)]' },
+  smart_workflow: { label: 'SMART PLANNER', style: 'border-[#8b5cf6] text-[#8b5cf6] bg-[#8b5cf6]/5 shadow-[0_0_8px_rgba(139,92,246,0.15)]' },
+  smart_planner: { label: 'SMART PLANNER', style: 'border-[#8b5cf6] text-[#8b5cf6] bg-[#8b5cf6]/5 shadow-[0_0_8px_rgba(139,92,246,0.15)]' },
+  system: { label: 'SYSTEM ENGINE', style: 'border-[#10b981] text-[#10b981] bg-[#10b981]/5 shadow-[0_0_8px_rgba(16,185,129,0.15)]' },
 };
 
 export default function TaskPlanWidget({ plan }) {
@@ -164,6 +175,16 @@ export default function TaskPlanWidget({ plan }) {
                   {step.agent && AGENT_BADGES[step.agent.toLowerCase()] && (
                     <span className={`text-[7px] font-orbitron font-bold border px-1.5 py-0.5 rounded-md ${AGENT_BADGES[step.agent.toLowerCase()].style} shrink-0`}>
                       {AGENT_BADGES[step.agent.toLowerCase()].label}
+                    </span>
+                  )}
+                  {step.estimatedMs && (
+                    <span className="text-[7px] font-mono text-gray-500 bg-white/5 border border-white/5 px-1 py-0.5 rounded shrink-0">
+                      ~{Math.round(step.estimatedMs / 1000)}s
+                    </span>
+                  )}
+                  {(step.sensitive || ['whatsapp_send_message', 'file_delete', 'git_push', 'app_close'].includes(step.action)) && (
+                    <span className="text-[7px] font-orbitron font-bold text-red-400 bg-red-400/10 border border-red-400/20 px-1 py-0.5 rounded shrink-0">
+                      ⚠️ SENSITIVE
                     </span>
                   )}
                 </div>

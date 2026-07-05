@@ -2,6 +2,7 @@ import express from 'express';
 import { protect } from '../middleware/auth.js';
 import UserAnalytics from '../models/UserAnalytics.js';
 import Achievements from '../models/Achievements.js';
+import Subscription from '../models/Subscription.js';
 
 const router = express.Router();
 router.use(protect);
@@ -19,7 +20,12 @@ router.get('/data', async (req, res) => {
       achievements = await Achievements.create({ userId: req.user._id });
     }
 
-    res.json({ analytics, achievements });
+    let subscription = await Subscription.findOne({ userId: req.user._id });
+    if (!subscription) {
+      subscription = await Subscription.create({ userId: req.user._id, plan: 'free', status: 'active' });
+    }
+
+    res.json({ analytics, achievements, subscription });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

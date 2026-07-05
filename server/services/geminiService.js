@@ -58,7 +58,15 @@ export const chat = async ({
     }
 
     const result = await chatSession.sendMessage(lastMessage);
-    return result.response.text() || 'No response generated.';
+    const text = result.response.text() || 'No response generated.';
+    return {
+      text,
+      usage: {
+        promptTokens: result.response.usageMetadata?.promptTokenCount || 0,
+        completionTokens: result.response.usageMetadata?.candidatesTokenCount || 0,
+        totalTokens: result.response.usageMetadata?.totalTokenCount || 0,
+      }
+    };
 
   } catch (error) {
     if (error.message?.includes('429') || error.message?.includes('RESOURCE_EXHAUSTED')) {

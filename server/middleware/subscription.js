@@ -31,7 +31,22 @@ export const checkSubscriptionQuota = (feature) => {
 
     if (req.user.role === 'admin') return next();
 
+    // ── Check if using a Free OpenRouter Model ──
+    const { provider, model } = req.body;
+    const isFreeOpenRouter = provider === 'openrouter' && (String(model).endsWith(':free') || model === 'openrouter/free');
+    if (isFreeOpenRouter) {
+      return next(); // Unlimited free access
+    }
+
     if (used >= quota[feature]) {
+      // ── Auto-route to OpenRouter Free when quota is exceeded ──
+      if ((feature === 'chats' || feature === 'codeGen') && process.env.OPENROUTER_API_KEY) {
+        console.log(`[Subscription Middleware] Daily quota exceeded for ${feature}. Auto-routing to OpenRouter Free.`);
+        req.body.provider = 'openrouter';
+        req.body.model = 'openrouter/free';
+        return next();
+      }
+
       return res.status(429).json({
         message: `You've reached your ${plan} plan limit for ${feature}. Upgrade to Pro for more.`,
         code: 'QUOTA_EXCEEDED',

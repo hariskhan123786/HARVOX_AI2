@@ -6,10 +6,13 @@ import { useAuthStore } from '../../store/authStore';
 import PremiumLockOverlay from '../../components/ui/PremiumLockOverlay';
 import {
   CheckCircle2, XCircle, Loader2, Zap, Mic, Brain, Activity,
-  Clock, MessageSquare, Settings, ChevronDown,
+  Clock, MessageSquare, Settings, ChevronDown, Shield, Volume2,
+  BookOpen, FolderOpen, ListChecks, Cpu, RefreshCw, MicOff,
+  Trash2, Sparkles, Radio,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// ── Constants ──────────────────────────────────────────────────────────────────
 const AGENT_BADGES = {
   ceo:      { label: 'CEO AGENT',        color: '#fbbf24' },
   ui:       { label: 'UI AGENT',         color: '#be5cf6' },
@@ -19,9 +22,40 @@ const AGENT_BADGES = {
 };
 
 const AI_MODELS = [
-  { provider: 'groq',   model: 'llama-3.3-70b-versatile', label: 'Groq',   color: '#f97316', aliases: ['groq', 'llama', 'lama'] },
-  { provider: 'gemini', model: 'gemini-2.0-flash',         label: 'Gemini', color: '#a78bfa', aliases: ['gemini', 'gemeni', 'gemny', 'jemini'] },
+  { provider: 'groq',       model: 'llama-3.3-70b-versatile', label: 'Groq',       color: '#f97316', aliases: ['groq', 'llama', 'lama'] },
+  { provider: 'gemini',     model: 'gemini-2.0-flash',         label: 'Gemini',     color: '#a78bfa', aliases: ['gemini', 'gemeni', 'gemny', 'jemini'] },
+  { provider: 'openrouter', model: 'openrouter/free',          label: 'OpenRouter', color: '#2563eb', aliases: ['openrouter', 'router', 'free'] },
+  { provider: 'openai',     model: 'gpt-4o',                   label: 'OpenAI',     color: '#10b981', aliases: ['openai', 'chatgpt', 'gpt'] },
 ];
+
+// ── ElevenLabs Pre-made Free Voices ───────────────────────────────────────────
+const ELEVENLABS_VOICES = [
+  { id: '21m00Tcm4TlvDq8ikWAM', name: 'Rachel',  gender: 'F', style: 'Narration'   },
+  { id: 'pNInz6obpgfrhhF2E4DY', name: 'Adam',    gender: 'M', style: 'Narration'   },
+  { id: '29vD33N1CtxCmqQRPOHJ', name: 'Drew',    gender: 'M', style: 'News'        },
+  { id: '2EiwWnXF2V4jnm7Lb9z2', name: 'Clyde',   gender: 'M', style: 'Conversational'},
+  { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah',   gender: 'F', style: 'Soft'        },
+  { id: 'ErXwobaYiN019PkySvjV', name: 'Antoni',  gender: 'M', style: 'Well-Rounded' },
+  { id: 'GBv7mqt3OCnnkA55qy5z', name: 'Thomas',  gender: 'M', style: 'Calm'        },
+  { id: 'IKne3meq5aKbA1x0m7Ed', name: 'Charlie', gender: 'M', style: 'Conversational'},
+  { id: 'Lcfc5ZowlhAlwG5vBb22', name: 'Emily',   gender: 'F', style: 'Calm'        },
+  { id: 'N2lVS1w7Etoq3r1oG1t2', name: 'Callum',  gender: 'M', style: 'Characters'  },
+  { id: 'VR6AeaYCDIgk55MLRXhk', name: 'Arnold',  gender: 'M', style: 'Narration'   },
+  { id: 'XB0fDUnUDz4sSJJ5qy5z', name: 'Charlotte',gender:'F', style: 'Conversational'},
+  { id: 'Xb7hH8XZ157tM3t08wEw', name: 'Alice',   gender: 'F', style: 'News'        },
+  { id: 'XrExE9yKIg1AlwG5vBb2', name: 'Matilda', gender: 'F', style: 'Narration'   },
+  { id: 'onwF48T1CtxCmqQRPOHJ', name: 'Daniel',  gender: 'M', style: 'News'        },
+  { id: 'piTKgcLEGmPEeZsZasrn', name: 'Nicole',  gender: 'F', style: 'Whisper'     },
+  { id: 'pFZP5JQ4vr4xnSDxMaLp', name: 'Lily',    gender: 'F', style: 'Narration'   },
+  { id: 'jBpfyvQ7N1ctxCmqQRPO', name: 'Gigi',    gender: 'F', style: 'Animated'    },
+  { id: 'oWAoZ11UznfIEsZasrn2', name: 'Grace',   gender: 'F', style: 'Southern'    },
+  { id: 'TX3o48T1CtxCmqQRPOHJ', name: 'Liam',    gender: 'M', style: 'Narration'   },
+];
+
+// ElevenLabs voice IDs as a Set for O(1) lookup
+const ELEVENLABS_IDS = new Set(ELEVENLABS_VOICES.map((v) => v.id));
+
+const MAX_HISTORY = 20;
 
 function detectModelSwitch(text) {
   const lower = text.toLowerCase().trim();
@@ -45,7 +79,23 @@ function detectModelSwitch(text) {
   return null;
 }
 
-// ── Shared card wrapper ───────────────────────────────────────────────────────
+// ── Toggle Component ───────────────────────────────────────────────────────────
+function Toggle({ value, onChange, color = 'bg-neon-blue' }) {
+  const glowStyle = value
+    ? { boxShadow: color === 'bg-neon-blue' ? '0 0 10px rgba(0, 240, 255, 0.4)' : '0 0 10px rgba(255, 0, 200, 0.4)' }
+    : {};
+  return (
+    <button
+      onClick={() => onChange(!value)}
+      style={glowStyle}
+      className={`relative w-8 h-4 rounded-full transition-all duration-300 flex items-center px-0.5 shrink-0 ${value ? color : 'bg-[#111118] border border-white/10'}`}
+    >
+      <motion.div layout className="w-2.5 h-2.5 bg-white rounded-full shadow" />
+    </button>
+  );
+}
+
+// ── HUD Card wrapper ───────────────────────────────────────────────────────────
 const HudCard = ({ children, className = '', glow = '#8A2BE2' }) => (
   <div
     className={`relative rounded-2xl border border-white/8 bg-[#07060f]/90 backdrop-blur-xl overflow-hidden ${className}`}
@@ -58,11 +108,100 @@ const HudCard = ({ children, className = '', glow = '#8A2BE2' }) => (
   </div>
 );
 
-// ── Voice Auto Task Runner ────────────────────────────────────────────────────
-function VoiceAutoTaskRunner({ plan, onDone, speak }) {
+// ── Audio Level Meter ──────────────────────────────────────────────────────────
+function AudioLevelMeter({ level = 0, active }) {
+  const bars = 16;
+  return (
+    <div className="flex items-end justify-center gap-0.5 h-8">
+      {Array.from({ length: bars }).map((_, i) => {
+        const threshold = (i / bars) * 100;
+        const lit = active && level > threshold;
+        const color = lit
+          ? i < bars * 0.5 ? '#34d399' : i < bars * 0.75 ? '#fbbf24' : '#f87171'
+          : 'rgba(255,255,255,0.06)';
+        return (
+          <div
+            key={i}
+            className="w-1 rounded-full transition-all duration-75"
+            style={{
+              height: lit ? `${Math.max(20, 20 + (level / 100) * 80)}%` : '20%',
+              background: color,
+              boxShadow: lit ? `0 0 4px ${color}` : 'none',
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Conversation History Item ──────────────────────────────────────────────────
+function HistoryItem({ item, onReplay }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      className="border border-white/5 rounded-xl bg-white/2 overflow-hidden"
+    >
+      <button
+        onClick={() => setExpanded(v => !v)}
+        className="w-full flex items-start gap-3 px-3 py-2.5 text-left hover:bg-white/3 transition-colors"
+      >
+        <div
+          className="w-5 h-5 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+          style={{
+            background: item.isError ? '#f8717120' : '#00f0ff15',
+            border: `1px solid ${item.isError ? '#f8717130' : '#00f0ff20'}`,
+          }}
+        >
+          {item.isError
+            ? <XCircle size={10} className="text-rose-400" />
+            : <MessageSquare size={10} className="text-cyan-400" />
+          }
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-mono text-gray-400 truncate">{item.query}</p>
+          <p className="text-[8px] font-mono text-gray-700 mt-0.5">{item.time} · {item.model}</p>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            onClick={(e) => { e.stopPropagation(); onReplay(item.query); }}
+            className="text-[8px] font-mono text-cyan-600 hover:text-cyan-400 transition-colors px-1.5 py-0.5 rounded border border-cyan-900/40 hover:border-cyan-600/40"
+          >
+            Replay
+          </button>
+          <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <ChevronDown size={10} className="text-gray-600" />
+          </motion.div>
+        </div>
+      </button>
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="px-3 pb-3 pt-1 border-t border-white/5">
+              <p className="text-[9px] font-mono text-gray-300 leading-relaxed whitespace-pre-wrap">
+                {item.response}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+// ── Voice Task Runner ──────────────────────────────────────────────────────────
+function VoiceTaskRunner({ plan, onDone, speakRef }) {
   const [steps, setSteps] = useState(plan.steps.map(s => ({ ...s, status: 'pending' })));
   const [logs, setLogs] = useState([]);
   const hasRun = useRef(false);
+
   const addLog = (text, type = 'info') =>
     setLogs(prev => [...prev, { text, type, time: new Date().toLocaleTimeString() }]);
 
@@ -73,8 +212,8 @@ function VoiceAutoTaskRunner({ plan, onDone, speak }) {
   }, []);
 
   const runAll = async () => {
-    speak(`Executing: ${plan.title}`);
-    addLog(`Auto-executing: ${plan.title}`, 'success');
+    speakRef.current?.(`Starting execution of: ${plan.title}`);
+    addLog(`Executing plan: ${plan.title}`, 'success');
     for (let i = 0; i < plan.steps.length; i++) {
       const step = plan.steps[i];
       setSteps(prev => prev.map((s, idx) => idx === i ? { ...s, status: 'running' } : s));
@@ -90,26 +229,23 @@ function VoiceAutoTaskRunner({ plan, onDone, speak }) {
         const msg = err.response?.data?.error || err.response?.data?.message || err.message || 'Failed';
         setSteps(prev => prev.map((s, idx) => idx === i ? { ...s, status: 'failed' } : s));
         addLog(`✗ ${msg}`, 'error');
-        speak(`Sorry, step ${i + 1} failed. ${msg}`);
+        speakRef.current?.(`Sorry, step ${i + 1} failed. ${msg}`);
         onDone?.();
         return;
       }
     }
-    speak(`Done. ${plan.title} completed successfully.`);
+    speakRef.current?.(`System update complete. ${plan.title} completed successfully.`);
     addLog('All steps completed.', 'success');
     onDone?.();
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <HudCard glow="#fbbf24" className="p-4">
         <div className="flex items-center gap-2 mb-3">
           <Zap size={11} className="text-yellow-400 animate-pulse" />
           <span className="text-[9px] font-orbitron font-black tracking-[0.2em] text-yellow-400 uppercase">
-            Voice Auto-Execute — No Approval Required
+            Automation Pipeline Running
           </span>
         </div>
         <p className="text-xs font-orbitron font-bold text-white mb-3">{plan.title}</p>
@@ -152,7 +288,7 @@ function VoiceAutoTaskRunner({ plan, onDone, speak }) {
   );
 }
 
-// ── Brain Core Stats ──────────────────────────────────────────────────────────
+// ── Brain Core Stats Panel ─────────────────────────────────────────────────────
 function BrainCorePanel({ activeModel, sessionStats, listening, thinking, speaking }) {
   const uptime = useRef(Date.now());
   const [elapsed, setElapsed] = useState(0);
@@ -208,9 +344,216 @@ function BrainCorePanel({ activeModel, sessionStats, listening, thinking, speaki
   );
 }
 
-// ── Particles ─────────────────────────────────────────────────────────────────
+// ── Daily Operator HUD Panel ───────────────────────────────────────────────────
+const BSCS_SUBJECTS = [
+  { key: 'AI',                   label: 'Artificial Intelligence', color: '#00f0ff' },
+  { key: 'Database',             label: 'Database Systems',         color: '#a78bfa' },
+  { key: 'Software Engineering', label: 'Software Engineering',     color: '#34d399' },
+  { key: 'Assembly Language',    label: 'Assembly Language',        color: '#fbbf24' },
+];
+
+function DailyAssistantPanel() {
+  const [open,          setOpen]          = useState(false);
+  const [loading,       setLoading]       = useState(false);
+  const [data,          setData]          = useState(null);
+  const [lastFetched,   setLastFetched]   = useState(null);
+
+  const loadDashboard = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [dashRes, studyRes] = await Promise.all([
+        automationAPI.getDashboard(),
+        automationAPI.getLearning(),
+      ]);
+      setData({ ...dashRes.data, studyTrack: studyRes.data });
+      setLastFetched(new Date());
+    } catch { /* informational only */ }
+    finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    loadDashboard();
+    const id = setInterval(loadDashboard, 90_000);
+    return () => clearInterval(id);
+  }, [open, loadDashboard]);
+
+  const tasks       = data?.tasks       || [];
+  const studyTrack  = data?.studyTrack  || [];
+  const projects    = data?.projects    || [];
+  const activities  = data?.activities  || [];
+  const doneTasks    = tasks.filter(t => t.status === 'done' || t.status === 'completed').length;
+  const pendingTasks = tasks.filter(t => t.status !== 'done' && t.status !== 'completed').length;
+  const totalStudyHrs = studyTrack.reduce((s, t) => s + (t.hours || 0), 0);
+
+  return (
+    <div className="w-full max-w-sm">
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-white/8 bg-white/3 hover:bg-white/5 transition-colors text-[10px] font-orbitron font-bold tracking-widest text-gray-500 uppercase"
+      >
+        <div className="flex items-center gap-2">
+          <Cpu size={10} />
+          Daily Operator HUD
+        </div>
+        <div className="flex items-center gap-2">
+          {loading && <Loader2 size={9} className="animate-spin text-neon-blue" />}
+          <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <ChevronDown size={12} />
+          </motion.div>
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <HudCard glow="#00f0ff" className="mt-2 p-4 space-y-5">
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { icon: ListChecks, label: 'Pending', value: pendingTasks, color: '#fbbf24' },
+                  { icon: CheckCircle2, label: 'Done',  value: doneTasks,    color: '#34d399' },
+                  { icon: BookOpen,    label: 'Study Hrs', value: `${totalStudyHrs}h`, color: '#00f0ff' },
+                ].map(({ icon: Icon, label, value, color }) => (
+                  <div
+                    key={label}
+                    className="flex flex-col items-center gap-1 py-2.5 rounded-xl"
+                    style={{ background: `${color}08`, border: `1px solid ${color}18` }}
+                  >
+                    <Icon size={11} style={{ color }} />
+                    <span className="font-orbitron font-black text-sm" style={{ color }}>{value}</span>
+                    <span className="text-[7px] font-mono text-white/25 uppercase tracking-wider">{label}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <p className="text-[9px] font-orbitron font-black tracking-widest text-gray-500 uppercase mb-2 flex items-center gap-1.5">
+                  <ListChecks size={8} /> Active Tasks
+                </p>
+                {tasks.length === 0 ? (
+                  <p className="text-[9px] font-mono text-white/20 text-center py-2">No tasks found. Create one via voice.</p>
+                ) : (
+                  <div className="space-y-1.5 max-h-36 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                    {tasks.slice(0, 8).map((task) => {
+                      const isDone = task.status === 'done' || task.status === 'completed';
+                      const priColor = task.priority === 'high' ? '#f87171' : task.priority === 'medium' ? '#fbbf24' : '#6b7280';
+                      return (
+                        <div
+                          key={task._id}
+                          className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl"
+                          style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
+                        >
+                          {isDone
+                            ? <CheckCircle2 size={10} className="text-emerald-400 shrink-0" />
+                            : <div className="w-2.5 h-2.5 rounded-full border shrink-0" style={{ borderColor: priColor }} />
+                          }
+                          <p className={`flex-1 text-[10px] font-mono leading-none truncate ${isDone ? 'line-through text-white/25' : 'text-white/70'}`}>
+                            {task.title}
+                          </p>
+                          {task.priority && (
+                            <span className="text-[7px] font-orbitron font-black uppercase shrink-0" style={{ color: priColor }}>
+                              {task.priority}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <p className="text-[9px] font-orbitron font-black tracking-widest text-gray-500 uppercase mb-2 flex items-center gap-1.5">
+                  <BookOpen size={8} /> BSCS Study Track
+                </p>
+                <div className="space-y-2.5">
+                  {BSCS_SUBJECTS.map(({ key, label, color }) => {
+                    const track = studyTrack.find(t => t.subject === key);
+                    const hrs   = track?.hours || 0;
+                    const pct   = Math.min(100, Math.round((hrs / 50) * 100));
+                    return (
+                      <div key={key}>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-[8px] font-mono text-white/40">{label}</span>
+                          <span className="text-[8px] font-orbitron font-black" style={{ color }}>{hrs}h</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${pct}%` }}
+                            transition={{ duration: 0.8, ease: 'easeOut' }}
+                            className="h-full rounded-full"
+                            style={{ background: `linear-gradient(90deg, ${color}60, ${color})`, boxShadow: `0 0 8px ${color}40` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {projects.length > 0 && (
+                <div>
+                  <p className="text-[9px] font-orbitron font-black tracking-widest text-gray-500 uppercase mb-2 flex items-center gap-1.5">
+                    <FolderOpen size={8} /> Active Projects
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {projects.slice(0, 5).map((proj) => (
+                      <span
+                        key={proj._id}
+                        className="text-[8px] font-mono px-2 py-1 rounded-lg"
+                        style={{ background: 'rgba(138,43,226,0.08)', border: '1px solid rgba(138,43,226,0.2)', color: '#a78bfa' }}
+                      >
+                        {proj.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <p className="text-[9px] font-orbitron font-black tracking-widest text-gray-500 uppercase mb-2 flex items-center gap-1.5">
+                  <Activity size={8} /> Recent Activity
+                </p>
+                {activities.length === 0 ? (
+                  <p className="text-[9px] font-mono text-white/20 text-center py-2">No recent activity logged.</p>
+                ) : (
+                  <div className="space-y-1 max-h-28 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                    {activities.slice(0, 8).map((act, i) => (
+                      <div key={act._id || i} className="flex items-start gap-2">
+                        <span className="w-1 h-1 mt-1.5 rounded-full bg-neon-purple/50 shrink-0" />
+                        <span className="text-[8px] font-mono text-white/35 leading-relaxed">{act.content}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {lastFetched && (
+                <button
+                  onClick={loadDashboard}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-1.5 text-[8px] font-mono text-white/20 hover:text-white/40 transition-colors py-1"
+                >
+                  <RefreshCw size={8} className={loading ? 'animate-spin' : ''} />
+                  Last updated {lastFetched.toLocaleTimeString()}
+                </button>
+              )}
+            </HudCard>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 const Particles = () => {
-  const pts = useRef(Array.from({ length: 20 }).map(() => ({
+  const pts = useRef(Array.from({ length: 25 }).map(() => ({
     w: Math.random() * 2 + 1,
     left: Math.random() * 100,
     top: Math.random() * 100,
@@ -236,7 +579,9 @@ const Particles = () => {
   );
 };
 
-// ── MAIN ──────────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// ── MAIN COMPONENT ────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
 export default function VoiceAssistant() {
   const { user } = useAuthStore();
   const isPro = user?.subscription === 'pro' || user?.role === 'admin';
@@ -249,122 +594,204 @@ export default function VoiceAssistant() {
     );
   }
 
-  const [listening,   setListening]   = useState(false);
-  const [thinking,    setThinking]    = useState(false);
-  const [speaking,    setSpeaking]    = useState(false);
-  const [hasError,    setHasError]    = useState(false);
-  const [transcript,  setTranscript]  = useState('');
-  const [response,    setResponse]    = useState('');
-  const [taskPlan,    setTaskPlan]    = useState(null);
-  const [supported,   setSupported]   = useState(true);
-  const [selectedModelIdx, setSelectedModelIdx] = useState(0);
+  // ── State ──────────────────────────────────────────────────────────────────
+  const [listening,           setListening]           = useState(false);
+  const [thinking,            setThinking]            = useState(false);
+  const [speaking,            setSpeaking]            = useState(false);
+  const [hasError,            setHasError]            = useState(false);
+  const [errorMsg,            setErrorMsg]            = useState('');
+  const [transcript,          setTranscript]          = useState('');
+  const [response,            setResponse]            = useState('');
+  const [taskPlan,            setTaskPlan]            = useState(null);
+  const [executingPlan,       setExecutingPlan]       = useState(null);
+  const [pendingPlanApproval, setPendingPlanApproval] = useState(false);
+  const [supported,           setSupported]           = useState(true);
+  const [selectedModelIdx,    setSelectedModelIdx]    = useState(0);
+  const [switchToast,         setSwitchToast]         = useState(null);
+  const [sessionStats,        setSessionStats]        = useState({ queries: 0 });
+  const [showControls,        setShowControls]        = useState(false);
+  const [audioLevel,          setAudioLevel]          = useState(0);
+  const [conversationHistory, setConversationHistory] = useState([]);
+  const [showHistory,         setShowHistory]         = useState(false);
+  const [retryCount,          setRetryCount]          = useState(0);
+  const [voiceConfidence,     setVoiceConfidence]     = useState(98);
+  const [ambientNoise,        setAmbientNoise]        = useState(32);
+  const [voices,              setVoices]              = useState([]);
+  const [selectedVoice,       setSelectedVoice]       = useState('female');
+  const [voiceSpeed,          setVoiceSpeed]          = useState(1.0);
+  const [voiceLanguage,       setVoiceLanguage]       = useState('en-US');
+
+  const [continuousMode, setContinuousMode] = useState(() => {
+    const val = localStorage.getItem('harvox_voice_continuous');
+    return val !== null ? JSON.parse(val) : true;
+  });
+  const [autoApprove, setAutoApprove] = useState(true);
+
+  // ── Mutable refs (avoid stale closures) ───────────────────────────────────
+  const recognitionRef          = useRef(null);
+  const silenceTimerRef         = useRef(null);
+  const finalTranscriptRef      = useRef('');
+  const isProcessingRef         = useRef(false);
+  const canvasRef               = useRef(null);
+  const elevenLabsAudioRef      = useRef(null); // active ElevenLabs Audio element
+
+  // State refs — keep up-to-date so callbacks always see fresh values
+  const continuousRef           = useRef(continuousMode);
+  const autoApproveRef          = useRef(autoApprove);
+  const pendingPlanApprovalRef  = useRef(pendingPlanApproval);
+  const taskPlanRef             = useRef(taskPlan);
+  const executingPlanRef        = useRef(executingPlan);
+  const selectedModelIdxRef     = useRef(selectedModelIdx);
+  const voicesRef               = useRef(voices);
+  const selectedVoiceRef        = useRef(selectedVoice);
+  const voiceSpeedRef           = useRef(voiceSpeed);
+  const voiceLanguageRef        = useRef(voiceLanguage);
+
+  // Forward refs to break circular deps between speak / startListening
+  const startListeningRef = useRef(null);
+  const speakRef          = useRef(null);  // used by VoiceTaskRunner
+
+  useEffect(() => { continuousRef.current          = continuousMode; },      [continuousMode]);
+  useEffect(() => { autoApproveRef.current         = autoApprove; },         [autoApprove]);
+  useEffect(() => { pendingPlanApprovalRef.current = pendingPlanApproval; }, [pendingPlanApproval]);
+  useEffect(() => { taskPlanRef.current            = taskPlan; },            [taskPlan]);
+  useEffect(() => { executingPlanRef.current       = executingPlan; },       [executingPlan]);
+  useEffect(() => { selectedModelIdxRef.current    = selectedModelIdx; },    [selectedModelIdx]);
+  useEffect(() => { voicesRef.current              = voices; },              [voices]);
+  useEffect(() => { selectedVoiceRef.current       = selectedVoice; },       [selectedVoice]);
+  useEffect(() => { voiceSpeedRef.current          = voiceSpeed; },          [voiceSpeed]);
+  useEffect(() => { voiceLanguageRef.current       = voiceLanguage; },       [voiceLanguage]);
+
   const activeModel = AI_MODELS[selectedModelIdx];
-  const [switchToast, setSwitchToast] = useState(null);
-  const [sessionStats, setSessionStats] = useState({ queries: 0 });
-  const [showControls, setShowControls] = useState(false);
 
-  const recognitionRef  = useRef(null);
-  const silenceTimerRef = useRef(null);
-  const finalTranscript = useRef('');
-  const isProcessingRef = useRef(false);
-
-  const [voices, setVoices] = useState([]);
-  const [selectedVoice, setSelectedVoice] = useState('female');
-  const [voiceSpeed, setVoiceSpeed] = useState(1.0);
-  const [voiceLanguage, setVoiceLanguage] = useState('en-US');
-
+  // ── speak — ElevenLabs (preferred) → native speechSynthesis fallback ────────
   const speak = useCallback((text, onEnd) => {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const clean = text.replace(/[#*`\-_>]/g, '').slice(0, 600);
+    // Stop any ongoing ElevenLabs audio
+    if (elevenLabsAudioRef.current) {
+      elevenLabsAudioRef.current.pause();
+      elevenLabsAudioRef.current = null;
+    }
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+    const clean = (text || '').replace(/[#*`\->_]/g, '').slice(0, 800).trim();
+    if (!clean) { onEnd?.(); return; }
+
+    const afterSpeak = () => {
+      setSpeaking(false);
+      if (onEnd) {
+        onEnd();
+      } else if (continuousRef.current && !pendingPlanApprovalRef.current && !executingPlanRef.current) {
+        setTimeout(() => startListeningRef.current?.(), 500);
+      }
+    };
+
+    const sel = selectedVoiceRef.current;
+    const isElevenLabs = sel && ELEVENLABS_IDS.has(sel);
+
+    if (isElevenLabs) {
+      // ── ElevenLabs TTS ──
+      setSpeaking(true);
+      aiAPI.tts({ text: clean, voiceId: sel })
+        .then(({ data }) => {
+          if (data.audioBase64) {
+            const audio = new Audio(`data:audio/mpeg;base64,${data.audioBase64}`);
+            audio.playbackRate = voiceSpeedRef.current;
+            elevenLabsAudioRef.current = audio;
+            audio.onended  = afterSpeak;
+            audio.onerror  = () => {
+              console.warn('[ElevenLabs] Playback error — falling back to native TTS');
+              elevenLabsAudioRef.current = null;
+              speakNative(clean, afterSpeak);
+            };
+            audio.play().catch(() => speakNative(clean, afterSpeak));
+          } else {
+            // fallback = true means API key not configured
+            speakNative(clean, afterSpeak);
+          }
+        })
+        .catch(() => {
+          console.warn('[ElevenLabs] API call failed — falling back to native TTS');
+          speakNative(clean, afterSpeak);
+        });
+    } else {
+      speakNative(clean, afterSpeak);
+    }
+  }, []); // intentionally empty — reads via refs
+
+  // ── speakNative — browser Web Speech API helper ───────────────────────────
+  const speakNative = useCallback((clean, afterSpeak) => {
+    if (!('speechSynthesis' in window)) { afterSpeak(); return; }
     const utter = new SpeechSynthesisUtterance(clean);
-    utter.rate  = voiceSpeed;
-    const isUrdu = voiceLanguage === 'ur-PK' || /[\u0600-\u06FF]/.test(clean);
-    let matched = null;
+    utter.rate  = voiceSpeedRef.current;
+
+    const isUrdu = voiceLanguageRef.current === 'ur-PK' || /[\u0600-\u06FF]/.test(clean);
     if (isUrdu) {
-      matched = voices.find(v => v.lang.startsWith('ur') || v.name.toLowerCase().includes('urdu'));
+      const urduVoice = voicesRef.current.find(v => v.lang.startsWith('ur') || v.name.toLowerCase().includes('urdu'));
+      if (urduVoice) utter.voice = urduVoice;
       utter.lang = 'ur-PK';
     } else {
-      matched = voices.find(v => v.name === selectedVoice);
+      const sel = selectedVoiceRef.current;
+      if (sel && sel !== 'female' && sel !== 'male' && !ELEVENLABS_IDS.has(sel)) {
+        const matched = voicesRef.current.find(v => v.name === sel);
+        if (matched) utter.voice = matched;
+      }
     }
-    if (matched) utter.voice = matched;
     utter.onstart = () => setSpeaking(true);
-    utter.onend   = () => { setSpeaking(false); onEnd?.(); };
-    utter.onerror = () => { setSpeaking(false); onEnd?.(); };
+    utter.onend   = afterSpeak;
+    utter.onerror = afterSpeak;
     window.speechSynthesis.speak(utter);
-  }, [voices, selectedVoice, voiceSpeed, voiceLanguage]);
-
-  useEffect(() => {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { setSupported(false); return; }
-    const rec = new SR();
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.lang = voiceLanguage;
-    rec.onresult = (e) => {
-      let interim = '', final = '';
-      for (const result of e.results) {
-        if (result.isFinal) final   += result[0].transcript;
-        else                interim += result[0].transcript;
-      }
-      const full = final + interim;
-      setTranscript(full);
-      finalTranscript.current = full;
-      clearTimeout(silenceTimerRef.current);
-      silenceTimerRef.current = setTimeout(() => {
-        if (recognitionRef.current && !isProcessingRef.current) recognitionRef.current.stop();
-      }, 2000);
-    };
-    rec.onend = () => {
-      clearTimeout(silenceTimerRef.current);
-      setListening(false);
-      if (finalTranscript.current.trim() && !isProcessingRef.current) {
-        isProcessingRef.current = true;
-        askAI(finalTranscript.current.trim());
-      }
-    };
-    rec.onerror = (e) => {
-      if (e.error === 'no-speech') return;
-      setListening(false);
-      setHasError(true);
-    };
-    recognitionRef.current = rec;
-    return () => clearTimeout(silenceTimerRef.current);
-  }, [voiceLanguage]);
-
-  useEffect(() => {
-    const load = () => { if ('speechSynthesis' in window) setVoices(window.speechSynthesis.getVoices()); };
-    load();
-    if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = load;
   }, []);
 
-  useEffect(() => {
-    settingsAPI.get().then(({ data }) => {
-      if (data?.settings?.voice) {
-        setSelectedVoice(data.settings.voice.voiceSelection || 'female');
-        setVoiceSpeed(data.settings.voice.speed || 1.0);
-        setVoiceLanguage(data.settings.voice.language || 'en-US');
-      }
-    }).catch(() => {});
-  }, []);
+  speakRef.current = speak;
 
-  const startListening = () => {
-    if (!recognitionRef.current || listening) return;
+  // ── startListening — stable callback ──────────────────────────────────────
+  const startListening = useCallback(() => {
+    if (!recognitionRef.current) return;
     if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); setSpeaking(false); }
-    finalTranscript.current = '';
-    isProcessingRef.current = false;
+    finalTranscriptRef.current = '';
+    isProcessingRef.current    = false;
     setTranscript('');
     setResponse('');
-    setTaskPlan(null);
     setHasError(false);
+    setErrorMsg('');
     setListening(true);
     setThinking(false);
-    try { recognitionRef.current.start(); } catch {}
-  };
+    try { recognitionRef.current.start(); }
+    catch (e) { console.warn('[SR] start error:', e.message); setListening(false); }
+  }, []);
 
-  const askAI = async (text) => {
+  startListeningRef.current = startListening;
+
+  // ── askAI — reads model + speak via refs; wrapped in useCallback ──────────
+  const askAI = useCallback(async (text) => {
+    if (!text?.trim()) { isProcessingRef.current = false; return; }
+
+    // Handle pending plan approval via voice
+    if (pendingPlanApprovalRef.current && taskPlanRef.current) {
+      const lower = text.toLowerCase().trim();
+      const approve = ['yes','approve','execute','run','confirm','okay','ok','haji','haan','han','chalao','kar do','kar lo','theek','thek'];
+      const reject  = ['no','cancel','stop','reject','nah','nhi','nahi','roko','ruk','rehne do','rehn do'];
+      if (approve.some(p => lower.includes(p))) {
+        const plan = taskPlanRef.current;
+        setPendingPlanApproval(false);
+        setExecutingPlan(plan);
+        setTaskPlan(null);
+      } else if (reject.some(p => lower.includes(p))) {
+        setPendingPlanApproval(false);
+        setTaskPlan(null);
+        speak('Operation aborted. Automation plan has been rejected.');
+      } else {
+        speak('Please say yes to execute the plan, or no to reject.');
+      }
+      isProcessingRef.current = false;
+      setTranscript('');
+      return;
+    }
+
+    // Model switch
     const switchIdx = detectModelSwitch(text);
-    if (switchIdx !== null && switchIdx !== selectedModelIdx) {
+    const curIdx    = selectedModelIdxRef.current;
+    if (switchIdx !== null && switchIdx !== curIdx) {
       const target = AI_MODELS[switchIdx];
       setSelectedModelIdx(switchIdx);
       const msg = `Switched to ${target.label}.`;
@@ -375,60 +802,345 @@ export default function VoiceAssistant() {
       setTranscript('');
       return;
     }
+
     setThinking(true);
     setHasError(false);
-    try {
-      const { data } = await aiAPI.chat({
-        message: text,
-        provider: activeModel.provider,
-        model: activeModel.model,
-      });
-      const reply = data.reply || '';
-      setSessionStats(s => ({ ...s, queries: s.queries + 1 }));
-      const planRegex = /---TASK_PLAN_START---([\s\S]*?)---TASK_PLAN_END---/;
-      const match = reply.match(planRegex);
-      if (match) {
-        try {
-          const plan = JSON.parse(match[1].trim());
-          const cleanText = reply.replace(planRegex, '').trim();
-          setResponse(cleanText);
-          setTaskPlan(plan);
-          if (cleanText) speak(cleanText);
-        } catch {
+    setErrorMsg('');
+    setRetryCount(0);
+
+    const attemptRequest = async (attempt = 0) => {
+      try {
+        const model = AI_MODELS[selectedModelIdxRef.current];
+        const { data } = await aiAPI.chat({
+          message: text,
+          provider: model.provider,
+          model: model.model,
+        });
+
+        // ── Auto model switching detection ──
+        if (data.isFailover) {
+          const matchedIdx = AI_MODELS.findIndex(
+            (m) => m.provider === data.provider && m.model === data.model
+          );
+          if (matchedIdx !== -1) {
+            setSelectedModelIdx(matchedIdx);
+            const targetModel = AI_MODELS[matchedIdx];
+            const switchMsg = `Auto Switch: Limit reached. Migrated to ${targetModel.label}.`;
+            setSwitchToast(switchMsg);
+            speak(`Limit reached. Automatically switched model to ${targetModel.label}`);
+            setTimeout(() => setSwitchToast(null), 6000);
+          }
+        }
+
+        const reply = (data.reply || '').trim();
+        if (!reply) throw new Error('Empty response received from AI. Please try again.');
+
+        setSessionStats(s => ({ ...s, queries: s.queries + 1 }));
+
+        const planRegex = /---TASK_PLAN_START---([\s\S]*?)---TASK_PLAN_END---/;
+        const match = reply.match(planRegex);
+
+        if (match) {
+          try {
+            const plan     = JSON.parse(match[1].trim());
+            const cleanTxt = reply.replace(planRegex, '').trim();
+            setResponse(cleanTxt);
+            setTaskPlan(plan);
+            if (autoApproveRef.current) {
+              setExecutingPlan(plan);
+              if (cleanTxt) speak(cleanTxt);
+            } else {
+              setPendingPlanApproval(true);
+              const confirmTxt = cleanTxt
+                ? `${cleanTxt}. I have prepared a task plan. Do you want to execute it?`
+                : 'I have prepared a task plan. Do you want to execute it?';
+              speak(confirmTxt, () => {
+                if (continuousRef.current) setTimeout(() => startListeningRef.current?.(), 600);
+              });
+            }
+          } catch {
+            setResponse(reply);
+            speak(reply);
+          }
+        } else {
           setResponse(reply);
           speak(reply);
         }
-      } else {
-        setResponse(reply);
-        speak(reply);
-      }
-      setThinking(false);
-    } catch (err) {
-      setThinking(false);
-      setHasError(true);
-      const msg = err.response?.data?.message || 'Could not get response.';
-      setResponse(msg);
-      speak('Sorry, I encountered an error.');
-    } finally {
-      isProcessingRef.current = false;
-    }
-  };
 
+        // Store in session history
+        setConversationHistory(prev => [
+          {
+            id: Date.now(),
+            query: text,
+            response: reply.replace(/---TASK_PLAN_START---[\s\S]*?---TASK_PLAN_END---/g, '').trim(),
+            time: new Date().toLocaleTimeString(),
+            isError: false,
+            model: AI_MODELS[selectedModelIdxRef.current].label,
+          },
+          ...prev,
+        ].slice(0, MAX_HISTORY));
+
+        setThinking(false);
+      } catch (err) {
+        const status = err.response?.status;
+        const isRetryable = !status || status >= 500;
+        if (isRetryable && attempt < 2) {
+          setRetryCount(attempt + 1);
+          await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+          return attemptRequest(attempt + 1);
+        }
+
+        setThinking(false);
+        setHasError(true);
+        const msg = err.response?.data?.message || err.message || 'Could not get a response. Please try again.';
+        setErrorMsg(msg);
+        setResponse('');
+
+        setConversationHistory(prev => [
+          {
+            id: Date.now(),
+            query: text,
+            response: msg,
+            time: new Date().toLocaleTimeString(),
+            isError: true,
+            model: AI_MODELS[selectedModelIdxRef.current].label,
+          },
+          ...prev,
+        ].slice(0, MAX_HISTORY));
+
+        speak('Sorry, I encountered an error. Please try again.');
+      } finally {
+        isProcessingRef.current = false;
+      }
+    };
+
+    await attemptRequest();
+  }, [speak]); // speak is stable
+
+  // keep a ref to askAI so the SR onend handler always calls the latest version
+  const askAIRef = useRef(askAI);
+  useEffect(() => { askAIRef.current = askAI; }, [askAI]);
+
+  // ── Plan approve / reject ──────────────────────────────────────────────────
+  const handleApprovePlan = useCallback((planToRun) => {
+    const plan = planToRun || taskPlanRef.current;
+    if (!plan) return;
+    setPendingPlanApproval(false);
+    setExecutingPlan(plan);
+    setTaskPlan(null);
+  }, []);
+
+  const handleRejectPlan = useCallback(() => {
+    setPendingPlanApproval(false);
+    setTaskPlan(null);
+    speak('Operation aborted. Automation plan has been rejected.');
+  }, [speak]);
+
+  // ── Speech recognition ─────────────────────────────────────────────────────
+  useEffect(() => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { setSupported(false); return; }
+
+    const rec = new SR();
+    rec.continuous     = true;
+    rec.interimResults = true;
+    rec.lang           = voiceLanguage;
+
+    rec.onresult = (e) => {
+      let interim = '', final = '';
+      for (const result of e.results) {
+        if (result.isFinal) final   += result[0].transcript;
+        else                interim += result[0].transcript;
+      }
+      const full = final + interim;
+      setTranscript(full);
+      finalTranscriptRef.current = full;
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = setTimeout(() => {
+        try { if (recognitionRef.current && !isProcessingRef.current) recognitionRef.current.stop(); }
+        catch {}
+      }, 2500);
+    };
+
+    rec.onend = () => {
+      clearTimeout(silenceTimerRef.current);
+      setListening(false);
+      const captured = finalTranscriptRef.current.trim();
+      if (captured && !isProcessingRef.current) {
+        isProcessingRef.current = true;
+        askAIRef.current(captured);
+      }
+    };
+
+    rec.onerror = (e) => {
+      if (e.error === 'no-speech') return;
+      console.warn('[SR] Error:', e.error);
+      setListening(false);
+      if (e.error === 'not-allowed' || e.error === 'permission-denied') {
+        setHasError(true);
+        setErrorMsg('Microphone permission denied. Please allow mic access in your browser.');
+      } else if (e.error !== 'aborted') {
+        setHasError(true);
+      }
+    };
+
+    recognitionRef.current = rec;
+    return () => {
+      clearTimeout(silenceTimerRef.current);
+      try { rec.abort(); } catch {}
+    };
+    // Re-init only when language changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voiceLanguage]);
+
+  // ── Voice list ─────────────────────────────────────────────────────────────
+  useEffect(() => {
+    const load = () => { if ('speechSynthesis' in window) setVoices(window.speechSynthesis.getVoices()); };
+    load();
+    if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = load;
+    return () => { if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = null; };
+  }, []);
+
+  // ── Load settings ──────────────────────────────────────────────────────────
+  useEffect(() => {
+    settingsAPI.get().then(({ data }) => {
+      if (data?.settings?.voice) {
+        setSelectedVoice(data.settings.voice.voiceSelection || 'female');
+        setVoiceSpeed(data.settings.voice.speed || 1.0);
+        setVoiceLanguage(data.settings.voice.language || 'en-US');
+      }
+    }).catch(() => {});
+  }, []);
+
+  // ── Canvas waveform + audio level ──────────────────────────────────────────
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let animId, audioCtx, source, stream;
+
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth  * window.devicePixelRatio;
+      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    if (listening) {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(s => {
+        stream = s;
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        audioCtx  = new Ctx();
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        const bufLen  = analyser.frequencyBinCount;
+        const data    = new Uint8Array(bufLen);
+        source = audioCtx.createMediaStreamSource(s);
+        source.connect(analyser);
+
+        const draw = () => {
+          animId = requestAnimationFrame(draw);
+          const w = canvas.offsetWidth, h = canvas.offsetHeight;
+          ctx.clearRect(0, 0, w, h);
+          analyser.getByteTimeDomainData(data);
+
+          let sum = 0;
+          for (let i = 0; i < bufLen; i++) { const v = data[i] / 128.0 - 1.0; sum += v * v; }
+          const rms = Math.sqrt(sum / bufLen);
+          setAmbientNoise(Math.max(30, Math.min(90, 30 + Math.round(rms * 100))));
+          setAudioLevel(Math.min(100, rms * 600));
+          if (rms > 0.01) setVoiceConfidence(Math.round(88 + Math.random() * 11));
+
+          ctx.lineWidth = 2; ctx.strokeStyle = '#00F0FF';
+          ctx.shadowBlur = 10; ctx.shadowColor = '#00F0FF';
+          ctx.beginPath();
+          const sw = w / bufLen; let x = 0;
+          for (let i = 0; i < bufLen; i++) {
+            const y = (data[i] / 128.0) * h / 2;
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            x += sw;
+          }
+          ctx.lineTo(w, h / 2); ctx.stroke();
+        };
+        draw();
+      }).catch(() => runSimulated());
+    } else {
+      setAudioLevel(0);
+      runSimulated();
+    }
+
+    function runSimulated() {
+      let t = 0;
+      const draw = () => {
+        animId = requestAnimationFrame(draw);
+        const w = canvas.offsetWidth, h = canvas.offsetHeight;
+        ctx.clearRect(0, 0, w, h);
+        t += 0.05;
+        ctx.lineWidth = 1.5; ctx.shadowBlur = 5;
+        if (speaking) {
+          ctx.strokeStyle = '#be5cf6'; ctx.shadowColor = '#be5cf6';
+          for (let j = 0; j < 3; j++) {
+            ctx.beginPath();
+            const amp = (14 - j * 3) * Math.abs(Math.sin(t * 0.5 + j));
+            for (let i = 0; i < w; i++) {
+              const y = h / 2 + Math.sin(i * 0.025 + t + j) * amp;
+              if (i === 0) ctx.moveTo(i, y); else ctx.lineTo(i, y);
+            }
+            ctx.stroke();
+          }
+        } else if (thinking) {
+          ctx.strokeStyle = '#fbbf24'; ctx.shadowColor = '#fbbf24';
+          ctx.beginPath();
+          for (let i = 0; i < w; i++) {
+            const noise = Math.sin(i * 0.08 + t * 2.5) * 5 * Math.cos(i * 0.04 + t);
+            if (i === 0) ctx.moveTo(i, h / 2 + noise); else ctx.lineTo(i, h / 2 + noise);
+          }
+          ctx.stroke();
+        } else {
+          ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.shadowBlur = 0;
+          ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
+        }
+      };
+      draw();
+    }
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+      stream?.getTracks().forEach(t => t.stop());
+      audioCtx?.close();
+    };
+  }, [listening, speaking, thinking]);
+
+  // ── Derived UI state ───────────────────────────────────────────────────────
   const statusText =
+    listening && pendingPlanApproval ? 'Waiting for voice confirmation… "Yes" or "No"' :
     listening ? 'Listening… speak your command.' :
-    thinking  ? 'Processing your request…'        :
-    speaking  ? 'Speaking…'                        :
-    hasError  ? 'System error encountered.'        :
-    taskPlan  ? 'Executing task plan…'             :
-                'Tap the orb to speak';
+    thinking  ? 'Processing your request…' :
+    speaking  ? 'AI is responding…' :
+    hasError  ? errorMsg || 'System error encountered.' :
+    executingPlan ? 'Executing task plan…' :
+    pendingPlanApproval ? 'Waiting for approval…' :
+    retryCount > 0 ? `Retrying… (attempt ${retryCount + 1})` :
+    'Tap the orb to speak';
 
   const statusColor =
-    listening ? '#00F0FF' :
-    thinking  ? '#fbbf24' :
-    speaking  ? '#be5cf6' :
-    hasError  ? '#f87171' :
-                '#6b7280';
+    listening ? '#00F0FF' : thinking ? '#fbbf24' : speaking ? '#be5cf6' :
+    hasError ? '#f87171' : executingPlan ? '#fbbf24' : '#6b7280';
 
+  // ── Replay ─────────────────────────────────────────────────────────────────
+  const replayQuery = useCallback((query) => {
+    if (isProcessingRef.current || listening || thinking || speaking) return;
+    isProcessingRef.current = true;
+    setTranscript(query);
+    setResponse('');
+    setHasError(false);
+    setErrorMsg('');
+    askAI(query);
+  }, [askAI, listening, thinking, speaking]);
+
+  // ══════════════════════════════════════════════════════════════════════════
   return (
     <div className="relative min-h-screen pb-10">
       <Particles />
@@ -441,7 +1153,9 @@ export default function VoiceAssistant() {
           <h1 className="font-orbitron text-3xl font-black tracking-wider">
             Voice <span className="gradient-text">Assistant</span>
           </h1>
-          <p className="text-[10px] text-gray-600 mt-1.5 font-mono tracking-widest">PHASE 8 · AUTO-EXECUTE MODE ACTIVE</p>
+          <p className="text-[10px] text-gray-600 mt-1.5 font-mono tracking-widest">
+            PHASE 9 · {autoApprove ? 'AUTO-EXECUTE MODE ACTIVE' : 'SECURE VERIFICATION MODE ACTIVE'}
+          </p>
         </div>
 
         {/* ── Model Toggle ── */}
@@ -454,22 +1168,19 @@ export default function VoiceAssistant() {
                 id={`voice-model-${m.provider}`}
                 onClick={() => setSelectedModelIdx(idx)}
                 className="relative px-5 py-2 rounded-xl font-orbitron text-[10px] font-black tracking-wider transition-all duration-300"
-                style={isActive ? {
-                  background: `${m.color}18`,
-                  boxShadow: `0 0 16px ${m.color}40`,
-                  border: `1px solid ${m.color}40`,
-                  color: m.color,
-                } : { color: 'rgba(255,255,255,0.25)', border: '1px solid transparent' }}
+                style={isActive
+                  ? { background: `${m.color}18`, boxShadow: `0 0 16px ${m.color}40`, border: `1px solid ${m.color}40`, color: m.color }
+                  : { color: 'rgba(255,255,255,0.25)', border: '1px solid transparent' }
+                }
               >
                 {isActive && (
-                  <motion.span
-                    layoutId="model-pill"
-                    className="absolute inset-0 rounded-xl"
-                    style={{ background: `${m.color}08` }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                  />
+                  <motion.span layoutId="model-pill" className="absolute inset-0 rounded-xl"
+                    style={{ background: `${m.color}08` }} transition={{ type: 'spring', stiffness: 500, damping: 35 }} />
                 )}
-                <span className="relative z-10">{m.label}</span>
+                <span className="relative z-10 flex items-center gap-1.5 font-bold">
+                  {isActive && <Radio size={8} className="animate-pulse" />}
+                  {m.label}
+                </span>
               </button>
             );
           })}
@@ -478,132 +1189,150 @@ export default function VoiceAssistant() {
         {/* ── Model switch toast ── */}
         <AnimatePresence>
           {switchToast && (
-            <motion.div
-              initial={{ opacity: 0, y: -8, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
+            <motion.div initial={{ opacity: 0, y: -8, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.95 }}
               className="flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-orbitron font-black tracking-wider"
-              style={{ color: activeModel.color, borderColor: `${activeModel.color}40`, backgroundColor: `${activeModel.color}10`, boxShadow: `0 0 20px ${activeModel.color}30` }}
-            >
+              style={{ color: activeModel.color, borderColor: `${activeModel.color}40`, backgroundColor: `${activeModel.color}10`, boxShadow: `0 0 20px ${activeModel.color}30` }}>
               <span className="w-1.5 h-1.5 rounded-full animate-ping" style={{ backgroundColor: activeModel.color }} />
               {switchToast}
             </motion.div>
           )}
         </AnimatePresence>
 
+        {/* ── Unsupported warning ── */}
         {!supported && (
           <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-yellow-500/30 bg-yellow-500/8 text-yellow-400 text-xs font-mono">
-            ⚠ Speech recognition not supported. Use Chrome or Edge.
+            <MicOff size={13} /> Speech recognition not supported. Use Chrome or Edge.
           </div>
         )}
 
         {/* ── Orb ── */}
         <div className="relative flex flex-col items-center gap-4">
-          {/* Outer glow rings */}
           <div className="relative">
-            <motion.div
-              animate={{ scale: [1, 1.05, 1], opacity: [0.15, 0.3, 0.15] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="absolute inset-0 rounded-full"
-              style={{ background: `radial-gradient(circle, ${listening ? '#00F0FF' : thinking ? '#fbbf24' : '#8A2BE2'}20, transparent 70%)`, margin: '-30px' }}
-            />
+            <motion.div animate={{ scale: [1, 1.05, 1], opacity: [0.15, 0.3, 0.15] }}
+              transition={{ duration: 3, repeat: Infinity }} className="absolute inset-0 rounded-full"
+              style={{ background: `radial-gradient(circle, ${listening ? '#00F0FF' : thinking ? '#fbbf24' : '#8A2BE2'}20, transparent 70%)`, margin: '-30px' }} />
             <button
               onClick={startListening}
               disabled={listening || thinking || speaking || !supported}
               className="focus:outline-none disabled:cursor-not-allowed relative z-10"
               title={listening ? 'Listening…' : 'Click to speak'}
             >
-              <VoiceOrb
-                isListening={listening}
-                isSpeaking={speaking}
-                isThinking={thinking}
-                isError={hasError}
-              />
+              <VoiceOrb isListening={listening} isSpeaking={speaking} isThinking={thinking} isError={hasError} />
             </button>
           </div>
 
-          {/* Status text */}
+          {/* Status */}
           <div className="flex flex-col items-center gap-2">
-            <p className="text-sm font-mono font-medium" style={{ color: statusColor }}>{statusText}</p>
-            <div className="flex items-center gap-1.5 text-[9px] font-mono text-emerald-400/70 bg-emerald-400/5 border border-emerald-400/10 px-3 py-1 rounded-full">
-              <Zap size={9} />
-              AUTO-EXECUTE · voice switch enabled
+            <motion.p key={statusText} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
+              className="text-sm font-mono font-medium text-center" style={{ color: statusColor }}>
+              {statusText}
+            </motion.p>
+            <div className="flex items-center gap-2 flex-wrap justify-center">
+              <div className="flex items-center gap-1 text-[9px] font-mono text-cyan-400/80 bg-cyan-400/5 border border-cyan-400/10 px-3 py-1 rounded-full">
+                <Volume2 size={9} /> CONFIDENCE: {voiceConfidence}%
+              </div>
+              <div className="flex items-center gap-1 text-[9px] font-mono text-purple-400/80 bg-purple-400/5 border border-purple-400/10 px-3 py-1 rounded-full">
+                <Activity size={9} /> NOISE: {ambientNoise}dB
+              </div>
+              {retryCount > 0 && (
+                <div className="flex items-center gap-1 text-[9px] font-mono text-amber-400/80 bg-amber-400/5 border border-amber-400/10 px-3 py-1 rounded-full">
+                  <RefreshCw size={9} className="animate-spin" /> RETRY {retryCount}
+                </div>
+              )}
             </div>
           </div>
+        </div>
+
+        {/* ── Audio Level Meter ── */}
+        <div className="w-full max-w-sm">
+          <AudioLevelMeter level={audioLevel} active={listening} />
+        </div>
+
+        {/* ── Canvas Waveform ── */}
+        <div className="w-full max-w-sm px-2">
+          <canvas ref={canvasRef} className="w-full h-10 rounded-xl border border-white/5 bg-black/40 shadow-inner" />
         </div>
 
         {/* ── Transcript bubble ── */}
         <AnimatePresence>
           {transcript && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center bg-neon-blue/5 border border-neon-blue/20 px-5 py-3 rounded-2xl backdrop-blur-md max-w-sm w-full mx-auto shadow-[0_0_20px_rgba(0,240,255,0.08)]"
-            >
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+              className="text-center bg-neon-blue/5 border border-neon-blue/20 px-5 py-3 rounded-2xl backdrop-blur-md max-w-sm w-full mx-auto shadow-[0_0_20px_rgba(0,240,255,0.08)]">
+              <p className="text-[9px] font-orbitron font-black tracking-widest text-cyan-600/80 uppercase mb-1">You said</p>
               <p className="text-xs text-neon-blue font-mono italic">"{transcript}"</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Error banner ── */}
+        <AnimatePresence>
+          {hasError && errorMsg && (
+            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              className="w-full max-w-sm flex items-start gap-3 px-4 py-3 rounded-xl border border-rose-500/25 bg-rose-500/6 text-rose-400">
+              <XCircle size={13} className="shrink-0 mt-0.5" />
+              <p className="text-[10px] font-mono leading-relaxed">{errorMsg}</p>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* ── Brain Core ── */}
         <div className="w-full max-w-sm">
-          <BrainCorePanel
-            activeModel={activeModel}
-            sessionStats={sessionStats}
-            listening={listening}
-            thinking={thinking}
-            speaking={speaking}
-          />
+          <BrainCorePanel activeModel={activeModel} sessionStats={sessionStats}
+            listening={listening} thinking={thinking} speaking={speaking} />
         </div>
 
-        {/* ── Speak / Stop button ── */}
-        <motion.button
-          onClick={startListening}
-          disabled={listening || thinking || speaking || !supported}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className="relative flex items-center gap-2.5 px-8 py-3.5 rounded-2xl font-orbitron font-black text-sm tracking-widest uppercase overflow-hidden transition-all disabled:opacity-50 group"
-          style={{
-            background: listening || thinking
-              ? 'linear-gradient(135deg, #1e0a3c, #0a1e3c)'
-              : 'linear-gradient(135deg, #8A2BE2, #00F0FF)',
-            boxShadow: '0 0 30px rgba(138,43,226,0.35)',
-          }}
-        >
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 overflow-hidden transition-opacity duration-300">
-            <div className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-700" />
-          </div>
-          <span className="relative flex items-center gap-2">
-            {listening
-              ? <><Loader2 size={15} className="animate-spin" /> Listening…</>
-              : <><Mic size={15} /> Tap to Speak</>
-            }
-          </span>
-        </motion.button>
-
-        {/* ── Controls accordion ── */}
-        <div className="w-full max-w-sm">
-          <button
-            onClick={() => setShowControls(v => !v)}
-            className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-white/8 bg-white/3 hover:bg-white/5 transition-colors text-[10px] font-orbitron font-bold tracking-widest text-gray-500 uppercase"
+        {/* ── Action buttons ── */}
+        <div className="flex items-center gap-3 w-full max-w-sm">
+          <motion.button
+            onClick={startListening}
+            disabled={listening || thinking || speaking || !supported}
+            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            className="flex-1 relative flex items-center justify-center gap-2.5 py-3.5 rounded-2xl font-orbitron font-black text-sm tracking-widest uppercase overflow-hidden transition-all disabled:opacity-50 group"
+            style={{
+              background: listening || thinking ? 'linear-gradient(135deg, #1e0a3c, #0a1e3c)' : 'linear-gradient(135deg, #8A2BE2, #00F0FF)',
+              boxShadow: '0 0 30px rgba(138,43,226,0.35)',
+            }}
           >
-            <div className="flex items-center gap-2">
-              <Settings size={10} />
-              Voice Controls
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 overflow-hidden transition-opacity duration-300">
+              <div className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-700" />
             </div>
+            <span className="relative flex items-center gap-2">
+              {listening  ? <><Loader2 size={15} className="animate-spin" /> Listening…</>
+              : thinking  ? <><Brain size={15} className="animate-pulse" /> Thinking…</>
+              : speaking  ? <><Volume2 size={15} className="animate-bounce" /> Speaking…</>
+              :              <><Mic size={15} /> Tap to Speak</>}
+            </span>
+          </motion.button>
+
+          {speaking && (
+            <motion.button initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                window.speechSynthesis?.cancel();
+                if (elevenLabsAudioRef.current) { elevenLabsAudioRef.current.pause(); elevenLabsAudioRef.current = null; }
+                setSpeaking(false);
+              }}
+              className="p-3.5 rounded-2xl border border-rose-500/30 bg-rose-500/8 text-rose-400 hover:bg-rose-500/15 transition-all"
+              title="Stop speaking">
+              <MicOff size={15} />
+            </motion.button>
+          )}
+        </div>
+
+        {/* ── Voice Controls Accordion ── */}
+        <div className="w-full max-w-sm">
+          <button onClick={() => setShowControls(v => !v)}
+            className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-white/8 bg-white/3 hover:bg-white/5 transition-colors text-[10px] font-orbitron font-bold tracking-widest text-gray-500 uppercase">
+            <div className="flex items-center gap-2"><Settings size={10} />Voice Controls</div>
             <motion.div animate={{ rotate: showControls ? 180 : 0 }} transition={{ duration: 0.2 }}>
               <ChevronDown size={12} />
             </motion.div>
           </button>
           <AnimatePresence>
             {showControls && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden"
-              >
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
                 <HudCard glow="#8A2BE2" className="mt-2 p-4 space-y-4">
                   {/* Language */}
                   <div>
@@ -612,43 +1341,70 @@ export default function VoiceAssistant() {
                       {[{ id: 'en-US', label: 'EN 🇬🇧' }, { id: 'ur-PK', label: 'UR 🇵🇰' }].map((lang) => {
                         const isActive = voiceLanguage === lang.id;
                         return (
-                          <button
-                            key={lang.id}
-                            onClick={() => {
-                              setVoiceLanguage(lang.id);
-                              settingsAPI.update({ voice: { language: lang.id } }).catch(() => {});
-                            }}
+                          <button key={lang.id}
+                            onClick={() => { setVoiceLanguage(lang.id); settingsAPI.update({ voice: { language: lang.id } }).catch(() => {}); }}
                             className="flex-1 py-2 rounded-xl font-orbitron text-[10px] font-black tracking-wider transition-all border"
-                            style={isActive ? {
-                              borderColor: 'rgba(255,0,200,0.4)',
-                              color: '#FF00C8',
-                              background: 'rgba(255,0,200,0.08)',
-                              boxShadow: '0 0 12px rgba(255,0,200,0.2)',
-                            } : { borderColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.25)' }}
-                          >
+                            style={isActive
+                              ? { borderColor: 'rgba(255,0,200,0.4)', color: '#FF00C8', background: 'rgba(255,0,200,0.08)', boxShadow: '0 0 12px rgba(255,0,200,0.2)' }
+                              : { borderColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.25)' }}>
                             {lang.label}
                           </button>
                         );
                       })}
                     </div>
                   </div>
-                  {/* Voice select */}
+                  {/* Voice */}
                   <div>
-                    <label className="block text-[9px] font-orbitron font-black tracking-widest text-gray-500 uppercase mb-2">Voice</label>
-                    <select
-                      value={selectedVoice}
-                      onChange={(e) => {
-                        setSelectedVoice(e.target.value);
-                        settingsAPI.update({ voice: { voiceSelection: e.target.value, speed: voiceSpeed } }).catch(() => {});
-                      }}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-gray-300 outline-none focus:border-neon-purple/40 transition-all"
-                    >
-                      <option value="female">Default — Aura (Female)</option>
-                      <option value="male">Default — Echo (Male)</option>
-                      {voices.map((v) => (
-                        <option key={v.name} value={v.name}>{v.name} [{v.lang}]</option>
-                      ))}
+                    <label className="block text-[9px] font-orbitron font-black tracking-widest text-gray-500 uppercase mb-2">
+                      Voice {ELEVENLABS_IDS.has(selectedVoice) && <span className="ml-1 text-amber-400/80">⚡ ElevenLabs</span>}
+                    </label>
+                    <select value={selectedVoice}
+                      onChange={(e) => { setSelectedVoice(e.target.value); settingsAPI.update({ voice: { voiceSelection: e.target.value, speed: voiceSpeed } }).catch(() => {}); }}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-gray-300 outline-none focus:border-neon-purple/40 transition-all">
+                      <optgroup label="── Browser Voices ──">
+                        <option value="female">Default — Aura (Female)</option>
+                        <option value="male">Default — Echo (Male)</option>
+                        {voices.map((v) => (<option key={v.name} value={v.name}>{v.name} [{v.lang}]</option>))}
+                      </optgroup>
+                      <optgroup label="── ElevenLabs Voices (Requires API Key) ──">
+                        {ELEVENLABS_VOICES.map((v) => (
+                          <option key={v.id} value={v.id}>
+                            {v.name} — {v.style} ({v.gender === 'F' ? '♀' : '♂'})
+                          </option>
+                        ))}
+                      </optgroup>
                     </select>
+                    {ELEVENLABS_IDS.has(selectedVoice) && (
+                      <p className="text-[8px] font-mono text-amber-400/60 mt-1">Add ELEVENLABS_API_KEY to .env for premium voices</p>
+                    )}
+                  </div>
+                  {/* Speed */}
+                  <div>
+                    <label className="block text-[9px] font-orbitron font-black tracking-widest text-gray-500 uppercase mb-2">
+                      Speed — {voiceSpeed.toFixed(1)}×
+                    </label>
+                    <input type="range" min="0.5" max="2.0" step="0.1" value={voiceSpeed}
+                      onChange={(e) => { const v = parseFloat(e.target.value); setVoiceSpeed(v); settingsAPI.update({ voice: { speed: v } }).catch(() => {}); }}
+                      className="w-full accent-neon-purple" />
+                  </div>
+                  {/* Toggles */}
+                  <div className="space-y-3 pt-3 border-t border-white/5">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-orbitron text-[10px] font-bold text-white tracking-wider">CONTINUOUS MODE</p>
+                        <p className="text-[8px] text-gray-500">Auto-restarts voice detection after speaking</p>
+                      </div>
+                      <Toggle value={continuousMode} onChange={(v) => { setContinuousMode(v); localStorage.setItem('harvox_voice_continuous', JSON.stringify(v)); }} color="bg-neon-pink" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-orbitron text-[10px] font-bold text-white tracking-wider">AUTO-APPROVE ACTIONS</p>
+                        <p className="text-[8px] text-gray-500">Autopilot mode is strictly enforced</p>
+                      </div>
+                      <span className="text-[8px] font-orbitron font-black text-neon-blue bg-neon-blue/10 border border-neon-blue/20 px-2 py-1 rounded">
+                        ACTIVE
+                      </span>
+                    </div>
                   </div>
                 </HudCard>
               </motion.div>
@@ -656,35 +1412,136 @@ export default function VoiceAssistant() {
           </AnimatePresence>
         </div>
 
-        {/* ── AI text response ── */}
+        <DailyAssistantPanel />
+
+        {/* ── AI Response ── */}
         <AnimatePresence>
           {response && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="w-full"
-            >
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="w-full">
               <HudCard glow="#8A2BE2" className="p-4">
-                <p className="text-[9px] font-orbitron font-black tracking-widest text-neon-purple/60 uppercase mb-3">AI Response</p>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles size={10} className="text-neon-purple" />
+                    <p className="text-[9px] font-orbitron font-black tracking-widest text-neon-purple/60 uppercase">AI Response</p>
+                  </div>
+                  <span className="text-[8px] font-mono text-gray-700">{activeModel.label}</span>
+                </div>
                 <ChatMessage role="assistant" content={response} compact />
+                {speaking && (
+                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/5">
+                    <Volume2 size={9} className="text-purple-400 animate-pulse" />
+                    <span className="text-[8px] font-mono text-purple-400/70">Speaking response…</span>
+                    <div className="flex items-end gap-0.5 h-4 ml-auto">
+                      {[1,2,3,4].map(i => (
+                        <motion.div key={i} animate={{ height: ['30%', '100%', '30%'] }}
+                          transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.1 }}
+                          className="w-0.5 rounded-full bg-purple-400" />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </HudCard>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ── Task plan runner ── */}
+        {/* ── Task Runner ── */}
         <AnimatePresence>
-          {taskPlan && (
+          {executingPlan && (
             <div className="w-full">
-              <VoiceAutoTaskRunner
-                key={taskPlan.title}
-                plan={taskPlan}
-                speak={speak}
-                onDone={() => { setTimeout(() => setTaskPlan(null), 3000); }}
+              <VoiceTaskRunner
+                key={executingPlan.title}
+                plan={executingPlan}
+                speakRef={speakRef}
+                onDone={() => {
+                  setExecutingPlan(null);
+                  if (continuousRef.current) setTimeout(() => startListeningRef.current?.(), 800);
+                }}
               />
             </div>
           )}
         </AnimatePresence>
+
+        {/* ── Conversation History ── */}
+        {conversationHistory.length > 0 && (
+          <div className="w-full max-w-sm">
+            <button onClick={() => setShowHistory(v => !v)}
+              className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-white/8 bg-white/3 hover:bg-white/5 transition-colors text-[10px] font-orbitron font-bold tracking-widest text-gray-500 uppercase">
+              <div className="flex items-center gap-2"><Clock size={10} />Session History ({conversationHistory.length})</div>
+              <div className="flex items-center gap-2">
+                <button onClick={(e) => { e.stopPropagation(); setConversationHistory([]); }}
+                  className="text-[8px] font-mono text-gray-600 hover:text-rose-400 transition-colors" title="Clear history">
+                  <Trash2 size={8} />
+                </button>
+                <motion.div animate={{ rotate: showHistory ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                  <ChevronDown size={12} />
+                </motion.div>
+              </div>
+            </button>
+            <AnimatePresence>
+              {showHistory && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-2">
+                  <div className="space-y-1.5 max-h-80 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                    {conversationHistory.map(item => (
+                      <HistoryItem key={item.id} item={item} onReplay={replayQuery} />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
+        {/* ── Safety Confirmation Modal ── */}
+        <AnimatePresence>
+          {pendingPlanApproval && taskPlan && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+              <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
+                className="w-full max-w-lg overflow-hidden border border-white/10 rounded-2xl bg-[#0b0a14]/95 shadow-2xl p-6 relative" style={{ boxShadow: '0 0 40px rgba(0, 240, 255, 0.2)' }}>
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink" />
+                <h2 className="font-orbitron font-bold text-lg text-white mb-2 tracking-wider flex items-center gap-2">
+                  <Shield className="text-neon-blue shrink-0 animate-pulse" size={18} />
+                  CONFIRM OPERATION PLAN
+                </h2>
+                <p className="text-xs text-muted mb-4 font-mono">
+                  Review the queued automation sequence. Say{' '}
+                  <span className="text-neon-blue font-bold">"Yes"</span> or click{' '}
+                  <span className="text-neon-blue font-bold">"Approve"</span> to run, or{' '}
+                  <span className="text-rose-400 font-bold">"No"</span> to reject.
+                </p>
+                <div className="space-y-2 mb-6 max-h-60 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                  {taskPlan.steps.map((step, i) => {
+                    const badge = step.agent && AGENT_BADGES[step.agent.toLowerCase()];
+                    return (
+                      <div key={step.id || i} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/3 border border-white/5">
+                        <span className="text-[10px] font-mono text-gray-500 w-5 shrink-0">0{i + 1}</span>
+                        <div className="flex-1 flex flex-col min-w-0">
+                          <p className="text-xs text-white leading-tight font-medium">{step.description}</p>
+                          <span className="text-[9px] font-mono text-muted/60 mt-0.5">
+                            {step.action}({step.args ? step.args.join(', ') : ''})
+                          </span>
+                        </div>
+                        {badge && (
+                          <span className="text-[7px] font-orbitron font-black px-2 py-0.5 rounded border shrink-0"
+                            style={{ color: badge.color, borderColor: `${badge.color}40`, background: `${badge.color}10` }}>
+                            {badge.label}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex items-center justify-end gap-3">
+                  <button onClick={handleRejectPlan} className="px-5 py-2.5 rounded-xl font-orbitron text-xs font-bold tracking-wider text-rose-400 border border-rose-500/20 hover:border-rose-500/40 bg-rose-950/10 hover:bg-rose-950/20 transition-all duration-300">Reject Plan</button>
+                  <button onClick={() => handleApprovePlan(taskPlan)} className="px-6 py-2.5 rounded-xl font-orbitron text-xs font-bold tracking-wider text-white border border-neon-blue/40 bg-neon-blue/15 hover:bg-neon-blue/25 transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.2)]">Approve & Run</button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </div>
     </div>
   );

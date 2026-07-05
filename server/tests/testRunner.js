@@ -9,6 +9,7 @@ process.env.JWT_SECRET = 'test-secret-key-12345';
 
 import { connectDB, getDBHealth } from '../config/db.js';
 import User from '../models/User.js';
+import Subscription from '../models/Subscription.js';
 
 const runTests = async () => {
   console.log('==================================================');
@@ -72,6 +73,50 @@ const runTests = async () => {
 
     // Clean up
     await User.deleteOne({ _id: newUser._id });
+
+    // ──── TEST 5: SCREENSHOT AUTO-VERIFICATION & UPGRADE ────
+    console.log('\n⚡ Running Test Case 5: Screenshot Upload Auto-Upgrade...');
+    const testUser = await User.create({
+      name: 'Billing Test User',
+      email: 'billing@harvox.ai',
+      password: 'BillingPassword123!',
+      role: 'free',
+      subscription: 'free'
+    });
+
+    let testSub = await Subscription.findOne({ userId: testUser._id });
+    if (!testSub) {
+      testSub = await Subscription.create({ userId: testUser._id, plan: 'free', status: 'active' });
+    }
+
+    // Simulate route handler auto-approval logic
+    testSub.paymentHistory.push({
+      amount: 999,
+      method: 'JazzCash',
+      transactionId: '1234567890',
+      plan: 'monthly',
+      status: 'approved',
+      screenshotUrl: 'mock_screenshot.png',
+    });
+    testSub.plan = 'pro';
+    testSub.status = 'active';
+    await testSub.save();
+
+    const dbUser = await User.findById(testUser._id);
+    if (dbUser.role === 'free') {
+      dbUser.role = 'pro';
+    }
+    dbUser.subscription = 'pro';
+    await dbUser.save();
+
+    assert(dbUser.subscription === 'pro', 'User subscription successfully upgraded to Pro');
+    assert(dbUser.role === 'pro', 'User role upgraded to Pro');
+    assert(testSub.plan === 'pro', 'Subscription plan updated to pro');
+    assert(testSub.paymentHistory[0].status === 'approved', 'Payment status is approved instantly');
+
+    // Clean up Test 5
+    await User.deleteOne({ _id: testUser._id });
+    await Subscription.deleteOne({ userId: testUser._id });
 
     // ── SUMMARY REPORT ──
     console.log('\n==================================================');

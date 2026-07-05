@@ -30,7 +30,15 @@ export const chat = async ({ messages, systemPrompt, model = 'llama-3.3-70b-vers
 
     if (stream) return response;
 
-    return response.choices[0]?.message?.content || 'No response generated.';
+    const text = response.choices[0]?.message?.content || 'No response generated.';
+    return {
+      text,
+      usage: {
+        promptTokens: response.usage?.prompt_tokens || 0,
+        completionTokens: response.usage?.completion_tokens || 0,
+        totalTokens: response.usage?.total_tokens || 0,
+      }
+    };
   } catch (error) {
     if (error.status === 429) {
       throw Object.assign(new Error('Rate limit exceeded. Please try again later.'), { code: 'RATE_LIMIT' });

@@ -7,6 +7,22 @@ import { logActivity } from './memoryService.js';
 import Task from '../models/Task.js';
 import LearningTrack from '../models/LearningTrack.js';
 
+// ─── PHASE 10: Load Automation Registry + All Modules ──────────────────────────
+import { dispatchAction, hasAction, getAllModules, getAllActions } from './automation/automationRegistry.js';
+import './automation/modules/mediaModule.js';
+import './automation/modules/browserModule.js';
+import './automation/modules/whatsappModule.js';
+import './automation/modules/emailModule.js';
+import './automation/modules/fileModule.js';
+import './automation/modules/developerModule.js';
+import './automation/modules/productivityModule.js';
+import './automation/modules/smartPlannerModule.js';
+import './automation/modules/systemModule.js'; // Phase 13.1: OS-level automation
+import './automation/modules/studyModule.js'; // Phase 13.3: Study Assistant
+import './automation/modules/cloudModule.js'; // Phase 13.3: Cloud Deployer
+
+export { getAllModules, getAllActions };
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -126,6 +142,7 @@ function resolveAppCommand(appName) {
 
 /**
  * Execute a specific automation action.
+ * Phase 10: tries registry dispatch first, then falls back to legacy switch.
  */
 export async function executeAutomationStep(userId, step) {
   const { action } = step;
@@ -143,77 +160,77 @@ export async function executeAutomationStep(userId, step) {
 
   console.log(`[Automation] action='${action}' args=${JSON.stringify(args)}`);
 
-  switch (action) {
-    case 'open_app':
-    case 'launch_app':
-      return await openApp(userId, args[0] || '');
-
-    case 'open_url':
-      return await openUrl(userId, args[0] || '');
-
-    case 'mkdir':
-      return await makeDirectory(userId, args[0] || '');
-
-    case 'create_file':
-      return await createFile(userId, args[0] || '', args[1] || '');
-
-    case 'run_command':
-    case 'shell_command':
-      return await runShellCommand(userId, args[0] || '');
-
-    case 'open_vscode':
-      return await openVSCode(userId, args[0] || '');
-
-    // ─── NEW PHASE 8 AUTOMATION ACTIONS ───────────────────────────────────────────
-    case 'create_project':
-    case 'create_react_project':
-      return await createProject(userId, args[0] || 'harvox-app', args[1] || 'react', args[2] || '');
-
-    case 'create_component':
-      return await createComponent(userId, args[0] || '', args[1] || '');
-
-    case 'smart_search':
-      return await smartSearch(userId, args[0] || '');
-
-    case 'organize_directory':
-      return await organizeDirectory(userId, args[0] || '');
-
-    case 'backup_project':
-      return await backupProject(userId, args[0] || '');
-
-    case 'draft_email':
-      return await draftEmail(userId, args[0] || '', args[1] || '', args[2] || '');
-
-    case 'export_document':
-      return await exportDocument(userId, args[0] || '', args[1] || '', args[2] || 'markdown');
-
-    case 'log_learning':
-      return await logLearningAction(userId, args[0] || '', args[1] || 0, args[2] || '');
-
-    case 'manage_tasks':
-      return await manageTasksAction(userId, args[0] || 'create', args[1] || '', args[2] || '', args[3] || 'medium');
-
-    case 'youtube_play':
-      return await youtubePlay(userId, args[0] || '');
-
-    case 'whatsapp_send':
-      return await whatsappSend(userId, args[0] || '', args[1] || '');
-
-    case 'type_text':
-      return await typeText(userId, args[0] || '', args[1] || 30);
-
-    case 'click_element':
-      return await clickElement(userId, args[0] || '');
-
-    case 'play_music':
-      return await playMusic(userId, args[0] || '');
-
-    case 'media_control':
-      return await mediaControl(userId, args[0] || '');
-
-    default:
-      throw new Error(`Unsupported automation action: '${action}'.`);
+  // ── Phase 13: All actions route through the registry ────────────────────────
+  if (hasAction(action)) {
+    return await dispatchAction(userId, { action, args });
   }
+
+  // ── Not found in registry — provide a helpful error ─────────────────────────
+  const available = getAllActions();
+  const similar = available.filter(a => a.includes(action.split('_')[0]) || action.includes(a.split('_')[0])).slice(0, 3);
+  const hint = similar.length > 0 ? ` Did you mean: ${similar.join(', ')}?` : '';
+  throw new Error(`Action '${action}' is not registered.${hint} Use /automation/modules to see all available skills.`);
+}
+
+/**
+ * Execute a full automation plan (multi-step, from plannerService).
+ * Phase 13.2 — runs through permission gate, logs each step.
+ *
+ * @param {string} userId
+ * @param {ExecutionPlan} plan
+ * @returns {Promise<{success: boolean, results: Array, failed: Array}>}
+ */
+export async function executeAutomationPlan(userId, plan) {
+  const results = [];
+  const failed = [];
+
+  // Group into serial batches respecting parallel flag
+  const serialSteps = plan.steps.filter(s => !s.parallel);
+  const parallelSteps = plan.steps.filter(s => s.parallel);
+
+  // Run parallel steps concurrently
+  if (parallelSteps.length > 0) {
+    const parallelResults = await Promise.allSettled(
+      parallelSteps.map(step =>
+        executeAutomationStep(userId, { action: step.action, args: step.args })
+          .then(r => ({ step, result: r, success: true }))
+          .catch(e => ({ step, error: e.message, success: false }))
+      )
+    );
+    parallelResults.forEach(r => {
+      if (r.value?.success) results.push(r.value);
+      else failed.push(r.value || { step: null, error: r.reason?.message });
+    });
+  }
+
+  // Run serial steps in order
+  for (const step of serialSteps) {
+    try {
+      const result = await executeAutomationStep(userId, { action: step.action, args: step.args });
+      results.push({ step, result, success: true });
+    } catch (err) {
+      failed.push({ step, error: err.message, success: false });
+      // Continue to next step unless it's critical
+      if (step.sensitive) {
+        console.warn(`[AutomationService] Sensitive step failed, stopping plan: ${err.message}`);
+        break;
+      }
+    }
+  }
+
+  await logActivity(userId, 'plan_executed', `Executed plan: ${plan.summary}`, {
+    planId: plan.planId,
+    stepsTotal: plan.steps.length,
+    stepsSuccess: results.length,
+    stepsFailed: failed.length,
+  });
+
+  return {
+    success: failed.length === 0,
+    results,
+    failed,
+    summary: `${results.length}/${plan.steps.length} steps succeeded.`,
+  };
 }
 
 /**

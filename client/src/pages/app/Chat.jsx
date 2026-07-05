@@ -6,7 +6,7 @@ import {
   Sparkles, Paperclip, ArrowUp, ChevronDown, Clock, X, Bell,
   Download, Cpu as CpuIcon, HardDrive, Wifi, Plus, Crown, ArrowRight,
   FileText, Lightbulb, Briefcase, Bot, User, Menu, ChevronLeft, ChevronRight,
-  Search, Trash2, LogOut, RotateCcw, History
+  Search, Trash2, LogOut, RotateCcw, History, Zap, AlertTriangle
 } from 'lucide-react';
 import { aiAPI, chatAPI } from '../../services/api';
 import Sidebar from '../../components/layout/Sidebar';
@@ -14,8 +14,10 @@ import { useAuthStore } from '../../store/authStore';
 import { useSidebarStore } from '../../store/sidebarStore';
 import { cn } from '../../utils/cn';
 import {
-  AI_PROVIDERS, GROQ_MODELS, GEMINI_MODELS, getModelsByProvider,
+  AI_PROVIDERS, getDefaultModelForProvider, getModelById,
 } from '../../config/aiModels';
+import ModelSelector from '../../components/chat/ModelSelector';
+import ModeSelector from '../../components/chat/ModeSelector';
 import ChatMessage from '../../components/chat/ChatMessage';
 import ChatErrorBoundary from '../../components/chat/ChatErrorBoundary';
 import { saveAs } from 'file-saver';
@@ -401,19 +403,31 @@ export default function Chat() {
   const [messages,     setMessages]     = useState([]);
   const [input,        setInput]        = useState('');
   const [loading,      setLoading]      = useState(false);
-  const [provider,     setProvider]     = useState(AI_PROVIDERS.GROQ);
-  const [model,        setModel]        = useState('llama-3.3-70b-versatile');
+  const [provider,     setProvider]     = useState('cerebras');
+  const [model,        setModel]        = useState('llama-3.3-70b');
   const [showSettings, setShowSettings] = useState(false);
-  const [showSidebar,  setShowSidebar]  = useState(false); // Mobile sidebar drawer
-  const [showSystem,   setShowSystem]   = useState(false); // System diagnostics panel
-  const [showHistory,  setShowHistory]  = useState(false); // Chat History panel
+  const [showSidebar,  setShowSidebar]  = useState(false);
+  const [showSystem,   setShowSystem]   = useState(false);
+  const [showHistory,  setShowHistory]  = useState(false);
   const [msgCount,     setMsgCount]     = useState(0);
   const [searchQuery,  setSearchQuery]  = useState('');
+  const [showModelSelector, setShowModelSelector] = useState(false);
+  const [showModeSelector,  setShowModeSelector]  = useState(false);
+  const [personalityMode,   setPersonalityMode]   = useState('professional');
+  const [metrics, setMetrics]           = useState(null);
+  const [failoverNotice, setFailoverNotice] = useState(null);
+  const modelBtnRef = useRef(null);
+  const modeBtnRef  = useRef(null);
 
   // ── Load chat list ──
   useEffect(() => {
     chatAPI.list().then(({ data }) => setChats(data.chats || []));
   }, []);
+
+  // ── Load AI Metrics ──
+  useEffect(() => {
+    aiAPI.getMetrics().then(({ data }) => setMetrics(data)).catch(() => {});
+  }, [messages.length]);
 
   // ── Route state ──
   useEffect(() => {
@@ -502,8 +516,18 @@ export default function Chat() {
 
     try {
       await aiAPI.streamChat(
-        { message: msg, chatId: activeChat?._id, provider, model },
+        { message: msg, chatId: activeChat?._id, provider, model, personalityMode },
         (parsed) => {
+          if (parsed.isFailoverNotice) {
+            const fromLabel = `${parsed.failoverFromProvider} / ${parsed.failoverFromModel}`;
+            const toLabel = `${parsed.currentProvider} / ${parsed.currentModel}`;
+            setFailoverNotice({ from: fromLabel, to: toLabel });
+            // Automatically update the active provider+model in the UI so the selector shows the real model
+            if (parsed.currentProvider) setProvider(parsed.currentProvider);
+            if (parsed.currentModel) setModel(parsed.currentModel);
+            setTimeout(() => setFailoverNotice(null), 8000);
+            return;
+          }
           if (parsed.content) {
             setMessages((prev) => {
               const updated = [...prev];
@@ -521,6 +545,8 @@ export default function Chat() {
                 setMessages(parsed.chat.messages);
               }
             }
+            // Refresh metrics after each completion
+            aiAPI.getMetrics().then(({ data }) => setMetrics(data)).catch(() => {});
             chatAPI.list().then(({ data }) => setChats(data.chats || []));
           }
         },
@@ -902,6 +928,63 @@ export default function Chat() {
                 </div>
               )}
               
+              {/* Model Selector Button */}
+              <div className="relative" ref={modelBtnRef}>
+                <button
+                  onClick={() => setShowModelSelector((v) => !v)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold font-mono border transition-all ${
+                    showModelSelector
+                      ? 'border-neon-blue/50 bg-neon-blue/10 text-neon-blue shadow-[0_0_10px_rgba(0,240,255,0.15)]'
+                      : 'border-white/10 bg-white/5 text-gray-300 hover:border-neon-blue/30 hover:text-neon-blue'
+                  }`}
+                  title="Select AI Model"
+                >
+                  <Zap size={10} className={provider === 'auto' ? 'text-neon-pink animate-pulse' : 'text-neon-blue'} />
+                  <span className="max-w-[140px] truncate">
+                    {provider === 'auto' ? 'Auto Routing' : (getModelById(model)?.name || model)}
+                  </span>
+                  <ChevronDown size={10} />
+                </button>
+                <ModelSelector
+                  isOpen={showModelSelector}
+                  onClose={() => setShowModelSelector(false)}
+                  selectedProvider={provider}
+                  selectedModel={model}
+                  onSelect={(p, m) => { setProvider(p); setModel(m); }}
+                  anchorRef={modelBtnRef}
+                />
+              </div>
+
+              {/* Mode Selector Button (landing) */}
+              <div className="relative" ref={modeBtnRef}>
+                <button
+                  onClick={() => { setShowModeSelector((v) => !v); setShowModelSelector(false); }}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold font-mono border transition-all ${
+                    showModeSelector
+                      ? 'border-neon-purple/50 bg-neon-purple/10 text-neon-purple shadow-[0_0_10px_rgba(138,43,226,0.2)]'
+                      : 'border-white/10 bg-white/5 text-gray-300 hover:border-neon-purple/30 hover:text-neon-purple'
+                  }`}
+                  title="Personality Mode"
+                >
+                  <span>{{
+                    professional: '💼',
+                    friendly: '😊',
+                    mentor: '🎓',
+                    playful: '🎮',
+                    flirty: '😘',
+                    fun: '🎉',
+                  }[personalityMode] || '💼'}</span>
+                  <span className="capitalize">{personalityMode}</span>
+                </button>
+                <ModeSelector
+                  isOpen={showModeSelector}
+                  onClose={() => setShowModeSelector(false)}
+                  currentMode={personalityMode}
+                  onSelect={(mode) => { setPersonalityMode(mode); setShowModeSelector(false); }}
+                  anchorRef={modeBtnRef}
+                />
+              </div>
+              
               <div className="relative bg-[#050811]/80 backdrop-blur-md border border-neon-purple/30 rounded-3xl p-4 shadow-[0_0_30px_rgba(0,0,0,0.6),0_0_20px_rgba(138,43,226,0.15)] focus-within:border-neon-blue focus-within:shadow-[0_0_35px_rgba(0,240,255,0.15)] transition-all duration-300">
                 <div className="flex items-center gap-1.5 text-neon-blue mb-2 px-1">
                   <Sparkles size={16} className="animate-pulse" />
@@ -921,17 +1004,6 @@ export default function Chat() {
 
                 <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
                   <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => setShowSettings(!showSettings)}
-                      className={`p-2 rounded-xl transition-all border ${
-                        showSettings
-                          ? 'bg-neon-purple/20 text-neon-purple border-neon-purple/40'
-                          : 'text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 border-white/5'
-                      }`}
-                      title="AI Settings"
-                    >
-                      <Settings size={12} />
-                    </button>
                     <button
                       onClick={triggerFileSelect}
                       className="flex items-center gap-1.5 px-3.5 py-2 bg-white/5 hover:bg-white/10 text-[11px] text-gray-300 font-semibold rounded-full border border-white/5 transition-all"
@@ -993,44 +1065,95 @@ export default function Chat() {
         {messages.length > 0 && (
           <footer className="p-4 border-t border-white/5 bg-black/40 backdrop-blur-md flex-shrink-0 z-20">
             <div className="max-w-3xl mx-auto w-full">
-              {showSettings && (
-                <div className="grid grid-cols-2 gap-3 mb-3 p-3 bg-[#050811]/90 backdrop-blur-md border border-neon-purple/30 rounded-2xl animate-fade-in">
-                  <div>
-                    <label className="text-[9px] font-bold tracking-widest text-gray-500 uppercase mb-1.5 block">
-                      Provider
-                    </label>
-                    <select
-                      value={provider}
-                      onChange={(e) => {
-                        setProvider(e.target.value);
-                        setModel(
-                          e.target.value === AI_PROVIDERS.GEMINI
-                            ? GEMINI_MODELS[0].id
-                            : GROQ_MODELS[0].id
-                        );
-                      }}
-                      className="w-full px-2.5 py-1.5 bg-black/60 border border-white/10 rounded-lg text-[10px] text-white outline-none focus:border-neon-blue/50"
+              {/* Failover Notice — Auto Model Switch Toast */}
+              {failoverNotice && (
+                <motion.div
+                  initial={{ opacity: 0, y: -12, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                  className="flex items-center gap-3 mb-3 px-4 py-2.5 rounded-xl border border-amber-400/30 bg-gradient-to-r from-amber-500/10 via-orange-500/8 to-amber-500/5 backdrop-blur-sm shadow-lg shadow-amber-500/5"
+                >
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
                     >
-                      <option value={AI_PROVIDERS.GROQ} className="bg-black text-white">⚡ Groq</option>
-                      <option value={AI_PROVIDERS.GEMINI} className="bg-black text-white">✨ Gemini</option>
-                    </select>
+                      <Zap size={13} className="text-amber-400" />
+                    </motion.div>
                   </div>
-                  <div>
-                    <label className="text-[9px] font-bold tracking-widest text-gray-500 uppercase mb-1.5 block">
-                      Model
-                    </label>
-                    <select
-                      value={model}
-                      onChange={(e) => setModel(e.target.value)}
-                      className="w-full px-2.5 py-1.5 bg-black/60 border border-white/10 rounded-lg text-[10px] text-white outline-none focus:border-neon-blue/50"
-                    >
-                      {getModelsByProvider(provider).map((m) => (
-                        <option key={m.id} value={m.id} className="bg-black text-white">{m.name}</option>
-                      ))}
-                    </select>
+                  <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                    <span className="text-amber-300 text-[9px] font-bold tracking-widest uppercase">Auto Model Switch</span>
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-white/70">
+                      <span className="text-red-400/80 truncate max-w-[110px]">{failoverNotice.from}</span>
+                      <ArrowRight size={9} className="text-amber-400 shrink-0" />
+                      <span className="text-emerald-400 truncate max-w-[110px]">{failoverNotice.to}</span>
+                    </div>
                   </div>
-                </div>
+                  <button
+                    onClick={() => setFailoverNotice(null)}
+                    className="ml-auto shrink-0 p-1 rounded-md text-white/30 hover:text-white/70 hover:bg-white/5 transition-colors"
+                  >
+                    <X size={10} />
+                  </button>
+                </motion.div>
               )}
+
+              {/* Model Selector Button (footer version) */}
+              <div className="relative mb-1.5" ref={modelBtnRef}>
+                <button
+                  onClick={() => setShowModelSelector((v) => !v)}
+                  className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[9px] font-bold font-mono border transition-all ${
+                    showModelSelector
+                      ? 'border-neon-blue/50 bg-neon-blue/10 text-neon-blue'
+                      : 'border-white/8 bg-white/4 text-gray-400 hover:border-neon-blue/30 hover:text-neon-blue'
+                  }`}
+                >
+                  <Zap size={9} className={provider === 'auto' ? 'text-neon-pink animate-pulse' : 'text-neon-blue'} />
+                  <span className="max-w-[160px] truncate">
+                    {provider === 'auto' ? '⚡ Auto Routing' : (getModelById(model)?.name || model)}
+                  </span>
+                  <ChevronDown size={9} />
+                </button>
+                <ModelSelector
+                  isOpen={showModelSelector}
+                  onClose={() => setShowModelSelector(false)}
+                  selectedProvider={provider}
+                  selectedModel={model}
+                  onSelect={(p, m) => { setProvider(p); setModel(m); }}
+                  anchorRef={modelBtnRef}
+                />
+              </div>
+
+              {/* Mode Selector Button (footer) */}
+              <div className="relative" ref={modeBtnRef}>
+                <button
+                  onClick={() => { setShowModeSelector((v) => !v); setShowModelSelector(false); }}
+                  className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[9px] font-bold font-mono border transition-all ${
+                    showModeSelector
+                      ? 'border-neon-purple/50 bg-neon-purple/10 text-neon-purple'
+                      : 'border-white/8 bg-white/4 text-gray-400 hover:border-neon-purple/30 hover:text-neon-purple'
+                  }`}
+                  title="Personality Mode"
+                >
+                  <span>{{
+                    professional: '💼',
+                    friendly: '😊',
+                    mentor: '🎓',
+                    playful: '🎮',
+                    flirty: '😘',
+                    fun: '🎉',
+                  }[personalityMode] || '💼'}</span>
+                  <span className="capitalize hidden sm:inline">{personalityMode}</span>
+                </button>
+                <ModeSelector
+                  isOpen={showModeSelector}
+                  onClose={() => setShowModeSelector(false)}
+                  currentMode={personalityMode}
+                  onSelect={(mode) => { setPersonalityMode(mode); setShowModeSelector(false); }}
+                  anchorRef={modeBtnRef}
+                />
+              </div>
 
               <div className="relative bg-[#050811]/80 backdrop-blur-md border border-neon-purple/30 rounded-2xl p-3 shadow-lg focus-within:border-neon-blue transition-all duration-300">
                 <textarea
@@ -1098,7 +1221,7 @@ export default function Chat() {
       </main>
       </div>
 
-      {/* SYSTEM DIAGNOSTICS DRAWER */}
+      {/* SYSTEM DIAGNOSTICS DRAWER — now also shows telemetry */}
       {showSystem && (
         <>
           <div
@@ -1118,6 +1241,53 @@ export default function Chat() {
                   <X size={14} />
                 </button>
               </div>
+
+              {/* Telemetry Panel */}
+              {metrics && (
+                <div className="mb-4 space-y-2">
+                  <p className="text-[9px] font-bold font-orbitron tracking-widest text-neon-blue/60 uppercase">AI Telemetry</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { label: 'Total Calls', value: metrics.totalCalls, color: '#00F0FF' },
+                      { label: 'Success Rate', value: `${metrics.successRate}%`, color: '#00ff9d' },
+                      { label: 'Avg Latency', value: `${metrics.avgLatency}ms`, color: '#FFD21E' },
+                      { label: 'Est. Cost', value: `$${metrics.totalCost}`, color: '#FF00C8' },
+                      { label: 'Total Tokens', value: (metrics.totalTokens || 0).toLocaleString(), color: '#8A2BE2' },
+                      { label: 'Failovers', value: metrics.failoverCalls, color: '#FF6B35' },
+                    ].map(({ label, value, color }) => (
+                      <div
+                        key={label}
+                        className="flex flex-col px-2.5 py-2 rounded-xl border bg-secondary/10"
+                        style={{ borderColor: `${color}25` }}
+                      >
+                        <span className="text-[8px] font-orbitron font-bold tracking-widest text-muted/50 uppercase">{label}</span>
+                        <span className="text-sm font-mono font-bold mt-0.5" style={{ color }}>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Recent Logs */}
+                  {metrics.recentLogs?.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-[8px] font-bold font-orbitron tracking-widest text-muted/40 uppercase mb-1.5">Recent Calls</p>
+                      <div className="space-y-1">
+                        {metrics.recentLogs.slice(0, 5).map((log, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center justify-between px-2 py-1.5 rounded-lg border border-white/5 bg-secondary/10 text-[9px] font-mono"
+                          >
+                            <span className={log.status === 'success' ? 'text-emerald-400' : 'text-rose-400'}>
+                              {log.provider}
+                            </span>
+                            <span className="text-muted/50">{log.latencyMs}ms</span>
+                            <span className="text-neon-blue/70">${log.cost.toFixed(5)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="flex-1 overflow-y-auto pr-1" style={{ scrollbarWidth: 'none' }}>
                 <SystemStatusPanel
