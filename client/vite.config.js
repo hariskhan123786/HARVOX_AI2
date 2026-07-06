@@ -19,23 +19,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'vendor-react';
-            }
-            if (id.includes('three') || id.includes('@splinetool') || id.includes('framer-motion') || id.includes('tsparticles')) {
-              return 'vendor-visuals';
-            }
-            if (id.includes('@xterm')) {
-              return 'vendor-xterm';
-            }
-            if (id.includes('lucide-react') || id.includes('recharts') || id.includes('monaco-editor')) {
-              return 'vendor-ui';
-            }
-            return 'vendor-libs';
-          }
-        },
+        // Disabled manualChunks to fix runtime React 'Children' loading issues
       },
     },
   },
