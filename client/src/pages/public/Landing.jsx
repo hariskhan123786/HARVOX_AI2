@@ -342,7 +342,7 @@ export default function Landing() {
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
 
   return (
-    <div className="relative min-h-screen" style={{ cursor: 'none' }}>
+    <div className="relative min-h-screen">
       <BackgroundEffects />
 
       {/* ── Navbar ── */}
