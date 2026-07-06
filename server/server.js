@@ -132,7 +132,11 @@ app.use(
     origin(origin, callback) {
       if (corsWildcard || !origin) return callback(null, true);
       // Allow any Railway-hosted frontend automatically
-      if (origin.endsWith('.railway.app') || origin.endsWith('.up.railway.app')) {
+      if (
+        origin.endsWith('.railway.app') ||
+        origin.endsWith('.up.railway.app') ||
+        origin.endsWith('.vercel.app')
+      ) {
         return callback(null, true);
       }
       if (allowedOrigins.includes(origin)) {
@@ -211,7 +215,11 @@ const io = new Server(httpServer, {
   cors: {
     origin(origin, callback) {
       if (corsWildcard || !origin) return callback(null, true);
-      if (origin.endsWith('.railway.app') || origin.endsWith('.up.railway.app')) {
+      if (
+        origin.endsWith('.railway.app') ||
+        origin.endsWith('.up.railway.app') ||
+        origin.endsWith('.vercel.app')
+      ) {
         return callback(null, true);
       }
       if (allowedOrigins.includes(origin)) return callback(null, true);
