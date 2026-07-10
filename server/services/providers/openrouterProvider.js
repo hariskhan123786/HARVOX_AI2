@@ -11,10 +11,14 @@ export const chat = async ({
   stream = false,
   apiKey = null,
 }) => {
-  const key = apiKey || process.env.OPENROUTER_API_KEY;
+  let key = apiKey || process.env.OPENROUTER_API_KEY;
+  if (key && key.trim().startsWith('ssk-')) {
+    key = key.trim().slice(1);
+  }
   if (!key) {
     throw new Error('OpenRouter API Key is not configured. Please set OPENROUTER_API_KEY.');
   }
+
 
   const headers = {
     'Content-Type': 'application/json',

@@ -45,35 +45,34 @@ const MODEL_PRICING = {
   'llama3.1-70b': [0.85, 1.20],
   'llama3.1-8b': [0.10, 0.10],
   'deepseek-r1-distill-llama-70b': [0.85, 1.20],
+  'gpt-oss-120b': [0.30, 0.30],
+  'gemma-4-31b': [0.30, 0.30],
 };
 
 // Failover Chain configuration
 const FAILOVER_CHAIN = {
   // OpenRouter Free -> Groq or Gemini
-  'openrouter/free': { provider: 'gemini', model: 'gemini-2.0-flash' },
-  'deepseek/deepseek-r1:free': { provider: 'gemini', model: 'gemini-2.0-flash' },
+  'openrouter/free': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
+  'deepseek/deepseek-r1:free': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
   'qwen/qwen-2.5-coder-32b-instruct:free': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
-  'qwen/qwen-2.5-72b-instruct:free': { provider: 'gemini', model: 'gemini-1.5-pro' },
+  'qwen/qwen-2.5-72b-instruct:free': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
   'meta-llama/llama-3.2-3b-instruct:free': { provider: 'groq', model: 'mixtral-8x7b-32768' },
-  'google/gemma-2-9b-it:free': { provider: 'gemini', model: 'gemini-2.0-flash' },
+  'google/gemma-2-9b-it:free': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
   'mistralai/mistral-7b-instruct:free': { provider: 'groq', model: 'mixtral-8x7b-32768' },
-  // Gemini -> Cerebras (then Groq)
-  'gemini-2.0-flash': { provider: 'cerebras', model: 'llama-3.3-70b' },
-  'gemini-1.5-pro': { provider: 'cerebras', model: 'llama-3.3-70b' },
+  // Gemini -> Groq
+  'gemini-2.0-flash': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
+  'gemini-1.5-pro': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
   'gemini-1.5-flash': { provider: 'groq', model: 'mixtral-8x7b-32768' },
-  // Groq -> Cerebras
-  'llama-3.3-70b-versatile': { provider: 'cerebras', model: 'llama-3.3-70b' },
-  'llama-3.1-70b-versatile': { provider: 'cerebras', model: 'llama3.1-70b' },
-  'mixtral-8x7b-32768': { provider: 'gemini', model: 'gemini-1.5-flash-8b' },
-  // OpenAI -> Gemini
-  'gpt-4o': { provider: 'gemini', model: 'gemini-1.5-pro' },
-  'gpt-3.5-turbo': { provider: 'gemini', model: 'gemini-2.0-flash' },
-  // Cerebras -> Groq (failover)
-  'llama-4-scout-17b-16e-instruct': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
-  'llama-3.3-70b': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
-  'llama3.1-70b': { provider: 'groq', model: 'llama-3.1-70b-versatile' },
-  'llama3.1-8b': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
-  'deepseek-r1-distill-llama-70b': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
+  // Groq -> OpenRouter
+  'llama-3.3-70b-versatile': { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct:free' },
+  'llama-3.1-70b-versatile': { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct:free' },
+  'mixtral-8x7b-32768': { provider: 'openrouter', model: 'meta-llama/llama-3.2-3b-instruct:free' },
+  // OpenAI -> Groq
+  'gpt-4o': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
+  'gpt-3.5-turbo': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
+  // Cerebras -> Groq
+  'gpt-oss-120b': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
+  'gemma-4-31b': { provider: 'groq', model: 'llama-3.3-70b-versatile' },
 };
 
 const estimateTokens = (text) => {
@@ -110,7 +109,11 @@ export const routePrompt = (promptText, keys = {}) => {
   const isCreative = /write a story|poem|creative|roleplay|essay|lyrics|fiction|novel|joke/i.test(text);
   const isResearch = /reason|why|analyze|compare|research|philosophical|explain the concept/i.test(text);
 
-  const hasOpenRouter = Boolean(keys.openrouter || process.env.OPENROUTER_API_KEY);
+  let openRouterKey = keys.openrouter || process.env.OPENROUTER_API_KEY || '';
+  if (openRouterKey.startsWith('ssk-')) {
+    openRouterKey = openRouterKey.slice(1);
+  }
+  const hasOpenRouter = Boolean(openRouterKey);
   const hasGemini = Boolean(keys.gemini || process.env.GEMINI_API_KEY);
   const hasGroq = Boolean(keys.groq || process.env.GROQ_API_KEY);
   const hasOpenAI = Boolean(keys.openai || process.env.OPENAI_API_KEY);
@@ -192,6 +195,13 @@ export const chat = async ({
       let apiKey = apiKeys[currentProvider];
       if (currentProvider === 'ollama') {
         apiKey = apiKeys.ollamaUrl;
+      }
+      if (currentProvider === 'openrouter') {
+        let orKey = apiKey || process.env.OPENROUTER_API_KEY;
+        if (orKey && orKey.trim().startsWith('ssk-')) {
+          orKey = orKey.trim().slice(1);
+        }
+        apiKey = orKey;
       }
 
       const result = await providerModule.chat({
@@ -300,6 +310,76 @@ export const chat = async ({
             failoverFromModel,
           });
         } catch (streamErr) {
+          console.warn(`[AI Provider Manager] Stream error on ${currentProvider}/${currentModel}: ${streamErr.message}`);
+
+          // Resolve dynamic fallback from remaining keys
+          let fallback = FAILOVER_CHAIN[currentModel];
+          if (fallback && triedProviders.has(`${fallback.provider}:${fallback.model}`)) {
+            fallback = null;
+          }
+          if (!fallback) {
+            let openRouterKeyClean = apiKeys.openrouter || process.env.OPENROUTER_API_KEY || '';
+            if (openRouterKeyClean.startsWith('ssk-')) openRouterKeyClean = openRouterKeyClean.slice(1);
+
+            const candidates = [
+              (apiKeys.groq   || process.env.GROQ_API_KEY)      ? { provider: 'groq',        model: 'llama-3.3-70b-versatile' }   : null,
+              (openRouterKeyClean)                              ? { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct:free' } : null,
+              (apiKeys.openai || process.env.OPENAI_API_KEY)    ? { provider: 'openai',      model: 'gpt-4o' }                    : null,
+              (apiKeys.cerebras || process.env.CEREBRAS_API_KEY) ? { provider: 'cerebras',   model: 'gpt-oss-120b' }              : null,
+              (apiKeys.gemini || process.env.GEMINI_API_KEY)    ? { provider: 'gemini',      model: 'gemini-2.0-flash' }          : null,
+            ]
+              .filter(Boolean)
+              .filter((c) => !triedProviders.has(`${c.provider}:${c.model}`));
+            fallback = candidates[0] || null;
+          }
+
+          if (fallback) {
+            console.log(`[AI Provider Manager] 🔄 Stream failover: switching to ${fallback.provider}/${fallback.model}`);
+            triedProviders.add(`${fallback.provider}:${fallback.model}`);
+
+            // Prepend a failover notice to inform the client of the transition
+            yield {
+              content: '',
+              isFailoverNotice: true,
+              failoverFromProvider: currentProvider,
+              failoverFromModel: currentModel,
+              currentProvider: fallback.provider,
+              currentModel: fallback.model,
+            };
+
+            try {
+              // Call chat recursively on the fallback provider with stream: true
+              const fallbackResult = await chat({
+                userId,
+                chatId,
+                messages,
+                systemPrompt,
+                provider: fallback.provider,
+                model: fallback.model,
+                temperature,
+                max_tokens,
+                stream: true,
+                apiKeys,
+              });
+
+              if (fallbackResult.stream) {
+                for await (const chunk of fallbackResult.responseStream) {
+                  if (chunk.content) {
+                    yield { content: chunk.content };
+                  }
+                }
+              } else if (fallbackResult.text) {
+                yield { content: fallbackResult.text };
+              }
+              return; // Exit stream generator successfully after failover complete
+            } catch (fallbackErr) {
+              console.error('[AI Provider Manager] Fallback stream error:', fallbackErr.message);
+              // Use fallback error for subsequent throws if we exhaust options
+              streamErr = fallbackErr;
+            }
+          }
+
+          // If no fallback is available or succeeded, log and bubble up error
           const endTime = Date.now();
           const latency = endTime - streamStartTime;
           const promptTokens = estimateTokens(systemPrompt + JSON.stringify(messages));
@@ -355,13 +435,16 @@ export const chat = async ({
 
       // ── Step 2: Dynamic fallback from available keys (env + user apiKeys) ──
       if (!fallback) {
+        let openRouterKeyClean = apiKeys.openrouter || process.env.OPENROUTER_API_KEY || '';
+        if (openRouterKeyClean.startsWith('ssk-')) openRouterKeyClean = openRouterKeyClean.slice(1);
+
         const candidates = [
           // User-supplied keys take priority
-          (apiKeys.cerebras || process.env.CEREBRAS_API_KEY) ? { provider: 'cerebras',   model: 'llama-3.3-70b' }             : null,
-          (apiKeys.gemini || process.env.GEMINI_API_KEY)    ? { provider: 'gemini',      model: 'gemini-2.0-flash' }          : null,
           (apiKeys.groq   || process.env.GROQ_API_KEY)      ? { provider: 'groq',        model: 'llama-3.3-70b-versatile' }   : null,
-          (apiKeys.openrouter || process.env.OPENROUTER_API_KEY) ? { provider: 'openrouter', model: 'openrouter/free' }        : null,
+          (openRouterKeyClean)                              ? { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct:free' } : null,
           (apiKeys.openai || process.env.OPENAI_API_KEY)    ? { provider: 'openai',      model: 'gpt-4o' }                    : null,
+          (apiKeys.cerebras || process.env.CEREBRAS_API_KEY) ? { provider: 'cerebras',   model: 'gpt-oss-120b' }              : null,
+          (apiKeys.gemini || process.env.GEMINI_API_KEY)    ? { provider: 'gemini',      model: 'gemini-2.0-flash' }          : null,
         ]
           .filter(Boolean)
           .filter((c) => !triedProviders.has(`${c.provider}:${c.model}`));
