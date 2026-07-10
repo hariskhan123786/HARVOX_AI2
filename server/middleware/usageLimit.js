@@ -4,8 +4,9 @@ export const checkUsageLimit = async (req, res, next) => {
     user.resetDailyUsageIfNeeded();
 
     const limit = user.subscription === 'pro'
-      ? parseInt(process.env.PRO_DAILY_LIMIT || '500', 10)
-      : parseInt(process.env.FREE_DAILY_LIMIT || '20', 10);
+      ? parseInt(process.env.PRO_DAILY_LIMIT || '5000', 10)
+      : parseInt(process.env.FREE_DAILY_LIMIT || '1000', 10);
+
 
     // ── Check if using a Free OpenRouter Model ──
     const { provider, model } = req.body;
