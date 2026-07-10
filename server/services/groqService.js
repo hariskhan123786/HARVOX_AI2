@@ -5,7 +5,7 @@ let groq = null;
 const getClient = () => {
   if (!groq) {
     if (!process.env.GROQ_API_KEY) {
-      throw new Error('GROQ_API_KEY is not configured');
+      throw Object.assign(new Error('GROQ_API_KEY is not configured. Switching to next provider.'), { code: 'RATE_LIMIT' });
     }
     groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
   }

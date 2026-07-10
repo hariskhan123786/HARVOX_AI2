@@ -41,64 +41,76 @@ const startServer = async () => {
   try {
     await connectDB();
     console.log('Database connected successfully');
-    
-    // Auto-seed demo user for in-memory DB
-    // Auto-seed default settings
-    let settings = await SystemSettings.findOne();
-    if (!settings) {
-      await SystemSettings.create({
-        jazzCashNumber: '03001234567',
-        jazzCashName: 'HARVOX AI SAAS',
-        easyPaisaNumber: '03451234567',
-        easyPaisaName: 'HARVOX AI SAAS',
-        announcement: 'Welcome to HARVOX AI - Premium AI SaaS Platform! Update settings in admin panel.',
-      });
-      console.log('Default SystemSettings seeded.');
-    }
-
-    // Auto-seed admin user
-    const adminExists = await User.findOne({ email: 'admin@harvox.ai' });
-    if (!adminExists) {
-      const admin = await User.create({
-        name: 'Harvox Admin',
-        email: 'admin@harvox.ai',
-        password: 'admin123',
-        role: 'admin',
-        subscription: 'pro',
-      });
-      await UserSettings.create({ userId: admin._id });
-      await UserAnalytics.create({ userId: admin._id });
-      await Achievements.create({ userId: admin._id });
-      await Subscription.create({ userId: admin._id, plan: 'pro', status: 'active' });
-      console.log('Admin user seeded: admin@harvox.ai / admin123');
-    }
-
-    // Auto-seed demo user (Free tier for payment testing)
-    const demoExists = await User.findOne({ email: 'demo@harvox.ai' });
-    if (!demoExists) {
-      const demo = await User.create({
-        name: 'Demo User',
-        email: 'demo@harvox.ai',
-        password: 'demo123',
-        role: 'free',
-        subscription: 'free',
-      });
-      await UserSettings.create({ userId: demo._id });
-      await UserAnalytics.create({ userId: demo._id });
-      await Achievements.create({ userId: demo._id });
-      await Subscription.create({ userId: demo._id, plan: 'free', status: 'active' });
-      console.log('Demo user seeded: demo@harvox.ai / demo123');
-    } else if (process.env.USE_IN_MEMORY_DB === 'true' && demoExists.subscription === 'pro') {
-      // Reset if it was pro from previous default seeding so billing flow can be tested
-      demoExists.role = 'free';
-      demoExists.subscription = 'free';
-      await demoExists.save();
-    }
   } catch (err) {
-    console.error('Failed to connect to MongoDB:', err.message);
-    process.exit(1);
+    // DO NOT exit — server must stay alive for Railway healthcheck.
+    // MongoDB will retry in the background via handleReconnect().
+    console.error('[Startup] MongoDB connection failed, continuing anyway:', err.message);
   }
+
+  // Run seeding in a separate non-blocking block so any failure never kills the process
+  (async () => {
+    try {
+      let settings = await SystemSettings.findOne();
+      if (!settings) {
+        await SystemSettings.create({
+          jazzCashNumber: '03001234567',
+          jazzCashName: 'HARVOX AI SAAS',
+          easyPaisaNumber: '03451234567',
+          easyPaisaName: 'HARVOX AI SAAS',
+          announcement: 'Welcome to HARVOX AI - Premium AI SaaS Platform! Update settings in admin panel.',
+        });
+        console.log('Default SystemSettings seeded.');
+      }
+    } catch (err) {
+      console.warn('[Seed] SystemSettings skipped:', err.message);
+    }
+
+    try {
+      const adminExists = await User.findOne({ email: 'admin@harvox.ai' });
+      if (!adminExists) {
+        const admin = await User.create({
+          name: 'Harvox Admin',
+          email: 'admin@harvox.ai',
+          password: 'admin123',
+          role: 'admin',
+          subscription: 'pro',
+        });
+        await UserSettings.create({ userId: admin._id });
+        await UserAnalytics.create({ userId: admin._id });
+        await Achievements.create({ userId: admin._id });
+        await Subscription.create({ userId: admin._id, plan: 'pro', status: 'active' });
+        console.log('Admin user seeded: admin@harvox.ai / admin123');
+      }
+    } catch (err) {
+      console.warn('[Seed] Admin user skipped:', err.message);
+    }
+
+    try {
+      const demoExists = await User.findOne({ email: 'demo@harvox.ai' });
+      if (!demoExists) {
+        const demo = await User.create({
+          name: 'Demo User',
+          email: 'demo@harvox.ai',
+          password: 'demo123',
+          role: 'free',
+          subscription: 'free',
+        });
+        await UserSettings.create({ userId: demo._id });
+        await UserAnalytics.create({ userId: demo._id });
+        await Achievements.create({ userId: demo._id });
+        await Subscription.create({ userId: demo._id, plan: 'free', status: 'active' });
+        console.log('Demo user seeded: demo@harvox.ai / demo123');
+      } else if (process.env.USE_IN_MEMORY_DB === 'true' && demoExists.subscription === 'pro') {
+        demoExists.role = 'free';
+        demoExists.subscription = 'free';
+        await demoExists.save();
+      }
+    } catch (err) {
+      console.warn('[Seed] Demo user skipped:', err.message);
+    }
+  })();
 };
+
 
 // Comprehensive production-ready Helmet CSP headers (enabling WebSockets & dynamic frames)
 app.use(

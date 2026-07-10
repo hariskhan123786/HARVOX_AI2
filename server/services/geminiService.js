@@ -5,7 +5,7 @@ let geminiClient = null;
 const getClient = () => {
   if (!geminiClient) {
     if (!process.env.GEMINI_API_KEY) {
-      throw new Error('GEMINI_API_KEY is not configured');
+      throw Object.assign(new Error('GEMINI_API_KEY is not configured. Switching to next provider.'), { code: 'RATE_LIMIT' });
     }
     geminiClient = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   }

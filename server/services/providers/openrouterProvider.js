@@ -16,8 +16,12 @@ export const chat = async ({
     key = key.trim().slice(1);
   }
   if (!key) {
-    throw new Error('OpenRouter API Key is not configured. Please set OPENROUTER_API_KEY.');
+    throw Object.assign(
+      new Error('OpenRouter API Key is not configured. Switching to next provider.'),
+      { code: 'RATE_LIMIT' }
+    );
   }
+
 
 
   const headers = {
