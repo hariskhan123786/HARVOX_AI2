@@ -65,10 +65,11 @@ export const chat = async ({
     if (response.status === 429) {
       throw Object.assign(new Error(`Rate limit exceeded on Cerebras: ${errMsg}`), { code: 'RATE_LIMIT' });
     }
-    if (response.status === 401) {
-      throw Object.assign(new Error('Invalid Cerebras API key.'), { code: 'API_KEY' });
+    if (response.status === 401 || response.status === 400) {
+      throw Object.assign(new Error(`Invalid Cerebras API key or model not found: ${errMsg}`), { code: 'RATE_LIMIT' });
     }
-    throw new Error(`Cerebras Error (${response.status}): ${errMsg}`);
+    // Tag all other errors as RATE_LIMIT so aiProviderManager always retries
+    throw Object.assign(new Error(`Cerebras Error (${response.status}): ${errMsg}`), { code: 'RATE_LIMIT' });
   }
 
   // ── Non-streaming ──────────────────────────────────────────────────────────

@@ -53,6 +53,8 @@ export const chat = async ({
     });
 
     if (stream) {
+      // sendMessageStream makes the HTTP request immediately — 400/401 errors surface here
+      // before we return, so the outer try/catch correctly tags them for failover routing
       const result = await chatSession.sendMessageStream(lastMessage);
       return result;
     }
@@ -69,13 +71,22 @@ export const chat = async ({
     };
 
   } catch (error) {
-    if (error.message?.includes('429') || error.message?.includes('RESOURCE_EXHAUSTED')) {
+    const msg = error.message || '';
+    if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')) {
       throw Object.assign(new Error('Rate limit exceeded. Please try again later.'), { code: 'RATE_LIMIT' });
     }
-    if (error.message?.includes('401') || error.message?.includes('UNAUTHENTICATED') || error.message?.includes('Invalid API key')) {
-      throw Object.assign(new Error('Invalid Gemini API key.'), { code: 'API_KEY' });
+    // Catch all invalid key variants: 400 Bad Request, API_KEY_INVALID, 401, UNAUTHENTICATED
+    if (
+      msg.includes('400') ||
+      msg.includes('API_KEY_INVALID') ||
+      msg.includes('401') ||
+      msg.includes('UNAUTHENTICATED') ||
+      msg.includes('Invalid API key') ||
+      msg.includes('API key not valid')
+    ) {
+      throw Object.assign(new Error('Invalid Gemini API key. Switching to fallback provider.'), { code: 'RATE_LIMIT' });
     }
-    throw Object.assign(new Error(error.message || 'AI service error'), { code: 'AI_ERROR' });
+    throw Object.assign(new Error(msg || 'AI service error'), { code: 'AI_ERROR' });
   }
 };
 

@@ -40,13 +40,13 @@ export const chat = async ({ messages, systemPrompt, model = 'llama-3.3-70b-vers
       }
     };
   } catch (error) {
-    if (error.status === 429) {
+    if (error.status === 429 || error.message?.includes('429') || error.message?.includes('rate limit')) {
       throw Object.assign(new Error('Rate limit exceeded. Please try again later.'), { code: 'RATE_LIMIT' });
     }
-    if (error.status === 401) {
-      throw Object.assign(new Error('Invalid Groq API key.'), { code: 'API_KEY' });
+    if (error.status === 401 || error.status === 400 || error.message?.includes('Invalid API Key') || error.message?.includes('invalid_api_key')) {
+      throw Object.assign(new Error('Invalid Groq API key. Switching to fallback provider.'), { code: 'RATE_LIMIT' });
     }
-    throw Object.assign(new Error(error.message || 'AI service error'), { code: 'AI_ERROR' });
+    throw Object.assign(new Error(error.message || 'AI service error'), { code: 'RATE_LIMIT' });
   }
 };
 
