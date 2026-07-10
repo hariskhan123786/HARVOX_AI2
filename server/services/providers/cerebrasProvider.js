@@ -25,7 +25,10 @@ export const chat = async ({
 }) => {
   const key = apiKey || process.env.CEREBRAS_API_KEY;
   if (!key) {
-    throw new Error('Cerebras API Key is not configured. Please set CEREBRAS_API_KEY.');
+    throw Object.assign(
+      new Error('Cerebras API Key is not configured. Switching to next provider.'),
+      { code: 'RATE_LIMIT' }
+    );
   }
 
   const headers = {
