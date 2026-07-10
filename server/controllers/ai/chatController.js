@@ -11,8 +11,8 @@ import { generatePlan } from '../../services/plannerService.js';
 
 export const getAIOptions = async (userId, overrideProvider = null, overrideModel = null) => {
   const options = {
-    provider: overrideProvider || 'groq',
-    model: overrideModel || 'llama-3.3-70b-versatile',
+    provider: overrideProvider || 'cerebras',
+    model: overrideModel || 'gpt-oss-120b',
     temperature: 0.7,
     max_tokens: 2048,
     personalityMode: 'professional',
@@ -32,11 +32,11 @@ export const getAIOptions = async (userId, overrideProvider = null, overrideMode
       if (overrideProvider && !overrideModel) {
         if (overrideProvider === 'gemini') options.model = 'gemini-2.0-flash';
         else if (overrideProvider === 'groq') options.model = 'llama-3.3-70b-versatile';
-        else if (overrideProvider === 'openrouter') options.model = 'openrouter/free';
+        else if (overrideProvider === 'openrouter') options.model = 'meta-llama/llama-3.2-3b-instruct:free';
         else if (overrideProvider === 'openai') options.model = 'gpt-4o';
         else if (overrideProvider === 'ollama') options.model = 'llama3';
         else if (overrideProvider === 'huggingface') options.model = 'meta-llama/Llama-3.2-3B-Instruct';
-        else if (overrideProvider === 'cerebras') options.model = 'llama-3.3-70b';
+        else if (overrideProvider === 'cerebras') options.model = 'gpt-oss-120b';
       }
       if (settings.ai?.creativity !== undefined) options.temperature = settings.ai.creativity;
       if (settings.ai?.responseLength) {
