@@ -1,0 +1,13 @@
+node_modules
+client/node_modules
+client/dist
+.git
+.github
+.agents
+.agent
+graphify-out
+*.log
+.env
+client/.env
+client/.env.production
+uploads

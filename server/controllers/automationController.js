@@ -4,13 +4,115 @@ import { generatePlan, generateWorkflowPlan, formatPlanForDisplay, getAvailableW
 import { auditPlanPermissions, formatConfirmationRequest, grantSessionPermission } from '../services/permissionService.js';
 import { executeRollback } from '../services/rollbackService.js';
 import { triggerWorkflow, getActiveWorkflowRuns, getWorkflowRunStatus } from '../services/workflowEngine.js';
-import Task from '../models/Task.js';
-import LearningTrack from '../models/LearningTrack.js';
-import Project from '../models/Project.js';
-import Memory from '../models/Memory.js';
-import AutomationPreferences from '../models/AutomationPreferences.js';
+import { supabase } from '../config/supabase.js';
 import { logActivity, getContextPrompt } from '../services/memoryService.js';
-import { getAIOptions } from './aiController.js';
+import { getAIOptions } from './ai/chatController.js';
+
+// Mappers for compatibility
+const mapTask = (t) => {
+  if (!t) return null;
+  return {
+    _id: t.id,
+    id: t.id,
+    userId: t.user_id,
+    title: t.title,
+    description: t.description,
+    deadline: t.deadline,
+    status: t.status,
+    priority: t.priority,
+    createdAt: t.created_at,
+    updatedAt: t.updated_at,
+  };
+};
+
+const mapLearningTrack = (l) => {
+  if (!l) return null;
+  return {
+    _id: l.id,
+    id: l.id,
+    userId: l.user_id,
+    subject: l.subject,
+    hours: Number(l.hours || 0),
+    notes: l.notes,
+    lastStudied: l.last_studied,
+    createdAt: l.created_at,
+    updatedAt: l.updated_at,
+  };
+};
+
+const mapMemory = (m) => {
+  if (!m) return null;
+  return {
+    _id: m.id,
+    id: m.id,
+    userId: m.user_id,
+    category: m.category,
+    key: m.key,
+    value: m.value,
+    isPinned: m.is_pinned,
+    metadata: m.metadata,
+    createdAt: m.created_at,
+    updatedAt: m.updated_at,
+  };
+};
+
+const mapPreferences = (p) => {
+  if (!p) return null;
+  return {
+    _id: p.id,
+    id: p.id,
+    userId: p.user_id,
+    preferredMusicService: p.preferred_music_service,
+    favoriteContacts: p.favorite_contacts || [],
+    frequentApps: p.frequent_apps || [],
+    frequentSites: p.frequent_sites || [],
+    savedWorkflows: p.saved_workflows || [],
+    pomodoroMinutes: p.pomodoro_minutes,
+    breakMinutes: p.break_minutes,
+    stats: p.stats,
+    permissions: p.permissions,
+    createdAt: p.created_at,
+    updatedAt: p.updated_at,
+  };
+};
+
+const getOrCreatePreferences = async (userId) => {
+  const { data: existing, error } = await supabase
+    .from('user_preferences')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (existing) return existing;
+
+  const { data: created, error: createError } = await supabase
+    .from('user_preferences')
+    .insert({ user_id: userId })
+    .select('*')
+    .single();
+
+  if (createError) throw createError;
+  return created;
+};
+
+const recordRunInPrefs = async (userId, success = true) => {
+  try {
+    const prefs = await getOrCreatePreferences(userId);
+    const stats = prefs.stats || { totalRuns: 0, successCount: 0, failureCount: 0 };
+    stats.totalRuns = (stats.totalRuns || 0) + 1;
+    if (success) {
+      stats.successCount = (stats.successCount || 0) + 1;
+    } else {
+      stats.failureCount = (stats.failureCount || 0) + 1;
+    }
+    await supabase
+      .from('user_preferences')
+      .update({ stats, updated_at: new Date() })
+      .eq('user_id', userId);
+  } catch (err) {
+    console.error('Failed to record run stats in preferences:', err.message);
+  }
+};
 
 export const executeStep = async (req, res) => {
   try {
@@ -20,7 +122,6 @@ export const executeStep = async (req, res) => {
       return res.status(400).json({ message: 'Invalid automation step: missing required field "action".' });
     }
 
-    // ── Schema normalisation ────────────────────────────────────────────────
     if (!Array.isArray(step.args)) {
       if (step.target !== undefined) {
         step.args = [String(step.target)];
@@ -39,32 +140,52 @@ export const executeStep = async (req, res) => {
   }
 };
 
-/**
- * Fetch all dashboard stats (tasks, projects, BSCS study tracks, recent log activity)
- */
 export const getDashboardInfo = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    // 1. Fetch all tasks for checklist
-    const tasks = await Task.find({ userId }).sort({ deadline: 1, createdAt: -1 });
+    // 1. Fetch tasks
+    const { data: tasks, error: tasksErr } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('user_id', userId)
+      .order('deadline', { ascending: true })
+      .order('created_at', { ascending: false });
 
-    // 2. Fetch learning tracking progress
-    const studyTrack = await LearningTrack.find({ userId });
+    if (tasksErr) throw tasksErr;
+
+    // 2. Fetch learning tracks
+    const { data: studyTrack, error: studyErr } = await supabase
+      .from('learning_tracks')
+      .select('*')
+      .eq('user_id', userId);
+
+    if (studyErr) throw studyErr;
 
     // 3. Fetch active projects
-    const projects = await Project.find({ userId }).select('name framework updatedAt');
+    const { data: projects, error: projErr } = await supabase
+      .from('projects')
+      .select('id, name, framework, updated_at')
+      .eq('user_id', userId);
 
-    // 4. Fetch telemetry / activity logs
-    const activities = await Memory.find({ userId, category: 'activity' })
-      .sort({ createdAt: -1 })
+    if (projErr) throw projErr;
+
+    // 4. Fetch telemetry / activity logs (stored in brain_memory as activities)
+    const { data: activities, error: actErr } = await supabase
+      .from('brain_memory')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('category', 'activity')
+      .order('created_at', { ascending: false })
       .limit(15);
 
+    if (actErr) throw actErr;
+
     res.json({
-      tasks,
-      studyTrack,
-      projects,
-      activities
+      tasks: (tasks || []).map(mapTask),
+      studyTrack: (studyTrack || []).map(mapLearningTrack),
+      projects: (projects || []).map(p => ({ _id: p.id, name: p.name, framework: p.framework, updatedAt: p.updated_at })),
+      activities: (activities || []).map(mapMemory),
     });
   } catch (err) {
     res.status(500).json({
@@ -74,20 +195,23 @@ export const getDashboardInfo = async (req, res) => {
   }
 };
 
-/**
- * Task CRUD
- */
 export const createTask = async (req, res) => {
   try {
     const { title, description, deadline, priority } = req.body;
-    const task = await Task.create({
-      userId: req.user._id,
-      title,
-      description,
-      deadline,
-      priority
-    });
-    res.status(201).json(task);
+    const { data: task, error } = await supabase
+      .from('tasks')
+      .insert({
+        user_id: req.user._id,
+        title,
+        description,
+        deadline: deadline || null,
+        priority: priority || 'medium',
+      })
+      .select('*')
+      .single();
+
+    if (error) throw error;
+    res.status(201).json(mapTask(task));
   } catch (err) {
     res.status(500).json({ message: 'Failed to create task', error: err.message });
   }
@@ -97,13 +221,24 @@ export const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, deadline, priority, status } = req.body;
-    const task = await Task.findOneAndUpdate(
-      { _id: id, userId: req.user._id },
-      { title, description, deadline, priority, status },
-      { new: true }
-    );
-    if (!task) return res.status(404).json({ message: 'Task not found' });
-    res.json(task);
+
+    const updates = {};
+    if (title !== undefined) updates.title = title;
+    if (description !== undefined) updates.description = description;
+    if (deadline !== undefined) updates.deadline = deadline || null;
+    if (priority !== undefined) updates.priority = priority;
+    if (status !== undefined) updates.status = status;
+
+    const { data: task, error } = await supabase
+      .from('tasks')
+      .update(updates)
+      .eq('id', id)
+      .eq('user_id', req.user._id)
+      .select('*')
+      .single();
+
+    if (error) return res.status(404).json({ message: 'Task not found' });
+    res.json(mapTask(task));
   } catch (err) {
     res.status(500).json({ message: 'Failed to update task', error: err.message });
   }
@@ -112,43 +247,73 @@ export const updateTask = async (req, res) => {
 export const deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const task = await Task.findOneAndDelete({ _id: id, userId: req.user._id });
-    if (!task) return res.status(404).json({ message: 'Task not found' });
-    res.json({ message: 'Task deleted successfully', task });
+    const { data: task, error } = await supabase
+      .from('tasks')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', req.user._id)
+      .select('*')
+      .single();
+
+    if (error) return res.status(404).json({ message: 'Task not found' });
+    res.json({ message: 'Task deleted successfully', task: mapTask(task) });
   } catch (err) {
     res.status(500).json({ message: 'Failed to delete task', error: err.message });
   }
 };
 
-/**
- * Study Tracking
- */
 export const logStudyProgress = async (req, res) => {
   try {
+    const userId = req.user._id;
     const { subject, hours, notes } = req.body;
     if (!['AI', 'Database', 'Software Engineering', 'Assembly Language'].includes(subject)) {
       return res.status(400).json({ message: 'Invalid BSCS subject. Must be AI, Database, Software Engineering, or Assembly Language.' });
     }
 
-    let track = await LearningTrack.findOne({ userId: req.user._id, subject });
-    if (track) {
-      track.hours += Number(hours);
-      if (notes) track.notes = notes;
-      track.lastStudied = new Date();
-      await track.save();
+    // Upsert study progress
+    // Fetch first to see current hours
+    const { data: existing } = await supabase
+      .from('learning_tracks')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('subject', subject)
+      .maybeSingle();
+
+    let track;
+    if (existing) {
+      const { data, error } = await supabase
+        .from('learning_tracks')
+        .update({
+          hours: Number(existing.hours || 0) + Number(hours),
+          notes: notes || existing.notes,
+          last_studied: new Date(),
+        })
+        .eq('id', existing.id)
+        .select('*')
+        .single();
+      
+      if (error) throw error;
+      track = data;
     } else {
-      track = await LearningTrack.create({
-        userId: req.user._id,
-        subject,
-        hours: Number(hours),
-        notes,
-        lastStudied: new Date()
-      });
+      const { data, error } = await supabase
+        .from('learning_tracks')
+        .insert({
+          user_id: userId,
+          subject,
+          hours: Number(hours),
+          notes: notes || '',
+          last_studied: new Date(),
+        })
+        .select('*')
+        .single();
+
+      if (error) throw error;
+      track = data;
     }
 
-    await logActivity(req.user._id, 'log_learning', `Studied ${subject} for ${hours} hours`, { subject, hours });
+    await logActivity(userId, 'log_learning', `Studied ${subject} for ${hours} hours`, { subject, hours });
 
-    res.json(track);
+    res.json(mapLearningTrack(track));
   } catch (err) {
     res.status(500).json({ message: 'Failed to log study progress', error: err.message });
   }
@@ -156,19 +321,18 @@ export const logStudyProgress = async (req, res) => {
 
 export const getStudyProgress = async (req, res) => {
   try {
-    const progress = await LearningTrack.find({ userId: req.user._id });
-    res.json(progress);
+    const { data: progress, error } = await supabase
+      .from('learning_tracks')
+      .select('*')
+      .eq('user_id', req.user._id);
+
+    if (error) throw error;
+    res.json((progress || []).map(mapLearningTrack));
   } catch (err) {
     res.status(500).json({ message: 'Failed to retrieve study progress', error: err.message });
   }
 };
 
-// ─── PHASE 10: New Automation Engine Endpoints ──────────────────────────────────
-
-/**
- * GET /automation/modules
- * Returns all registered automation modules with their skills.
- */
 export const getModules = async (req, res) => {
   try {
     const modules = getAllModules();
@@ -179,30 +343,35 @@ export const getModules = async (req, res) => {
   }
 };
 
-/**
- * GET /automation/history
- * Returns recent automation activity from memory log.
- */
 export const getHistory = async (req, res) => {
   try {
     const userId = req.user._id;
     const limit = parseInt(req.query.limit || '20');
 
-    const activities = await Memory.find({ userId, category: 'activity' })
-      .sort({ createdAt: -1 })
-      .limit(Math.min(limit, 50))
-      .select('action summary metadata createdAt');
+    const { data: activities, error } = await supabase
+      .from('brain_memory')
+      .select('id, key, value, metadata, created_at')
+      .eq('user_id', userId)
+      .eq('category', 'activity')
+      .order('created_at', { ascending: false })
+      .limit(Math.min(limit, 50));
 
-    res.json({ activities });
+    if (error) throw error;
+
+    res.json({
+      activities: (activities || []).map(a => ({
+        _id: a.id,
+        action: a.key,
+        summary: a.value,
+        metadata: a.metadata,
+        createdAt: a.created_at,
+      })),
+    });
   } catch (err) {
     res.status(500).json({ message: 'Failed to retrieve history', error: err.message });
   }
 };
 
-/**
- * POST /automation/quick-action
- * Execute a single automation skill directly without a full plan.
- */
 export const quickAction = async (req, res) => {
   try {
     const { action, args } = req.body;
@@ -211,37 +380,24 @@ export const quickAction = async (req, res) => {
     const step = { action, args: Array.isArray(args) ? args : (args ? [String(args)] : []) };
     const result = await executeAutomationStep(req.user._id, step);
 
-    // Track preferences
-    const prefs = await AutomationPreferences.getOrCreate(req.user._id);
-    await prefs.recordRun(true).catch(() => {});
+    await recordRunInPrefs(req.user._id, true);
 
     res.json(result);
   } catch (err) {
-    // Track failure
-    const prefs = await AutomationPreferences.getOrCreate(req.user._id).catch(() => null);
-    if (prefs) await prefs.recordRun(false).catch(() => {});
-
+    await recordRunInPrefs(req.user._id, false);
     res.status(500).json({ message: 'Quick action failed', error: err.message });
   }
 };
 
-/**
- * GET /automation/memory/preferences
- * Get user automation preferences.
- */
 export const getPreferences = async (req, res) => {
   try {
-    const prefs = await AutomationPreferences.getOrCreate(req.user._id);
-    res.json({ preferences: prefs });
+    const prefs = await getOrCreatePreferences(req.user._id);
+    res.json({ preferences: mapPreferences(prefs) });
   } catch (err) {
     res.status(500).json({ message: 'Failed to retrieve preferences', error: err.message });
   }
 };
 
-/**
- * POST /automation/memory/preferences
- * Update user automation preferences.
- */
 export const savePreferences = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -253,27 +409,32 @@ export const savePreferences = async (req, res) => {
       permissions,
     } = req.body;
 
-    const prefs = await AutomationPreferences.getOrCreate(userId);
+    const prefs = await getOrCreatePreferences(userId);
 
-    if (preferredMusicService) prefs.preferredMusicService = preferredMusicService;
-    if (favoriteContacts) prefs.favoriteContacts = favoriteContacts;
-    if (pomodoroMinutes) prefs.pomodoroMinutes = pomodoroMinutes;
-    if (breakMinutes) prefs.breakMinutes = breakMinutes;
-    if (permissions) prefs.permissions = { ...prefs.permissions, ...permissions };
+    const updates = {};
+    if (preferredMusicService) updates.preferred_music_service = preferredMusicService;
+    if (favoriteContacts) updates.favorite_contacts = favoriteContacts;
+    if (pomodoroMinutes) updates.pomodoro_minutes = pomodoroMinutes;
+    if (breakMinutes) updates.break_minutes = breakMinutes;
+    if (permissions) updates.permissions = { ...prefs.permissions, ...permissions };
 
-    await prefs.save();
+    const { data: updatedPrefs, error } = await supabase
+      .from('user_preferences')
+      .update(updates)
+      .eq('user_id', userId)
+      .select('*')
+      .single();
+
+    if (error) throw error;
+
     await logActivity(userId, 'prefs_update', 'Updated automation preferences');
 
-    res.json({ message: 'Automation preferences saved.', preferences: prefs });
+    res.json({ message: 'Automation preferences saved.', preferences: mapPreferences(updatedPrefs) });
   } catch (err) {
     res.status(500).json({ message: 'Failed to save preferences', error: err.message });
   }
 };
 
-/**
- * POST /automation/workflows
- * Save a reusable workflow template.
- */
 export const saveWorkflow = async (req, res) => {
   try {
     const { name, description, steps } = req.body;
@@ -281,38 +442,49 @@ export const saveWorkflow = async (req, res) => {
       return res.status(400).json({ message: 'Workflow name and steps are required.' });
     }
 
-    const prefs = await AutomationPreferences.getOrCreate(req.user._id);
-    prefs.savedWorkflows.push({ name, description, steps });
-    await prefs.save();
+    const prefs = await getOrCreatePreferences(req.user._id);
+    const workflows = prefs.saved_workflows || [];
+    
+    // Create new workflow item
+    const newWorkflow = {
+      _id: `wf_${Date.now()}`,
+      name,
+      description,
+      steps,
+      createdAt: new Date().toISOString(),
+    };
+    
+    workflows.push(newWorkflow);
+
+    const { data: updatedPrefs, error } = await supabase
+      .from('user_preferences')
+      .update({ saved_workflows: workflows })
+      .eq('user_id', req.user._id)
+      .select('*')
+      .single();
+
+    if (error) throw error;
 
     await logActivity(req.user._id, 'workflow_save', `Saved workflow: "${name}"`, { name });
-    res.status(201).json({ message: `Workflow "${name}" saved.`, workflow: prefs.savedWorkflows.at(-1) });
+    
+    res.status(201).json({
+      message: `Workflow "${name}" saved.`,
+      workflow: newWorkflow,
+    });
   } catch (err) {
     res.status(500).json({ message: 'Failed to save workflow', error: err.message });
   }
 };
 
-/**
- * GET /automation/workflows
- * Get user's saved workflow templates.
- */
 export const getWorkflows = async (req, res) => {
   try {
-    const prefs = await AutomationPreferences.getOrCreate(req.user._id);
-    res.json({ workflows: prefs.savedWorkflows });
+    const prefs = await getOrCreatePreferences(req.user._id);
+    res.json({ workflows: prefs.saved_workflows || [] });
   } catch (err) {
     res.status(500).json({ message: 'Failed to retrieve workflows', error: err.message });
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Phase 13.2 — Intent Detection + Planning Pipeline
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * POST /automation/intent
- * Detect user intent from natural language and generate an execution plan.
- */
 export const detectAndPlan = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -350,10 +522,6 @@ export const detectAndPlan = async (req, res) => {
   }
 };
 
-/**
- * POST /automation/plan/execute
- * Execute a confirmed plan (after user approves).
- */
 export const executePlan = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -375,10 +543,6 @@ export const executePlan = async (req, res) => {
   }
 };
 
-/**
- * GET /automation/workflows/builtin
- * Return all built-in workflow templates.
- */
 export const getBuiltinWorkflows = async (req, res) => {
   try {
     res.json({ workflows: getAvailableWorkflows() });
@@ -387,10 +551,6 @@ export const getBuiltinWorkflows = async (req, res) => {
   }
 };
 
-/**
- * POST /automation/workflows/builtin/:id/execute
- * Execute a built-in workflow by ID (with optional confirmation bypass).
- */
 export const executeBuiltinWorkflow = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -411,10 +571,6 @@ export const executeBuiltinWorkflow = async (req, res) => {
   }
 };
 
-/**
- * GET /automation/skills/top
- * Return most-used automation skills.
- */
 export const getTopSkills = async (req, res) => {
   try {
     const { getTopSkills: topFn } = await import('../services/automation/automationRegistry.js');
@@ -424,10 +580,6 @@ export const getTopSkills = async (req, res) => {
   }
 };
 
-/**
- * POST /automation/rollback
- * Undo the last automation operation.
- */
 export const rollback = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -441,10 +593,6 @@ export const rollback = async (req, res) => {
   }
 };
 
-/**
- * POST /automation/workflows/custom/:id/execute
- * Execute a custom user-saved workflow by ID.
- */
 export const executeCustomWorkflow = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -456,10 +604,6 @@ export const executeCustomWorkflow = async (req, res) => {
   }
 };
 
-/**
- * GET /automation/workflows/active
- * Return all active workflow runs on the system.
- */
 export const getActiveRuns = async (req, res) => {
   try {
     res.json({ runs: getActiveWorkflowRuns() });
@@ -468,10 +612,6 @@ export const getActiveRuns = async (req, res) => {
   }
 };
 
-/**
- * GET /automation/workflows/runs/:runId
- * Return execution status for a specific workflow run.
- */
 export const getRunStatus = async (req, res) => {
   try {
     const { runId } = req.params;
@@ -482,4 +622,3 @@ export const getRunStatus = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch run status', error: err.message });
   }
 };
-

@@ -1,9 +1,8 @@
-import Note from '../../models/Note.js';
-import UserAnalytics from '../../models/UserAnalytics.js';
 import { PROMPTS } from '../../config/prompts.js';
 import * as aiProviderManager from '../../services/aiProviderManager.js';
 import { incrementUsage } from '../../services/usageService.js';
 import { getAIOptions } from './chatController.js';
+import { supabase } from '../../config/supabase.js';
 
 export const generateCode = async (req, res) => {
   try {
@@ -37,10 +36,7 @@ export const generateCode = async (req, res) => {
 
       let fullReply = '';
       let clientDisconnected = false;
-
-      req.on('close', () => {
-        clientDisconnected = true;
-      });
+      req.on('close', () => { clientDisconnected = true; });
 
       for await (const chunk of result.responseStream) {
         if (clientDisconnected) break;
@@ -54,8 +50,8 @@ export const generateCode = async (req, res) => {
       await incrementUsage(req.user._id, 'codeGen');
 
       if (req.body.saveNote && !clientDisconnected) {
-        await Note.create({
-          userId: req.user._id,
+        await supabase.from('documents').insert({
+          user_id: req.user._id,
           title: prompt.slice(0, 60),
           content: fullReply,
           source: 'code',
@@ -81,8 +77,8 @@ export const generateCode = async (req, res) => {
     await incrementUsage(req.user._id, 'codeGen');
 
     if (req.body.saveNote) {
-      await Note.create({
-        userId: req.user._id,
+      await supabase.from('documents').insert({
+        user_id: req.user._id,
         title: prompt.slice(0, 60),
         content: result.text,
         source: 'code',
@@ -100,7 +96,7 @@ export const debugCode = async (req, res) => {
     const { error, code } = req.body;
     const content = `Error/Stack trace:\n${error || 'N/A'}\n\nCode:\n${code || 'N/A'}`;
     const aiOptions = await getAIOptions(req.user._id);
-    
+
     const result = await aiProviderManager.chat({
       userId: req.user._id,
       messages: [{ role: 'user', content }],
@@ -112,26 +108,17 @@ export const debugCode = async (req, res) => {
       stream: false,
       apiKeys: aiOptions.apiKeys,
     });
-    
+
     await incrementUsage(req.user._id, 'chats');
 
     try {
-      let analytics = await UserAnalytics.findOne({ userId: req.user._id });
-      if (!analytics) {
-        analytics = new UserAnalytics({ userId: req.user._id });
-      }
-      analytics.debuggingSessions += 1;
-      analytics.activityLog.push({
-        date: new Date(),
-        actionType: 'debug',
+      await supabase.from('activity_logs').insert({
+        user_id: req.user._id,
+        action_type: 'debug',
         details: 'Resolved compiler/runtime crash error',
       });
-      if (analytics.activityLog.length > 20) {
-        analytics.activityLog.shift();
-      }
-      await analytics.save();
     } catch (e) {
-      console.error('Failed to sync debug session analytics:', e);
+      console.error('Failed to log debug activity:', e);
     }
 
     res.json({ analysis: result.text });
@@ -145,7 +132,7 @@ export const explainCode = async (req, res) => {
     const { code } = req.body;
     if (!code) return res.status(400).json({ message: 'Code is required' });
     const aiOptions = await getAIOptions(req.user._id);
-    
+
     const result = await aiProviderManager.chat({
       userId: req.user._id,
       messages: [{ role: 'user', content: code }],
@@ -157,6 +144,7 @@ export const explainCode = async (req, res) => {
       stream: false,
       apiKeys: aiOptions.apiKeys,
     });
+
     await incrementUsage(req.user._id, 'chats');
     res.json({ explanation: result.text });
   } catch (error) {

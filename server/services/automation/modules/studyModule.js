@@ -4,8 +4,7 @@
  * Phase 13.3 — Study Assistant
  */
 
-import Note from '../../../models/Note.js';
-import LearningTrack from '../../../models/LearningTrack.js';
+import { supabase } from '../../../config/supabase.js';
 import { logActivity } from '../../memoryService.js';
 import { registerModule } from '../automationRegistry.js';
 import * as aiProviderManager from '../../aiProviderManager.js';
@@ -38,25 +37,23 @@ async function generateNotes(userId, args) {
 
   const noteContent = result.text || '';
   
-  // Save to Database
-  const note = await Note.create({
-    userId,
-    title: `Notes: ${topic}`,
-    content: noteContent,
-    source: 'chat',
-    tags: [subject, 'study-notes'],
-  });
+  // Save to Supabase documents table
+  const { data: note } = await supabase
+    .from('documents')
+    .insert({ user_id: userId, title: `Notes: ${topic}`, content: noteContent, source: 'chat', tags: [subject, 'study-notes'] })
+    .select('id')
+    .single();
 
   // Save to Workspace
   const filename = `Notes_${topic.replace(/[^a-zA-Z0-9]/g, '_')}.md`;
   await fs.mkdir(WORKSPACE_DIR, { recursive: true }).catch(() => {});
   await fs.writeFile(path.join(WORKSPACE_DIR, filename), noteContent, 'utf-8');
 
-  await logActivity(userId, 'generate_notes', `Generated notes on "${topic}"`, { subject, noteId: note._id });
+  await logActivity(userId, 'generate_notes', `Generated notes on "${topic}"`, { subject, noteId: note?.id });
   return { 
     success: true, 
     message: `🎓 Study notes for "${topic}" generated successfully. Saved in long-term memory and as workspace file "${filename}".`,
-    noteId: note._id,
+    noteId: note?.id,
     file: filename
   };
 }
@@ -116,21 +113,19 @@ async function generateFlashcards(userId, args) {
 
   const flashcardContent = result.text || '';
 
-  // Save to Database Note
-  const note = await Note.create({
-    userId,
-    title: `Flashcards: ${topic}`,
-    content: flashcardContent,
-    source: 'chat',
-    tags: ['flashcards', topic],
-  });
+  // Save to Supabase documents table
+  const { data: note } = await supabase
+    .from('documents')
+    .insert({ user_id: userId, title: `Flashcards: ${topic}`, content: flashcardContent, source: 'chat', tags: ['flashcards', topic] })
+    .select('id')
+    .single();
 
   await logActivity(userId, 'generate_flashcards', `Generated flashcards on "${topic}"`);
   return {
     success: true,
     message: `⚡ Flashcards for "${topic}" created and saved to your Notes.`,
     content: flashcardContent,
-    noteId: note._id
+    noteId: note?.id
   };
 }
 
@@ -145,26 +140,36 @@ async function logStudy(userId, args) {
     throw new Error('Invalid BSCS subject. Choose from: AI, Database, Software Engineering, Assembly Language');
   }
 
-  let track = await LearningTrack.findOne({ userId, subject });
-  if (track) {
-    track.hours += hours;
-    track.notes = notes;
-    track.lastStudied = new Date();
-    await track.save();
+  // Upsert learning track in Supabase
+  const { data: existing } = await supabase
+    .from('learning_tracks')
+    .select('id, hours')
+    .eq('user_id', userId)
+    .eq('subject', subject)
+    .maybeSingle();
+
+  let track;
+  if (existing) {
+    const { data } = await supabase
+      .from('learning_tracks')
+      .update({ hours: Number(existing.hours || 0) + hours, notes, last_studied: new Date() })
+      .eq('id', existing.id)
+      .select('*')
+      .single();
+    track = data;
   } else {
-    track = await LearningTrack.create({
-      userId,
-      subject,
-      hours,
-      notes,
-      lastStudied: new Date()
-    });
+    const { data } = await supabase
+      .from('learning_tracks')
+      .insert({ user_id: userId, subject, hours, notes, last_studied: new Date() })
+      .select('*')
+      .single();
+    track = data;
   }
 
   await logActivity(userId, 'log_learning', `Logged ${hours}h study progress for ${subject}`, { subject, hours });
   return {
     success: true,
-    message: `📈 Logged ${hours} hours of study for "${subject}". Total time: ${track.hours} hours.`,
+    message: `📈 Logged ${hours} hours of study for "${subject}". Total time: ${track?.hours || hours} hours.`,
     track
   };
 }

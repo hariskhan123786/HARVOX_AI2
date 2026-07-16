@@ -1,13 +1,10 @@
-import Chat from '../../models/Chat.js';
-import UserSettings from '../../models/UserSettings.js';
-import SystemSettings from '../../models/SystemSettings.js';
-import AICallLog from '../../models/AICallLog.js';
 import { PROMPTS, PERSONALITIES } from '../../config/prompts.js';
 import * as aiProviderManager from '../../services/aiProviderManager.js';
 import { incrementUsage } from '../../services/usageService.js';
 import { getContextPrompt, logActivity } from '../../services/memoryService.js';
 import { detectIntent, looksLikeAutomation } from '../../services/intentEngine.js';
 import { generatePlan } from '../../services/plannerService.js';
+import { supabase } from '../../config/supabase.js';
 
 export const getAIOptions = async (userId, overrideProvider = null, overrideModel = null) => {
   const options = {
@@ -20,7 +17,12 @@ export const getAIOptions = async (userId, overrideProvider = null, overrideMode
   };
 
   try {
-    const settings = await UserSettings.findOne({ userId }).select('+apiKeys.groq +apiKeys.gemini +apiKeys.openrouter +apiKeys.openai +apiKeys.huggingface +apiKeys.ollamaUrl +apiKeys.cerebras');
+    const { data: settings } = await supabase
+      .from('settings')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
     if (settings) {
       if (!overrideProvider && settings.ai?.provider) options.provider = settings.ai.provider;
       if (!overrideModel && settings.ai?.model) {
@@ -50,32 +52,39 @@ export const getAIOptions = async (userId, overrideProvider = null, overrideMode
         options.personalityMode = settings.ai.personalityMode;
       }
       options.apiKeys = {
-        groq: settings.apiKeys?.groq || '',
-        gemini: settings.apiKeys?.gemini || '',
-        openrouter: settings.apiKeys?.openrouter || '',
-        openai: settings.apiKeys?.openai || '',
-        huggingface: settings.apiKeys?.huggingface || '',
-        ollamaUrl: settings.apiKeys?.ollamaUrl || '',
-        cerebras: settings.apiKeys?.cerebras || '',
+        groq: settings.api_keys?.groq || '',
+        gemini: settings.api_keys?.gemini || '',
+        openrouter: settings.api_keys?.openrouter || '',
+        openai: settings.api_keys?.openai || '',
+        huggingface: settings.api_keys?.huggingface || '',
+        ollamaUrl: settings.api_keys?.ollamaUrl || '',
+        cerebras: settings.api_keys?.cerebras || '',
       };
     }
   } catch (err) {
-    console.error('Error fetching UserSettings in AI options:', err);
+    console.error('Error fetching settings in AI options:', err);
   }
 
   try {
-    const globalSettings = await SystemSettings.findOne();
-    if (!options.apiKeys.groq && globalSettings?.groqKey) {
-      options.apiKeys.groq = globalSettings.groqKey;
-    }
-    if (!options.apiKeys.gemini && globalSettings?.geminiKey) {
-      options.apiKeys.gemini = globalSettings.geminiKey;
-    }
-    if (!options.apiKeys.cerebras && globalSettings?.cerebrasKey) {
-      options.apiKeys.cerebras = globalSettings.cerebrasKey;
+    const { data: globalSettings } = await supabase
+      .from('system_settings')
+      .select('*')
+      .limit(1)
+      .maybeSingle();
+
+    if (globalSettings) {
+      if (!options.apiKeys.groq && globalSettings.groq_key) {
+        options.apiKeys.groq = globalSettings.groq_key;
+      }
+      if (!options.apiKeys.gemini && globalSettings.gemini_key) {
+        options.apiKeys.gemini = globalSettings.gemini_key;
+      }
+      if (!options.apiKeys.cerebras && globalSettings.cerebras_key) {
+        options.apiKeys.cerebras = globalSettings.cerebras_key;
+      }
     }
   } catch (err) {
-    console.error('Error fetching SystemSettings in AI options:', err);
+    console.error('Error fetching global system settings in AI options:', err);
   }
 
   return options;
@@ -86,16 +95,41 @@ export const chatAI = async (req, res) => {
     const { message, chatId, stream, provider, model, personalityMode } = req.body;
     if (!message) return res.status(400).json({ message: 'Message is required' });
 
-    let chat = chatId ? await Chat.findOne({ _id: chatId, userId: req.user._id }) : null;
-    if (!chat) {
-      chat = await Chat.create({
-        userId: req.user._id,
-        title: message.slice(0, 50),
-        messages: [],
-      });
+    let session = null;
+    if (chatId) {
+      const { data } = await supabase
+        .from('chat_sessions')
+        .select('*')
+        .eq('id', chatId)
+        .eq('user_id', req.user._id)
+        .maybeSingle();
+      session = data;
     }
 
-    const history = chat.messages
+    if (!session) {
+      const { data, error } = await supabase
+        .from('chat_sessions')
+        .insert({
+          user_id: req.user._id,
+          title: message.slice(0, 50),
+        })
+        .select('*')
+        .single();
+      
+      if (error) throw error;
+      session = data;
+    }
+
+    // Fetch message history
+    const { data: dbMessages, error: msgsErr } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .eq('session_id', session.id)
+      .order('created_at', { ascending: true });
+
+    if (msgsErr) throw msgsErr;
+
+    const history = (dbMessages || [])
       .filter((m) => m.content && m.content.trim())
       .map((m) => ({ role: m.role, content: m.content }));
     history.push({ role: 'user', content: message });
@@ -106,6 +140,31 @@ export const chatAI = async (req, res) => {
     }
     const memoryContext = await getContextPrompt(req.user._id);
 
+    // Build chat response helper to send Mongoose-style chat object to frontend
+    const buildChatResponse = async () => {
+      const { data: allMsgs } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('session_id', session.id)
+        .order('created_at', { ascending: true });
+
+      return {
+        _id: session.id,
+        id: session.id,
+        userId: session.user_id,
+        title: session.title,
+        messages: (allMsgs || []).map(m => ({
+          _id: m.id,
+          role: m.role,
+          content: m.content,
+          bookmarked: m.bookmarked,
+          createdAt: m.created_at,
+        })),
+        createdAt: session.created_at,
+        updatedAt: session.updated_at,
+      };
+    };
+
     // ── Phase 13.2 Check: Automatic Intent Detection & Plan Generation ─────────
     if (looksLikeAutomation(message)) {
       try {
@@ -115,9 +174,12 @@ export const chatAI = async (req, res) => {
         if (plan) {
           const planString = `Here is the execution plan I generated to automate your request:\n\n---TASK_PLAN_START---\n${JSON.stringify(plan, null, 2)}\n---TASK_PLAN_END---\n\nPlease review the sequence and click **ALLOW PLAN** to begin executing these commands on your computer.`;
 
-          chat.messages.push({ role: 'user', content: message });
-          chat.messages.push({ role: 'assistant', content: planString });
-          await chat.save();
+          await supabase.from('chat_messages').insert([
+            { session_id: session.id, role: 'user', content: message },
+            { session_id: session.id, role: 'assistant', content: planString }
+          ]);
+
+          const chatObj = await buildChatResponse();
           await incrementUsage(req.user._id, 'chats');
           await logActivity(req.user._id, 'intent_detected', `Auto-generated task plan: ${intent.summary}`, { planId: plan.planId });
 
@@ -126,11 +188,11 @@ export const chatAI = async (req, res) => {
             res.setHeader('Cache-Control', 'no-cache');
             res.setHeader('Connection', 'keep-alive');
             res.write(`data: ${JSON.stringify({ content: planString })}\n\n`);
-            res.write(`data: ${JSON.stringify({ done: true, chat })}\n\n`);
+            res.write(`data: ${JSON.stringify({ done: true, chat: chatObj })}\n\n`);
             return res.end();
           } else {
             return res.json({
-              chat,
+              chat: chatObj,
               reply: planString,
               provider: aiOptions.provider,
               model: aiOptions.model,
@@ -146,14 +208,14 @@ export const chatAI = async (req, res) => {
     const personalityText = PERSONALITIES[aiOptions.personalityMode] || PERSONALITIES.professional;
     const systemPrompt = `${PROMPTS.CHAT_ASSISTANT}\n\n==================================================\nPERSONALITY CONFIGURATION:\n${personalityText}\n==================================================\n${memoryContext}`;
 
-    await logActivity(req.user._id, 'ai_interaction', `Chat query: "${message.slice(0, 50)}"`, { chatId: chat._id });
+    await logActivity(req.user._id, 'ai_interaction', `Chat query: "${message.slice(0, 50)}"`, { chatId: session.id });
 
     if (stream) {
       let result;
       try {
         result = await aiProviderManager.chat({
           userId: req.user._id,
-          chatId: chat._id,
+          chatId: session.id,
           messages: history,
           systemPrompt,
           provider: aiOptions.provider,
@@ -215,17 +277,22 @@ export const chatAI = async (req, res) => {
 
       if (!clientDisconnected) {
         try {
-          chat.messages.push({ role: 'user', content: message });
           const assistantReply = (fullReply || '').trim();
-          chat.messages.push({ role: 'assistant', content: assistantReply || 'Unable to generate response.' });
-           const isFreeOR = result.provider === 'openrouter' && (String(result.model).endsWith(':free') || result.model === 'openrouter/free');
-           if (!isFreeOR) {
-             await incrementUsage(req.user._id, 'chats');
-           }
+          await supabase.from('chat_messages').insert([
+            { session_id: session.id, role: 'user', content: message },
+            { session_id: session.id, role: 'assistant', content: assistantReply || 'Unable to generate response.' }
+          ]);
+
+          const isFreeOR = result.provider === 'openrouter' && (String(result.model).endsWith(':free') || result.model === 'openrouter/free');
+          if (!isFreeOR) {
+            await incrementUsage(req.user._id, 'chats');
+          }
+
+          const chatObj = await buildChatResponse();
 
           res.write(`data: ${JSON.stringify({ 
             done: true, 
-            chat,
+            chat: chatObj,
             provider: result.provider,
             model: result.model,
             isFailover: result.isFailover
@@ -240,7 +307,7 @@ export const chatAI = async (req, res) => {
 
     const result = await aiProviderManager.chat({
       userId: req.user._id,
-      chatId: chat._id,
+      chatId: session.id,
       messages: history,
       systemPrompt,
       provider: aiOptions.provider,
@@ -251,17 +318,21 @@ export const chatAI = async (req, res) => {
       apiKeys: aiOptions.apiKeys,
     });
 
-    chat.messages.push({ role: 'user', content: message });
     const replyText = (result.text || '').trim();
-    chat.messages.push({ role: 'assistant', content: replyText || 'Unable to generate response.' });
-    await chat.save();
+    await supabase.from('chat_messages').insert([
+      { session_id: session.id, role: 'user', content: message },
+      { session_id: session.id, role: 'assistant', content: replyText || 'Unable to generate response.' }
+    ]);
+
     const isFreeOR = result.provider === 'openrouter' && (String(result.model).endsWith(':free') || result.model === 'openrouter/free');
     if (!isFreeOR) {
       await incrementUsage(req.user._id, 'chats');
     }
 
+    const chatObj = await buildChatResponse();
+
     res.json({
-      chat,
+      chat: chatObj,
       reply: result.text,
       provider: result.provider,
       model: result.model,
@@ -279,31 +350,25 @@ export const getAIMetrics = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const stats = await AICallLog.aggregate([
-      { $match: { userId } },
-      {
-        $group: {
-          _id: null,
-          totalCost: { $sum: '$cost' },
-          totalTokens: { $sum: '$totalTokens' },
-          avgLatency: { $avg: '$latencyMs' },
-          totalCalls: { $sum: 1 },
-          successCalls: {
-            $sum: { $cond: [{ $eq: ['$status', 'success'] }, 1, 0] },
-          },
-          failoverCalls: {
-            $sum: { $cond: [{ $eq: ['$isFailover', true] }, 1, 0] },
-          },
-        },
-      },
-    ]);
+    // Fetch all logs for this user to aggregate metrics in JS
+    const { data: callLogs, error: fetchErr } = await supabase
+      .from('ai_call_logs')
+      .select('cost, total_tokens, latency_ms, status, is_failover')
+      .eq('user_id', userId);
 
-    const recentLogs = await AICallLog.find({ userId })
-      .sort({ createdAt: -1 })
-      .limit(10)
-      .select('provider model latencyMs cost status isFailover createdAt');
+    if (fetchErr) throw fetchErr;
 
-    const metrics = stats[0] || {
+    // Fetch the 10 most recent logs
+    const { data: recentLogs, error: recentErr } = await supabase
+      .from('ai_call_logs')
+      .select('provider, model, latency_ms, cost, status, is_failover, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    if (recentErr) throw recentErr;
+
+    const metrics = {
       totalCost: 0,
       totalTokens: 0,
       avgLatency: 0,
@@ -311,6 +376,23 @@ export const getAIMetrics = async (req, res) => {
       successCalls: 0,
       failoverCalls: 0,
     };
+
+    if (callLogs && callLogs.length > 0) {
+      let sumLatency = 0;
+      callLogs.forEach(log => {
+        metrics.totalCost += Number(log.cost || 0);
+        metrics.totalTokens += Number(log.total_tokens || 0);
+        metrics.totalCalls += 1;
+        sumLatency += Number(log.latency_ms || 0);
+        if (log.status === 'success') {
+          metrics.successCalls += 1;
+        }
+        if (log.is_failover) {
+          metrics.failoverCalls += 1;
+        }
+      });
+      metrics.avgLatency = sumLatency / metrics.totalCalls;
+    }
 
     const successRate = metrics.totalCalls > 0
       ? Number(((metrics.successCalls / metrics.totalCalls) * 100).toFixed(1))
@@ -323,7 +405,15 @@ export const getAIMetrics = async (req, res) => {
       successRate,
       totalCalls: metrics.totalCalls,
       failoverCalls: metrics.failoverCalls,
-      recentLogs,
+      recentLogs: (recentLogs || []).map(log => ({
+        provider: log.provider,
+        model: log.model,
+        latencyMs: log.latency_ms,
+        cost: log.cost,
+        status: log.status,
+        isFailover: log.is_failover,
+        createdAt: log.created_at,
+      })),
     });
   } catch (error) {
     console.error('Error fetching AI metrics:', error);

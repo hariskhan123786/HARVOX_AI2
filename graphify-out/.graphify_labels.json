@@ -48,6 +48,18 @@
   "46": "3D Creation Studio Workspace",
   "47": "tailwind.config.js",
   "48": "Chat.jsx",
+  "49": "voiceController.js",
   "50": "ChatMessage.jsx",
-  "51": "CommandPalette.jsx"
+  "51": "CommandPalette.jsx",
+  "52": "vercel.json",
+  "53": "subscription.js",
+  "54": "geminiService.js",
+  "55": "cerebrasProvider.js",
+  "56": "CentralEventBus",
+  "57": "AuroraBorealis.jsx",
+  "58": "FloatingParticles.jsx",
+  "59": "WireframeBackground.jsx",
+  "60": "test_backend_connection.js",
+  "61": "add-fly-path.ps1",
+  "62": "install-fly.ps1"
 }

@@ -5,7 +5,7 @@ import * as openaiProvider from './providers/openaiProvider.js';
 import * as ollamaProvider from './providers/ollamaProvider.js';
 import * as huggingfaceProvider from './providers/huggingfaceProvider.js';
 import * as cerebrasProvider from './providers/cerebrasProvider.js';
-import AICallLog from '../models/AICallLog.js';
+import { supabase } from '../config/supabase.js';
 
 // Provider registry mapping
 const providers = {
@@ -97,7 +97,21 @@ const saveLog = async (logData) => {
   // Skip telemetry for internal engine calls that have no userId (e.g. intentEngine)
   if (!logData.userId) return;
   try {
-    await AICallLog.create(logData);
+    await supabase.from('ai_call_logs').insert({
+      user_id: logData.userId,
+      chat_id: logData.chatId || null,
+      provider: logData.provider,
+      model: logData.model,
+      prompt_tokens: logData.promptTokens || 0,
+      completion_tokens: logData.completionTokens || 0,
+      total_tokens: logData.totalTokens || 0,
+      latency_ms: logData.latencyMs || 0,
+      cost: logData.cost || 0,
+      status: logData.status || 'success',
+      is_failover: logData.isFailover || false,
+      failover_from_provider: logData.failoverFromProvider || null,
+      failover_from_model: logData.failoverFromModel || null,
+    });
   } catch (err) {
     console.error('[AI Provider Manager] Telemetry save error:', err.message);
   }

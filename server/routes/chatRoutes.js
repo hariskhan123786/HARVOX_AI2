@@ -1,28 +1,65 @@
 import express from 'express';
-import Chat from '../models/Chat.js';
 import { protect } from '../middleware/auth.js';
+import { supabase } from '../config/supabase.js';
 
 const router = express.Router();
 router.use(protect);
 
-// List all chats
+const mapChat = (session, messages = []) => ({
+  _id: session.id,
+  id: session.id,
+  userId: session.user_id,
+  title: session.title,
+  pinned: session.pinned,
+  archived: session.archived,
+  messages: messages.map((m) => ({
+    _id: m.id,
+    role: m.role,
+    content: m.content,
+    bookmarked: m.bookmarked,
+    createdAt: m.created_at,
+  })),
+  createdAt: session.created_at,
+  updatedAt: session.updated_at,
+});
+
+// List all chat sessions
 router.get('/', async (req, res) => {
   try {
-    const chats = await Chat.find({ userId: req.user._id })
-      .sort({ updatedAt: -1 })
-      .select('title messages createdAt updatedAt');
-    res.json({ chats });
+    const { data: sessions, error } = await supabase
+      .from('chat_sessions')
+      .select('*')
+      .eq('user_id', req.user._id)
+      .order('updated_at', { ascending: false });
+
+    if (error) throw error;
+    res.json({ chats: (sessions || []).map((s) => mapChat(s)) });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// Get single chat
+// Get single chat with all messages
 router.get('/:id', async (req, res) => {
   try {
-    const chat = await Chat.findOne({ _id: req.params.id, userId: req.user._id });
-    if (!chat) return res.status(404).json({ message: 'Chat not found' });
-    res.json({ chat });
+    const { data: session, error: sessErr } = await supabase
+      .from('chat_sessions')
+      .select('*')
+      .eq('id', req.params.id)
+      .eq('user_id', req.user._id)
+      .maybeSingle();
+
+    if (sessErr) throw sessErr;
+    if (!session) return res.status(404).json({ message: 'Chat not found' });
+
+    const { data: messages, error: msgsErr } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .eq('session_id', session.id)
+      .order('created_at', { ascending: true });
+
+    if (msgsErr) throw msgsErr;
+    res.json({ chat: mapChat(session, messages || []) });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -31,24 +68,41 @@ router.get('/:id', async (req, res) => {
 // Delete chat
 router.delete('/:id', async (req, res) => {
   try {
-    await Chat.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+    const { error } = await supabase
+      .from('chat_sessions')
+      .delete()
+      .eq('id', req.params.id)
+      .eq('user_id', req.user._id);
+
+    if (error) throw error;
     res.json({ message: 'Chat deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// Bookmark a message
+// Bookmark a message by message ID
 router.patch('/bookmark', async (req, res) => {
   try {
-    const { chatId, messageIndex, bookmarked } = req.body;
-    const chat = await Chat.findOne({ _id: chatId, userId: req.user._id });
-    if (!chat) return res.status(404).json({ message: 'Chat not found' });
-    if (chat.messages[messageIndex]) {
-      chat.messages[messageIndex].bookmarked = bookmarked;
-      await chat.save();
-    }
-    res.json({ chat });
+    const { chatId, messageId, bookmarked } = req.body;
+
+    // Verify the chat belongs to the user
+    const { data: session } = await supabase
+      .from('chat_sessions')
+      .select('id')
+      .eq('id', chatId)
+      .eq('user_id', req.user._id)
+      .maybeSingle();
+
+    if (!session) return res.status(404).json({ message: 'Chat not found' });
+
+    await supabase
+      .from('chat_messages')
+      .update({ bookmarked: !!bookmarked })
+      .eq('id', messageId)
+      .eq('session_id', chatId);
+
+    res.json({ message: 'Message bookmark updated' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

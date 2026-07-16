@@ -8,7 +8,8 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { connectDB, getDBHealth } from './config/db.js';
 import { isAIConfigured } from './services/groqService.js';
-import User from './models/User.js';
+import { supabase } from './config/supabase.js';
+import path from 'path';
 
 import authRoutes from './routes/authRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
@@ -22,97 +23,80 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import fsRoutes from './routes/fs.js';
 import memoryRoutes from './routes/memoryRoutes.js';
 import automationRoutes from './routes/automationRoutes.js';
-import SystemSettings from './models/SystemSettings.js';
-import UserSettings from './models/UserSettings.js';
-import UserAnalytics from './models/UserAnalytics.js';
-import Achievements from './models/Achievements.js';
-import Subscription from './models/Subscription.js';
-import Task from './models/Task.js';
-import LearningTrack from './models/LearningTrack.js';
-import path from 'path';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Initialize app
+// ── Startup ────────────────────────────────────────────────────────────────────
 const startServer = async () => {
   try {
     await connectDB();
-    console.log('Database connected successfully');
   } catch (err) {
-    // DO NOT exit — server must stay alive for Railway healthcheck.
-    // MongoDB will retry in the background via handleReconnect().
-    console.error('[Startup] MongoDB connection failed, continuing anyway:', err.message);
+    console.error('[Startup] Supabase connection check failed, continuing anyway:', err.message);
   }
 
-  // Run seeding in a separate non-blocking block so any failure never kills the process
+  // Non-blocking seeding via Supabase
   (async () => {
     try {
-      let settings = await SystemSettings.findOne();
+      const { data: settings } = await supabase
+        .from('system_settings')
+        .select('id')
+        .limit(1)
+        .maybeSingle();
+
       if (!settings) {
-        await SystemSettings.create({
-          jazzCashNumber: '03001234567',
-          jazzCashName: 'HARVOX AI SAAS',
-          easyPaisaNumber: '03451234567',
-          easyPaisaName: 'HARVOX AI SAAS',
+        await supabase.from('system_settings').insert({
+          jazz_cash_number: '03001234567',
+          jazz_cash_name: 'HARVOX AI SAAS',
+          easy_paisa_number: '03451234567',
+          easy_paisa_name: 'HARVOX AI SAAS',
           announcement: 'Welcome to HARVOX AI - Premium AI SaaS Platform! Update settings in admin panel.',
         });
-        console.log('Default SystemSettings seeded.');
+        console.log('[Seed] Default SystemSettings seeded.');
       }
     } catch (err) {
       console.warn('[Seed] SystemSettings skipped:', err.message);
     }
 
+    // Seed admin user via Supabase Auth + public tables
     try {
-      const adminExists = await User.findOne({ email: 'admin@harvox.ai' });
-      if (!adminExists) {
-        const admin = await User.create({
-          name: 'Harvox Admin',
-          email: 'admin@harvox.ai',
-          password: 'admin123',
-          role: 'admin',
-          subscription: 'pro',
+      const adminEmail = 'admin@harvox.ai';
+      const adminPassword = process.env.ADMIN_PASSWORD || 'HarvoxAdmin2025!';
+
+      const { data: adminUser } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', adminEmail)
+        .maybeSingle();
+
+      if (!adminUser) {
+        const { data: authData, error: signUpErr } = await supabase.auth.signUp({
+          email: adminEmail,
+          password: adminPassword,
+          options: { data: { name: 'Harvox Admin' } },
         });
-        await UserSettings.create({ userId: admin._id });
-        await UserAnalytics.create({ userId: admin._id });
-        await Achievements.create({ userId: admin._id });
-        await Subscription.create({ userId: admin._id, plan: 'pro', status: 'active' });
-        console.log('Admin user seeded: admin@harvox.ai / admin123');
+
+        if (signUpErr) {
+          console.warn('[Seed] Admin auth sign-up skipped:', signUpErr.message);
+        } else {
+          const uid = authData.user.id;
+          await supabase.from('users').insert({ id: uid, email: adminEmail, role: 'admin', subscription: 'pro' });
+          await supabase.from('profiles').insert({ id: uid, name: 'Harvox Admin' });
+          await supabase.from('settings').insert({ user_id: uid });
+          await supabase.from('subscriptions').insert({ user_id: uid, plan: 'pro', status: 'active' });
+          await supabase.from('user_preferences').insert({ user_id: uid });
+          console.log(`[Seed] Admin user seeded: ${adminEmail} / ${adminPassword}`);
+        }
       }
     } catch (err) {
       console.warn('[Seed] Admin user skipped:', err.message);
     }
-
-    try {
-      const demoExists = await User.findOne({ email: 'demo@harvox.ai' });
-      if (!demoExists) {
-        const demo = await User.create({
-          name: 'Demo User',
-          email: 'demo@harvox.ai',
-          password: 'demo123',
-          role: 'free',
-          subscription: 'free',
-        });
-        await UserSettings.create({ userId: demo._id });
-        await UserAnalytics.create({ userId: demo._id });
-        await Achievements.create({ userId: demo._id });
-        await Subscription.create({ userId: demo._id, plan: 'free', status: 'active' });
-        console.log('Demo user seeded: demo@harvox.ai / demo123');
-      } else if (process.env.USE_IN_MEMORY_DB === 'true' && demoExists.subscription === 'pro') {
-        demoExists.role = 'free';
-        demoExists.subscription = 'free';
-        await demoExists.save();
-      }
-    } catch (err) {
-      console.warn('[Seed] Demo user skipped:', err.message);
-    }
   })();
 };
 
-
-// Comprehensive production-ready Helmet CSP headers (enabling WebSockets & dynamic frames)
+// ── Security Middleware ────────────────────────────────────────────────────────
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -136,14 +120,12 @@ const allowedOrigins = [
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
-// Allow all origins if CLIENT_URL is '*' (useful for initial Railway setup)
 const corsWildcard = process.env.CLIENT_URL === '*';
 
 app.use(
   cors({
     origin(origin, callback) {
       if (corsWildcard || !origin) return callback(null, true);
-      // Allow any Railway-hosted frontend automatically
       if (
         origin.endsWith('.railway.app') ||
         origin.endsWith('.up.railway.app') ||
@@ -151,9 +133,7 @@ app.use(
       ) {
         return callback(null, true);
       }
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+      if (allowedOrigins.includes(origin)) return callback(null, true);
       callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
@@ -161,10 +141,10 @@ app.use(
 );
 app.use(express.json({ limit: '10mb' }));
 
-// Strict rate-limiting for auth routes to protect against dictionary attacks
+// ── Rate Limiting ──────────────────────────────────────────────────────────────
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 30, // Limit each IP to 30 requests per window
+  windowMs: 15 * 60 * 1000,
+  max: 30,
   message: { message: 'Too many auth attempts, please try again after 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -172,7 +152,6 @@ const authLimiter = rateLimit({
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 
-// General api rate-limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
@@ -182,6 +161,7 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+// ── Health Check ───────────────────────────────────────────────────────────────
 app.get('/api/health', (_, res) => {
   const dbHealth = getDBHealth();
   res.json({
@@ -192,6 +172,7 @@ app.get('/api/health', (_, res) => {
   });
 });
 
+// ── Routes ─────────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/chats', chatRoutes);
@@ -204,16 +185,13 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/fs', fsRoutes);
 app.use('/api/memory', memoryRoutes);
 app.use('/api/automation', automationRoutes);
-app.use('/uploads', express.static(path.join(path.resolve(), 'uploads')));
 
-// Serve client assets in production
+// ── Static Client (Production) ─────────────────────────────────────────────────
 if (process.env.NODE_ENV === 'production') {
   const distPath = path.join(path.resolve(), 'client/dist');
   app.use(express.static(distPath));
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
-      return next();
-    }
+    if (req.path.startsWith('/api')) return next();
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
@@ -222,6 +200,7 @@ app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({ message: err.message || 'Server error' });
 });
 
+// ── WebSocket / Socket.IO ──────────────────────────────────────────────────────
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -243,18 +222,17 @@ const io = new Server(httpServer, {
 
 initializeTerminalSocket(io);
 
-
 startServer().then(() => {
   httpServer.listen(PORT, () => {
-    console.log(`HARVOX AI server running on port ${PORT}`);
+    console.log(`🚀 HARVOX AI server running on port ${PORT}`);
     if (!isAIConfigured()) {
-      console.warn('Warning: GROQ_API_KEY not set — AI features will fail');
+      console.warn('⚠️  Warning: GROQ_API_KEY not set — AI features will fail');
     }
   });
 
   httpServer.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
-      console.error(`Port ${PORT} is already in use. Please close the other process and restart.`);
+      console.error(`Port ${PORT} is already in use.`);
       process.exit(1);
     } else {
       throw err;
@@ -262,9 +240,13 @@ startServer().then(() => {
   });
 });
 
-// Global guard — prevent node-pty or any module crash from taking down the server
 process.on('uncaughtException', (err) => {
-  if (err.message && (err.message.includes('AttachConsole') || err.message.includes('conpty') || err.message.includes('forEach'))) {
+  if (
+    err.message &&
+    (err.message.includes('AttachConsole') ||
+      err.message.includes('conpty') ||
+      err.message.includes('forEach'))
+  ) {
     console.warn('[PTY] Caught node-pty Windows error (non-fatal):', err.message);
   } else {
     console.error('[FATAL] Uncaught exception:', err);

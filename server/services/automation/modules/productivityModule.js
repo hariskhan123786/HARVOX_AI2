@@ -8,7 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { logActivity } from '../../memoryService.js';
 import { registerModule } from '../automationRegistry.js';
-import Task from '../../../models/Task.js';
+import { supabase } from '../../../config/supabase.js';
 import { runPS } from '../../../utils/powershell.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -109,9 +109,13 @@ async function createTask(userId, args) {
   const priority = args[2] || 'medium';
 
   const deadline = deadlineStr ? new Date(deadlineStr) : undefined;
-  const task = await Task.create({ userId, title, deadline, priority });
+  const { data: task } = await supabase
+    .from('tasks')
+    .insert({ user_id: userId, title, deadline: deadline || null, priority })
+    .select('id')
+    .single();
 
-  await logActivity(userId, 'task_create', `Created task: "${title}"`, { taskId: task._id });
+  await logActivity(userId, 'task_create', `Created task: "${title}"`, { taskId: task?.id });
   return { success: true, message: `Task "${title}" created with priority: ${priority}.` };
 }
 
@@ -120,7 +124,7 @@ async function createReminder(userId, args) {
   const whenStr = args[1] || '';
   const deadline = whenStr ? new Date(whenStr) : new Date(Date.now() + 60 * 60 * 1000);
 
-  await Task.create({ userId, title: `⏰ ${text}`, deadline, priority: 'high' });
+  await supabase.from('tasks').insert({ user_id: userId, title: `⏰ ${text}`, deadline: deadline.toISOString(), priority: 'high' });
 
   const formattedTime = deadline.toLocaleString();
   await showToast('HARVOX Reminder Set', `Reminder: "${text}" set for ${formattedTime}`).catch(() => {});

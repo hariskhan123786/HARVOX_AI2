@@ -404,7 +404,7 @@ export default function Chat() {
   const [input,        setInput]        = useState('');
   const [loading,      setLoading]      = useState(false);
   const [provider,     setProvider]     = useState('cerebras');
-  const [model,        setModel]        = useState('llama-3.3-70b');
+  const [model,        setModel]        = useState('gpt-oss-120b');
   const [showSettings, setShowSettings] = useState(false);
   const [showSidebar,  setShowSidebar]  = useState(false);
   const [showSystem,   setShowSystem]   = useState(false);

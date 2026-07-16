@@ -1,11 +1,11 @@
 import ptyManager from '../terminal/ptyManager.js';
-import jwt from 'jsonwebtoken';
+import { supabase } from '../config/supabase.js';
 
 export function initializeTerminalSocket(io) {
   const terminalNamespace = io.of('/terminal');
 
-  // Secure connection with JWT Authentication middleware
-  terminalNamespace.use((socket, next) => {
+  // Secure connection with Supabase JWT Authentication middleware
+  terminalNamespace.use(async (socket, next) => {
     const token = socket.handshake.auth?.token;
     if (!token) {
       console.warn(`[Socket Auth] Connection rejected for ${socket.id}: Token missing`);
@@ -13,12 +13,16 @@ export function initializeTerminalSocket(io) {
     }
 
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      socket.userId = decoded.id;
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+      if (error || !user) {
+        console.warn(`[Socket Auth] Connection rejected for ${socket.id}: Invalid or expired token`);
+        return next(new Error('Authentication error: Invalid token'));
+      }
+      socket.userId = user.id;
       next();
     } catch (err) {
-      console.warn(`[Socket Auth] Connection rejected for ${socket.id}: Invalid token`);
-      return next(new Error('Authentication error: Invalid token'));
+      console.warn(`[Socket Auth] Connection rejected for ${socket.id}: ${err.message}`);
+      return next(new Error('Authentication error: Token verification failed'));
     }
   });
 

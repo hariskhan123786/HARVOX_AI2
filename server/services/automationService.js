@@ -4,8 +4,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { logActivity } from './memoryService.js';
-import Task from '../models/Task.js';
-import LearningTrack from '../models/LearningTrack.js';
 
 // ─── PHASE 10: Load Automation Registry + All Modules ──────────────────────────
 import { dispatchAction, hasAction, getAllModules, getAllActions } from './automation/automationRegistry.js';

@@ -1,12 +1,45 @@
-import UserSettings from '../models/UserSettings.js';
+import { supabase } from '../config/supabase.js';
+
+const mapSettings = (s) => {
+  if (!s) return null;
+  return {
+    _id: s.id,
+    userId: s.user_id,
+    appearance: s.appearance,
+    ai: s.ai,
+    voice: s.voice,
+    notifications: s.notifications,
+    memory: s.memory,
+    workspace: s.workspace,
+    apiKeys: s.api_keys,
+    createdAt: s.created_at,
+    updatedAt: s.updated_at,
+  };
+};
 
 export const getSettings = async (req, res) => {
   try {
-    let settings = await UserSettings.findOne({ userId: req.user._id }).select('+apiKeys.groq +apiKeys.gemini +apiKeys.openrouter +apiKeys.openai +apiKeys.huggingface +apiKeys.ollamaUrl +apiKeys.cerebras');
+    const userId = req.user._id;
+    let { data: settings, error } = await supabase
+      .from('settings')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (error) throw error;
+
     if (!settings) {
-      settings = await UserSettings.create({ userId: req.user._id });
+      const { data: newSettings, error: createError } = await supabase
+        .from('settings')
+        .insert({ user_id: userId })
+        .select('*')
+        .single();
+      
+      if (createError) throw createError;
+      settings = newSettings;
     }
-    res.json({ settings });
+
+    res.json({ settings: mapSettings(settings) });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -14,23 +47,48 @@ export const getSettings = async (req, res) => {
 
 export const updateSettings = async (req, res) => {
   try {
+    const userId = req.user._id;
     const { appearance, ai, voice, notifications, memory, workspace, apiKeys } = req.body;
-    let settings = await UserSettings.findOne({ userId: req.user._id }).select('+apiKeys.groq +apiKeys.gemini +apiKeys.openrouter +apiKeys.openai +apiKeys.huggingface +apiKeys.ollamaUrl +apiKeys.cerebras');
-    
+
+    // Fetch current settings first
+    let { data: settings, error } = await supabase
+      .from('settings')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (error) throw error;
+
     if (!settings) {
-      settings = new UserSettings({ userId: req.user._id });
+      const { data: newSettings, error: createError } = await supabase
+        .from('settings')
+        .insert({ user_id: userId })
+        .select('*')
+        .single();
+      
+      if (createError) throw createError;
+      settings = newSettings;
     }
 
-    if (appearance) settings.appearance = { ...settings.appearance, ...appearance };
-    if (ai) settings.ai = { ...settings.ai, ...ai };
-    if (voice) settings.voice = { ...settings.voice, ...voice };
-    if (notifications) settings.notifications = { ...settings.notifications, ...notifications };
-    if (memory) settings.memory = { ...settings.memory, ...memory };
-    if (workspace) settings.workspace = { ...settings.workspace, ...workspace };
-    if (apiKeys !== undefined) settings.apiKeys = apiKeys;
+    const updates = {};
+    if (appearance) updates.appearance = { ...settings.appearance, ...appearance };
+    if (ai) updates.ai = { ...settings.ai, ...ai };
+    if (voice) updates.voice = { ...settings.voice, ...voice };
+    if (notifications) updates.notifications = { ...settings.notifications, ...notifications };
+    if (memory) updates.memory = { ...settings.memory, ...memory };
+    if (workspace) updates.workspace = { ...settings.workspace, ...workspace };
+    if (apiKeys !== undefined) updates.api_keys = apiKeys;
 
-    await settings.save();
-    res.json({ settings });
+    const { data: updatedSettings, error: updateError } = await supabase
+      .from('settings')
+      .update(updates)
+      .eq('user_id', userId)
+      .select('*')
+      .single();
+
+    if (updateError) throw updateError;
+
+    res.json({ settings: mapSettings(updatedSettings) });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

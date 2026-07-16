@@ -12,6 +12,8 @@ const About = lazy(() => import('./pages/public/About'));
 const Pricing = lazy(() => import('./pages/public/Pricing'));
 const Login = lazy(() => import('./pages/auth/Login'));
 const Register = lazy(() => import('./pages/auth/Register'));
+const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
 
 // Dynamic route split loading for app workspace modules
 const Dashboard = lazy(() => import('./pages/app/Dashboard'));
@@ -102,6 +104,8 @@ export default function App() {
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           <Route
             path="/app"

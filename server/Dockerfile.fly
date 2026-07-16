@@ -1,0 +1,42 @@
+# ── HARVOX AI — Dockerfile for Fly.io ────────────────────────────────────────
+# Build context = server/ directory (fly deploy is run from server/)
+# All COPY paths below are relative to server/
+
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install native build tools for node-pty
+RUN apk add --no-cache python3 make g++ bash linux-headers
+
+# Skip mongodb-memory-server binary download (not needed in production)
+ENV MONGOMS_DISABLE_POSTINSTALL=1
+
+COPY package*.json ./
+RUN npm ci --omit=dev --silent || npm install --omit=dev --silent
+
+# Copy all server source files
+COPY . .
+
+# ── FINAL RUNNER ──────────────────────────────────────────────────────────────
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# node-pty needs bash at runtime to spawn shell sessions
+RUN apk add --no-cache bash
+
+# Copy everything from builder
+COPY --from=builder /app ./
+
+ENV NODE_ENV=production
+ENV MONGOMS_DISABLE_POSTINSTALL=1
+
+# Run as non-root
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN chown -R appuser:appgroup /app
+USER appuser
+
+EXPOSE 8080
+
+CMD ["node", "server.js"]

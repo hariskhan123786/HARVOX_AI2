@@ -1,71 +1,66 @@
-import Memory from '../models/Memory.js';
+import { supabase } from '../config/supabase.js';
 import { eventBus } from '../utils/eventBus.js';
 
 // Setup asynchronous listener for central activity logs
 eventBus.on('activity', async ({ userId, actionKey, description, details }) => {
   try {
-    await Memory.create({
-      userId,
+    await supabase.from('brain_memory').insert({
+      user_id: userId,
       category: 'activity',
       key: actionKey,
       value: description,
-      metadata: details
+      metadata: details || {},
     });
   } catch (err) {
     console.error('[Memory Core Listener] Failed to log activity memory:', err.message);
   }
 });
 
-
 /**
- * Ensures default memories are seeded for the user (specifically matching Haris Khan identity).
+ * Ensures default memories are seeded for the user.
  */
 export async function ensureDefaultMemories(userId) {
   try {
-    const count = await Memory.countDocuments({ userId });
+    const { count, error } = await supabase
+      .from('brain_memory')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
+
+    if (error) throw error;
     if (count > 0) return;
 
     const defaults = [
-      // Identity Matrix
-      { category: 'identity', key: 'creator', value: 'Haris Khan', isPinned: true },
-      { category: 'identity', key: 'role', value: 'Full Stack Developer', isPinned: true },
-      { category: 'identity', key: 'education', value: 'BSCS Student', isPinned: true },
-      { category: 'identity', key: 'university', value: 'University of Balochistan', isPinned: true },
-      { category: 'identity', key: 'project', value: 'HARVOX AI', isPinned: true },
-
-      // Preferences Matrix
-      { category: 'preferences', key: 'preferredLanguage', value: 'JavaScript', isPinned: false },
-      { category: 'preferences', key: 'preferredFramework', value: 'React', isPinned: false },
-      { category: 'preferences', key: 'themePreference', value: 'cyberpunk', isPinned: false },
-      { category: 'preferences', key: 'favoriteModel', value: 'Gemini 2.5 Flash', isPinned: false },
-
-      // Initial Project Memory
+      { category: 'identity', key: 'creator', value: 'Haris Khan', is_pinned: true },
+      { category: 'identity', key: 'role', value: 'Full Stack Developer', is_pinned: true },
+      { category: 'identity', key: 'education', value: 'BSCS Student', is_pinned: true },
+      { category: 'identity', key: 'university', value: 'University of Balochistan', is_pinned: true },
+      { category: 'identity', key: 'project', value: 'HARVOX AI', is_pinned: true },
+      { category: 'preferences', key: 'preferredLanguage', value: 'JavaScript', is_pinned: false },
+      { category: 'preferences', key: 'preferredFramework', value: 'React', is_pinned: false },
+      { category: 'preferences', key: 'themePreference', value: 'cyberpunk', is_pinned: false },
+      { category: 'preferences', key: 'favoriteModel', value: 'Gemini 2.5 Flash', is_pinned: false },
       {
         category: 'project',
         key: 'activeProject',
         value: 'HARVOX AI Workspace',
-        isPinned: true,
+        is_pinned: true,
         metadata: {
           description: 'Autonomous AI Operating System and Interactive Developer Environment.',
-          architecture: 'MERN (Vite React + Node.js/Express + Mongoose + node-pty + WebSockets)',
-          status: 'Phase 7 In Development'
-        }
+          architecture: 'Vite React + Node.js/Express + Supabase PostgreSQL + WebSockets',
+          status: 'Phase 14 — Supabase Migration Complete',
+        },
       },
-
-      // Initial Activity Memory
       {
         category: 'activity',
         key: 'systemStart',
         value: 'System Uplink Stabilized',
-        isPinned: false,
-        metadata: {
-          details: 'HARVOX Brain Core initialized successfully.'
-        }
-      }
+        is_pinned: false,
+        metadata: { details: 'HARVOX Brain Core initialized successfully.' },
+      },
     ];
 
-    const records = defaults.map(d => ({ ...d, userId }));
-    await Memory.insertMany(records);
+    const records = defaults.map((d) => ({ ...d, user_id: userId }));
+    await supabase.from('brain_memory').insert(records);
     console.log(`[Memory Core] Seeded default operator context for user ${userId}`);
   } catch (err) {
     console.error('[Memory Core] Failed to seed default memories:', err.message);
@@ -73,69 +68,52 @@ export async function ensureDefaultMemories(userId) {
 }
 
 /**
- * Returns formatted text context from the operator\'s Memory Core to inject into AI System Prompts.
+ * Returns formatted text context from the operator's Memory Core to inject into AI System Prompts.
  */
 export async function getContextPrompt(userId) {
   try {
     await ensureDefaultMemories(userId);
 
-    // Retrieve pinned or critical memories (excluding activities unless they are pinned)
-    const memories = await Memory.find({ 
-      userId, 
-      category: { $ne: 'activity' } 
-    }).sort({ isPinned: -1, category: 1 });
+    const { data: memories, error } = await supabase
+      .from('brain_memory')
+      .select('*')
+      .eq('user_id', userId)
+      .neq('category', 'activity')
+      .order('is_pinned', { ascending: false })
+      .order('category', { ascending: true });
 
-    if (!memories.length) return '';
+    if (error) throw error;
+    if (!memories || !memories.length) return '';
 
-    // Group memories by category for neat presentation
-    const grouped = {
-      identity: [],
-      preferences: [],
-      project: [],
-      conversation: []
-    };
-
-    memories.forEach(m => {
-      if (grouped[m.category]) {
-        grouped[m.category].push(m);
-      }
+    const grouped = { identity: [], preferences: [], project: [], conversation: [] };
+    memories.forEach((m) => {
+      if (grouped[m.category]) grouped[m.category].push(m);
     });
 
     let contextText = '\n\n==================================================\n';
-    contextText += 'OPERATOR\'S LONG-TERM MEMORY CORE (HARVOX Brain Core):\n';
-    
+    contextText += "OPERATOR'S LONG-TERM MEMORY CORE (HARVOX Brain Core):\n";
+
     if (grouped.identity.length) {
       contextText += '\n[OPERATOR IDENTITY MATRIX]\n';
-      grouped.identity.forEach(m => {
-        contextText += `- ${m.key}: ${m.value}\n`;
-      });
+      grouped.identity.forEach((m) => { contextText += `- ${m.key}: ${m.value}\n`; });
     }
-
     if (grouped.preferences.length) {
       contextText += '\n[OPERATOR PREFERENCES]\n';
-      grouped.preferences.forEach(m => {
-        contextText += `- ${m.key}: ${m.value}\n`;
-      });
+      grouped.preferences.forEach((m) => { contextText += `- ${m.key}: ${m.value}\n`; });
     }
-
     if (grouped.project.length) {
       contextText += '\n[PROJECT METADATA]\n';
-      grouped.project.forEach(m => {
+      grouped.project.forEach((m) => {
         let metaStr = '';
         if (m.metadata && typeof m.metadata === 'object') {
-          metaStr = Object.entries(m.metadata)
-            .map(([k, v]) => `${k}: ${v}`)
-            .join(', ');
+          metaStr = Object.entries(m.metadata).map(([k, v]) => `${k}: ${v}`).join(', ');
         }
         contextText += `- ${m.key}: ${m.value} (${metaStr})\n`;
       });
     }
-
     if (grouped.conversation.length) {
       contextText += '\n[IMPORTANT HISTORICAL CONVERSATIONS]\n';
-      grouped.conversation.forEach(m => {
-        contextText += `- Goal/Topic: ${m.key} -> ${m.value}\n`;
-      });
+      grouped.conversation.forEach((m) => { contextText += `- Goal/Topic: ${m.key} -> ${m.value}\n`; });
     }
 
     contextText += '==================================================\n\n';

@@ -1,30 +1,28 @@
-import File from '../../models/File.js';
 import { PROMPTS } from '../../config/prompts.js';
 import * as aiProviderManager from '../../services/aiProviderManager.js';
 import { incrementUsage } from '../../services/usageService.js';
 import { getAIOptions } from './chatController.js';
-import fs from 'fs/promises';
-import path from 'path';
+import { supabase } from '../../config/supabase.js';
 import pdfParse from 'pdf-parse';
 import mammoth from 'mammoth';
+import path from 'path';
 
 export const analyzeFile = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
-    const filePath = req.file.path;
+    const buffer = req.file.buffer; // multer.memoryStorage()
     let extractedText = '';
     const ext = path.extname(req.file.originalname).toLowerCase();
 
     if (ext === '.pdf') {
-      const buffer = await fs.readFile(filePath);
       const data = await pdfParse(buffer);
       extractedText = data.text;
     } else if (ext === '.docx') {
-      const result = await mammoth.extractRawText({ path: filePath });
+      const result = await mammoth.extractRawText({ buffer });
       extractedText = result.value;
     } else {
-      extractedText = await fs.readFile(filePath, 'utf-8');
+      extractedText = buffer.toString('utf-8');
     }
 
     const { action, question } = req.body;
@@ -51,19 +49,36 @@ export const analyzeFile = async (req, res) => {
       apiKeys: aiOptions.apiKeys,
     });
 
-    const fileRecord = await File.create({
-      userId: req.user._id,
-      fileName: req.file.originalname,
-      fileUrl: req.file.filename,
-      mimeType: req.file.mimetype,
-      analysis: result.text,
-      extractedText: extractedText.slice(0, 5000),
-    });
+    // Save file record in Supabase
+    const { data: fileRecord, error: insertErr } = await supabase
+      .from('uploaded_files')
+      .insert({
+        user_id: req.user._id,
+        file_name: req.file.originalname,
+        file_url: '',
+        mime_type: req.file.mimetype,
+        analysis: result.text,
+        extracted_text: extractedText.slice(0, 5000),
+      })
+      .select('*')
+      .single();
+
+    if (insertErr) throw insertErr;
 
     await incrementUsage(req.user._id, 'files');
-    await fs.unlink(filePath).catch(() => {});
 
-    res.json({ file: fileRecord, analysis: result.text });
+    res.json({
+      file: {
+        _id: fileRecord.id,
+        fileName: fileRecord.file_name,
+        fileUrl: fileRecord.file_url,
+        mimeType: fileRecord.mime_type,
+        analysis: fileRecord.analysis,
+        extractedText: fileRecord.extracted_text,
+        createdAt: fileRecord.created_at,
+      },
+      analysis: result.text,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

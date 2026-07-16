@@ -1,0 +1,7 @@
+# HARVOX AI — .flyignore (like .dockerignore, but used by fly deploy)
+node_modules
+.env
+scratch
+tests/testRunner.js
+uploads
+*.log

@@ -134,14 +134,19 @@ export default function Register() {
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
+  const [regSuccess, setRegSuccess] = useState(false);
   const { register, loading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await register({ name, email, password });
-      navigate('/app/dashboard');
+      const data = await register({ name, email, password });
+      if (data && data.token) {
+        navigate('/app/dashboard');
+      } else {
+        setRegSuccess(true);
+      }
     } catch {}
   };
 
@@ -166,127 +171,149 @@ export default function Register() {
             <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-neon-pink/30 rounded-br-3xl" />
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon-blue/50 to-transparent" />
 
-            {/* Header */}
-            <div className="text-center mb-7">
-              {/* Mobile logo */}
-              <div className="flex lg:hidden items-center justify-center gap-2 mb-5">
-                <div className="w-8 h-8 rounded-xl bg-neon-blue/15 border border-neon-blue/30 flex items-center justify-center">
-                  <Zap size={14} className="text-neon-blue" />
+            {regSuccess ? (
+              <div className="text-center py-6">
+                <div className="w-16 h-16 mx-auto rounded-full bg-neon-blue/15 border border-neon-blue/30 flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(0,240,255,0.2)] animate-pulse">
+                  <Mail size={24} className="text-neon-blue" />
                 </div>
-                <span className="font-orbitron font-black text-base tracking-wider gradient-text">HARVOX AI</span>
+                <h2 className="font-orbitron text-xl font-black mb-3">Verify Your <span className="gradient-text">Email</span></h2>
+                <p className="text-gray-400 text-xs leading-relaxed font-mono mb-8 max-w-sm mx-auto">
+                  A verification link has been sent to <span className="text-white font-bold">{email}</span>. Please check your inbox and verify your email to log in.
+                </p>
+                <div className="mt-6">
+                  <Link
+                    to="/login"
+                    className="inline-flex items-center gap-2 text-xs font-mono text-neon-blue hover:text-neon-purple transition-colors font-bold"
+                  >
+                    Proceed to Login
+                  </Link>
+                </div>
               </div>
-              <p className="text-[9px] font-orbitron font-black tracking-[0.25em] text-neon-blue/50 uppercase mb-2">Create Access Token</p>
-              <h1 className="font-orbitron text-2xl font-black tracking-wide">
-                Join <span className="gradient-text">HARVOX</span>
-              </h1>
-              <p className="text-gray-600 text-xs mt-1.5 font-mono">Initialize your AI command center</p>
-            </div>
+            ) : (
+              <>
+                {/* Header */}
+                <div className="text-center mb-7">
+                  {/* Mobile logo */}
+                  <div className="flex lg:hidden items-center justify-center gap-2 mb-5">
+                    <div className="w-8 h-8 rounded-xl bg-neon-blue/15 border border-neon-blue/30 flex items-center justify-center">
+                      <Zap size={14} className="text-neon-blue" />
+                    </div>
+                    <span className="font-orbitron font-black text-base tracking-wider gradient-text">HARVOX AI</span>
+                  </div>
+                  <p className="text-[9px] font-orbitron font-black tracking-[0.25em] text-neon-blue/50 uppercase mb-2">Create Access Token</p>
+                  <h1 className="font-orbitron text-2xl font-black tracking-wide">
+                    Join <span className="gradient-text">HARVOX</span>
+                  </h1>
+                  <p className="text-gray-600 text-xs mt-1.5 font-mono">Initialize your AI command center</p>
+                </div>
 
-            {/* Error banner */}
-            <AnimatePresence>
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8, height: 0 }}
-                  animate={{ opacity: 1, y: 0, height: 'auto' }}
-                  exit={{ opacity: 0, y: -8, height: 0 }}
-                  className="flex items-center gap-2.5 bg-rose-500/8 border border-rose-500/30 text-rose-400 px-4 py-3 rounded-xl mb-6 text-xs font-mono"
-                >
-                  <AlertCircle size={13} className="shrink-0" />
-                  {error}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-[10px] font-orbitron font-bold tracking-widest text-gray-500 uppercase mb-2">Full Name</label>
-                <NeonInput
-                  icon={User}
-                  type="text"
-                  value={name}
-                  onChange={(e) => { setName(e.target.value); clearError(); }}
-                  placeholder="John Doe"
-                  required
-                  accentColor="#00F0FF"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-orbitron font-bold tracking-widest text-gray-500 uppercase mb-2">Email Address</label>
-                <NeonInput
-                  icon={Mail}
-                  type="email"
-                  value={email}
-                  onChange={(e) => { setEmail(e.target.value); clearError(); }}
-                  placeholder="you@example.com"
-                  required
-                  accentColor="#00F0FF"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-orbitron font-bold tracking-widest text-gray-500 uppercase mb-2">Password</label>
-                <NeonInput
-                  icon={Lock}
-                  type={showPass ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => { setPassword(e.target.value); clearError(); }}
-                  placeholder="Min. 6 characters"
-                  required
-                  minLength={6}
-                  accentColor="#00F0FF"
-                  rightEl={
-                    <button
-                      type="button"
-                      onClick={() => setShowPass(v => !v)}
-                      className="text-gray-600 hover:text-gray-400 transition-colors p-1"
+                {/* Error banner */}
+                <AnimatePresence>
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, height: 0 }}
+                      animate={{ opacity: 1, y: 0, height: 'auto' }}
+                      exit={{ opacity: 0, y: -8, height: 0 }}
+                      className="flex items-center gap-2.5 bg-rose-500/8 border border-rose-500/30 text-rose-400 px-4 py-3 rounded-xl mb-6 text-xs font-mono"
                     >
-                      {showPass ? <EyeOff size={13} /> : <Eye size={13} />}
-                    </button>
-                  }
-                />
-                <StrengthBar password={password} />
-              </div>
+                      <AlertCircle size={13} className="shrink-0" />
+                      {error}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-              {/* Submit */}
-              <motion.button
-                type="submit"
-                disabled={loading}
-                whileHover={{ scale: loading ? 1 : 1.02 }}
-                whileTap={{ scale: loading ? 1 : 0.98 }}
-                className="relative w-full mt-4 py-3.5 rounded-xl font-orbitron font-black text-sm tracking-widest uppercase overflow-hidden transition-all duration-300 disabled:opacity-60 group"
-                style={{
-                  background: 'linear-gradient(135deg, #00c4cc, #8A2BE2)',
-                  boxShadow: '0 0 30px rgba(0,240,255,0.3)',
-                }}
-              >
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 overflow-hidden transition-opacity duration-300">
-                  <div className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-700" />
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-orbitron font-bold tracking-widest text-gray-500 uppercase mb-2">Full Name</label>
+                    <NeonInput
+                      icon={User}
+                      type="text"
+                      value={name}
+                      onChange={(e) => { setName(e.target.value); clearError(); }}
+                      placeholder="John Doe"
+                      required
+                      accentColor="#00F0FF"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-orbitron font-bold tracking-widest text-gray-500 uppercase mb-2">Email Address</label>
+                    <NeonInput
+                      icon={Mail}
+                      type="email"
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); clearError(); }}
+                      placeholder="you@example.com"
+                      required
+                      accentColor="#00F0FF"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-orbitron font-bold tracking-widest text-gray-500 uppercase mb-2">Password</label>
+                    <NeonInput
+                      icon={Lock}
+                      type={showPass ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => { setPassword(e.target.value); clearError(); }}
+                      placeholder="Min. 6 characters"
+                      required
+                      minLength={6}
+                      accentColor="#00F0FF"
+                      rightEl={
+                        <button
+                          type="button"
+                          onClick={() => setShowPass(v => !v)}
+                          className="text-gray-600 hover:text-gray-400 transition-colors p-1"
+                        >
+                          {showPass ? <EyeOff size={13} /> : <Eye size={13} />}
+                        </button>
+                      }
+                    />
+                    <StrengthBar password={password} />
+                  </div>
+
+                  {/* Submit */}
+                  <motion.button
+                    type="submit"
+                    disabled={loading}
+                    whileHover={{ scale: loading ? 1 : 1.02 }}
+                    whileTap={{ scale: loading ? 1 : 0.98 }}
+                    className="relative w-full mt-4 py-3.5 rounded-xl font-orbitron font-black text-sm tracking-widest uppercase overflow-hidden transition-all duration-300 disabled:opacity-60 group"
+                    style={{
+                      background: 'linear-gradient(135deg, #00c4cc, #8A2BE2)',
+                      boxShadow: '0 0 30px rgba(0,240,255,0.3)',
+                    }}
+                  >
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 overflow-hidden transition-opacity duration-300">
+                      <div className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-700" />
+                    </div>
+                    <span className="relative flex items-center justify-center gap-2">
+                      {loading
+                        ? <><Loader2 size={15} className="animate-spin" /> Creating account...</>
+                        : <><span>Create Account</span> <ArrowRight size={14} /></>
+                      }
+                    </span>
+                  </motion.button>
+                </form>
+
+                {/* Divider */}
+                <div className="flex items-center gap-3 my-5">
+                  <div className="flex-1 h-px bg-white/5" />
+                  <span className="text-[9px] text-gray-700 font-mono tracking-widest">OR</span>
+                  <div className="flex-1 h-px bg-white/5" />
                 </div>
-                <span className="relative flex items-center justify-center gap-2">
-                  {loading
-                    ? <><Loader2 size={15} className="animate-spin" /> Creating account...</>
-                    : <><span>Create Account</span> <ArrowRight size={14} /></>
-                  }
-                </span>
-              </motion.button>
-            </form>
 
-            {/* Divider */}
-            <div className="flex items-center gap-3 my-5">
-              <div className="flex-1 h-px bg-white/5" />
-              <span className="text-[9px] text-gray-700 font-mono tracking-widest">OR</span>
-              <div className="flex-1 h-px bg-white/5" />
-            </div>
-
-            {/* Login link */}
-            <p className="text-center text-[11px] text-gray-600 font-mono">
-              Already initialized?{' '}
-              <Link to="/login" className="text-neon-blue hover:text-neon-purple transition-colors font-bold">
-                Sign in here
-              </Link>
-            </p>
+                {/* Login link */}
+                <p className="text-center text-[11px] text-gray-600 font-mono">
+                  Already initialized?{' '}
+                  <Link to="/login" className="text-neon-blue hover:text-neon-purple transition-colors font-bold">
+                    Sign in here
+                  </Link>
+                </p>
+              </>
+            )}
           </div>
 
           <p className="text-center text-[9px] text-gray-700 mt-5 font-mono tracking-widest">

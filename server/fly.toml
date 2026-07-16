@@ -1,0 +1,35 @@
+# fly.toml — HARVOX AI Backend on Fly.io
+# Run `fly deploy` from inside the server/ directory
+
+app = "harvox-ai-backend"
+primary_region = "sjc"         # San Jose (closest to California)
+
+[build]
+  dockerfile = "Dockerfile.fly"
+
+[env]
+  NODE_ENV             = "production"
+  PORT                 = "8080"
+  USE_IN_MEMORY_DB     = "false"
+  FREE_DAILY_LIMIT     = "20"
+  PRO_DAILY_LIMIT      = "500"
+  MONGOMS_DISABLE_POSTINSTALL = "1"
+
+[http_service]
+  internal_port        = 8080
+  force_https          = true
+  auto_stop_machines   = true
+  auto_start_machines  = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period  = "10s"
+    interval      = "30s"
+    method        = "GET"
+    timeout       = "5s"
+    path          = "/api/health"
+
+[[vm]]
+  memory   = "256mb"
+  cpu_kind = "shared"
+  cpus     = 1
