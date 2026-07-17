@@ -365,9 +365,9 @@
     "semantic_hash": ""
   },
   "client/src/store/authStore.js": {
-    "mtime": 1780216529.4886231,
-    "ast_hash": "1953256aa0c5183e502922b0b63ce104",
-    "semantic_hash": "1953256aa0c5183e502922b0b63ce104"
+    "mtime": 1784296226.9426765,
+    "ast_hash": "0666d976ae7ac6f761c1fd3ba08cbe82",
+    "semantic_hash": ""
   },
   "client/src/store/sidebarStore.js": {
     "mtime": 1781805596.5158541,
@@ -395,8 +395,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1783279255.763106,
-    "ast_hash": "ccdee94dde3c0b648bd579c3478e0ac0",
+    "mtime": 1784318075.9512067,
+    "ast_hash": "d01121721273caf39688a029f1cd6943",
     "semantic_hash": ""
   },
   "railway.json": {
@@ -540,8 +540,8 @@
     "semantic_hash": ""
   },
   "server/server.js": {
-    "mtime": 1784228058.2953503,
-    "ast_hash": "5daeb410037fa5b1f26f2e9d30ba70e5",
+    "mtime": 1784318095.0842073,
+    "ast_hash": "76476c3038570e2b563dc670466ef5e3",
     "semantic_hash": ""
   },
   "server/services/aiProviderManager.js": {
@@ -810,8 +810,8 @@
     "semantic_hash": ""
   },
   "vercel.json": {
-    "mtime": 1783301499.9417808,
-    "ast_hash": "b589984bf18d335f6e7e933a6d202263",
+    "mtime": 1784318116.941074,
+    "ast_hash": "32775a13224bde7fa38ca9c2e523d890",
     "semantic_hash": ""
   },
   "client/src/config/supabaseClient.js": {
@@ -872,6 +872,11 @@
   "server/scripts/seed_test_data.js": {
     "mtime": 1784295320.281181,
     "ast_hash": "e747dc4ba823641e82e52aca8824d76f",
+    "semantic_hash": ""
+  },
+  "api/index.js": {
+    "mtime": 1784318103.57377,
+    "ast_hash": "d78c545ff29b2d964cecaebcd5140b8d",
     "semantic_hash": ""
   }
 }

@@ -1,16 +1,16 @@
 # Graph Report - harvox_ai  (2026-07-17)
 
 ## Corpus Check
-- 167 files · ~250,153 words
+- 168 files · ~250,709 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 955 nodes · 1912 edges · 57 communities (48 shown, 9 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 56 edges (avg confidence: 0.59)
+- 969 nodes · 1928 edges · 61 communities (53 shown, 8 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 55 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `48e1addd`
+- Built from commit: `4fc320db`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -51,16 +51,20 @@
 - [[_COMMUNITY_RightPanel.jsx|RightPanel.jsx]]
 - [[_COMMUNITY_UserAnalytics.js|UserAnalytics.js]]
 - [[_COMMUNITY_settingsRoutes.js|settingsRoutes.js]]
+- [[_COMMUNITY_memoryService.js|memoryService.js]]
 - [[_COMMUNITY_Client Entry Point|Client Entry Point]]
+- [[_COMMUNITY_ChatMessage.jsx|ChatMessage.jsx]]
 - [[_COMMUNITY_geminiModels.js|geminiModels.js]]
 - [[_COMMUNITY_Gamification Award Badges|Gamification Award Badges]]
 - [[_COMMUNITY_Creator Portrait (HK)|Creator Portrait (HK)]]
 - [[_COMMUNITY_3D Creation Studio Workspace|3D Creation Studio Workspace]]
 - [[_COMMUNITY_Chat.jsx|Chat.jsx]]
+- [[_COMMUNITY_studyModule.js|studyModule.js]]
+- [[_COMMUNITY_Register.jsx|Register.jsx]]
 - [[_COMMUNITY_CommandPalette.jsx|CommandPalette.jsx]]
 - [[_COMMUNITY_vercel.json|vercel.json]]
 - [[_COMMUNITY_subscription.js|subscription.js]]
-- [[_COMMUNITY_cerebrasProvider.js|cerebrasProvider.js]]
+- [[_COMMUNITY_geminiService.js|geminiService.js]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `logActivity()` - 162 edges
@@ -83,8 +87,8 @@
   client/src/pages/auth/Login.jsx → server/controllers/authController.js
 - `Register()` --calls--> `register()`  [INFERRED]
   client/src/pages/auth/Register.jsx → server/controllers/authController.js
-- `XTerm()` --calls--> `io`  [INFERRED]
-  client/src/components/terminal/XTerm.jsx → server/server.js
+- `CI Workflow` --references--> `Client Entry Point`  [INFERRED]
+  .github/workflows/ci.yml → client/index.html
 
 ## Import Cycles
 - 3-file cycle: `server/services/automation/modules/fileModule.js -> server/services/rollbackService.js -> server/services/automationService.js -> server/services/automation/modules/fileModule.js`
@@ -93,43 +97,43 @@
 - **Harvox AI Technology Stack** — docker_compose_harvox_app, mongodb, groq_api, gemini_api [EXTRACTED 1.00]
 - **Continuous Integration Pipeline** — github_workflows_ci_yml, docker_compose_yml, client_index_html [INFERRED 0.85]
 
-## Communities (57 total, 9 thin omitted)
+## Communities (61 total, 8 thin omitted)
 
 ### Community 1 - "Landing.jsx"
-Cohesion: 0.14
-Nodes (10): FOMOBadge(), articles, faqs, features, HologramOrb, Landing(), plans, testimonials (+2 more)
+Cohesion: 0.06
+Nodes (26): BackgroundEffects(), CyberGrid(), GradientBlobs(), HologramWaves(), Starfield3D(), Card, CardContent, CardDescription (+18 more)
 
 ### Community 2 - "dependencies"
 Cohesion: 0.04
-Nodes (46): dependencies, axios, clsx, date-fns, file-saver, framer-motion, html2canvas, jspdf (+38 more)
+Nodes (48): dependencies, axios, clsx, date-fns, file-saver, framer-motion, html2canvas, jspdf (+40 more)
 
 ### Community 3 - "mediaModule.js"
-Cohesion: 0.28
-Nodes (8): registerModule(), deployRailway(), deployVercel(), __dirname, getEnvVars(), isCmdAvailable(), setEnvVar(), WORKSPACE_DIR
+Cohesion: 0.32
+Nodes (7): deployRailway(), deployVercel(), __dirname, getEnvVars(), isCmdAvailable(), setEnvVar(), WORKSPACE_DIR
 
 ### Community 4 - "automationService.js"
-Cohesion: 0.12
-Nodes (31): openUnreadChats(), openWhatsApp(), openWhatsAppChat(), searchWhatsAppContact(), sendWhatsAppMessage(), APP_MATRIX, backupProject(), clickElement() (+23 more)
+Cohesion: 0.10
+Nodes (25): APP_MATRIX, backupProject(), clickElement(), createComponent(), createFile(), createProject(), __dirname, draftEmail() (+17 more)
 
 ### Community 5 - "NeonButton.jsx"
-Cohesion: 0.14
-Nodes (10): GlassCard(), NeonButton(), PremiumLockOverlay(), languages, ICON_MAP, PRESETS, COMPLEXITY, STACKS (+2 more)
+Cohesion: 0.17
+Nodes (7): GlassCard(), NeonButton(), PremiumLockOverlay(), ICON_MAP, COMPLEXITY, STACKS, profileAPI
 
 ### Community 6 - "Settings.jsx"
-Cohesion: 0.08
-Nodes (26): CATEGORIES, ModelSelector(), PROVIDER_BADGES, SPEED_COLORS, MODES, ModeSelector(), AI_PROVIDER_META, AI_PROVIDERS (+18 more)
+Cohesion: 0.11
+Nodes (21): CATEGORIES, ModelSelector(), PROVIDER_BADGES, SPEED_COLORS, AI_PROVIDER_META, AI_PROVIDERS, ALL_MODELS, CEREBRAS_MODELS (+13 more)
 
 ### Community 7 - "WorkspaceOS.jsx"
 Cohesion: 0.11
-Nodes (13): @xterm/xterm, actions, TerminalPanel(), XTerm(), Holographic3DCard(), FileExplorer(), getFileColor(), getFileIcon() (+5 more)
+Nodes (12): @xterm/xterm, actions, TerminalPanel(), XTerm(), Holographic3DCard(), FileExplorer(), getFileColor(), getFileIcon() (+4 more)
 
 ### Community 8 - "aiProviderManager.js"
-Cohesion: 0.08
-Nodes (10): calculateCost(), chat(), estimateTokens(), FAILOVER_CHAIN, MODEL_PRICING, providers, routePrompt(), saveLog() (+2 more)
+Cohesion: 0.09
+Nodes (8): calculateCost(), chat(), estimateTokens(), FAILOVER_CHAIN, MODEL_PRICING, providers, routePrompt(), saveLog()
 
 ### Community 9 - "App.jsx"
-Cohesion: 0.05
-Nodes (36): react, About, AdminDashboard, AdminPayments, AdminSettings, AdminUsers, App(), AutomationCenter (+28 more)
+Cohesion: 0.07
+Nodes (27): About, AdminDashboard, AdminPayments, AdminSettings, AdminUsers, App(), AutomationCenter, Billing (+19 more)
 
 ### Community 10 - "dependencies"
 Cohesion: 0.08
@@ -140,56 +144,60 @@ Cohesion: 0.13
 Nodes (19): createReminder(), createTask(), __dirname, DISTRACTING_APPS, enableFocusMode(), enableMeetingMode(), enableStudyMode(), generateDailyPlan() (+11 more)
 
 ### Community 12 - "automationController.js"
-Cohesion: 0.05
-Nodes (73): createTask(), deleteTask(), detectAndPlan(), executeBuiltinWorkflow(), executeCustomWorkflow(), executePlan(), executeStep(), getActiveRuns() (+65 more)
+Cohesion: 0.06
+Nodes (66): createTask(), deleteTask(), detectAndPlan(), executeBuiltinWorkflow(), executeCustomWorkflow(), executePlan(), executeStep(), getActiveRuns() (+58 more)
 
 ### Community 13 - "VoiceAssistant.jsx"
-Cohesion: 0.10
-Nodes (11): AGENT_BADGES, TaskPlanWidget(), VoiceOrb(), AGENT_BADGES, AI_MODELS, BSCS_SUBJECTS, detectModelSwitch(), ELEVENLABS_IDS (+3 more)
+Cohesion: 0.09
+Nodes (9): VoiceOrb(), AGENT_BADGES, AI_MODELS, BSCS_SUBJECTS, detectModelSwitch(), ELEVENLABS_IDS, ELEVENLABS_VOICES, VoiceAssistant() (+1 more)
 
 ### Community 14 - "package.json"
-Cohesion: 0.07
-Nodes (26): harvox-app Service, Docker Compose Configuration, Gemini AI API, Groq AI API, MongoDB, dependencies, @google/generative-ai, mongodb (+18 more)
+Cohesion: 0.05
+Nodes (39): harvox-app Service, Docker Compose Configuration, Gemini AI API, Groq AI API, MongoDB, dependencies, axios, cors (+31 more)
 
 ### Community 15 - "useAuthStore"
 Cohesion: 0.12
-Nodes (10): jszip, AdminRoute(), ProtectedRoute(), AdminLayout(), Profile(), ProjectGenerator(), Login(), Register() (+2 more)
+Nodes (10): AdminRoute(), ProtectedRoute(), AdminLayout(), ROUTE_META, TopBar(), supabase, Billing(), Profile() (+2 more)
 
 ### Community 17 - "browserModule.js"
-Cohesion: 0.15
-Nodes (22): activateWindow(), browserBookmark(), browserCloseTab(), browserDownloads(), browserNavigate(), browserNewTab(), browserNextTab(), browserReopenTab() (+14 more)
+Cohesion: 0.10
+Nodes (29): activateWindow(), browserBookmark(), browserCloseTab(), browserDownloads(), browserNavigate(), browserNewTab(), browserNextTab(), browserReopenTab() (+21 more)
 
 ### Community 18 - "logActivity"
 Cohesion: 0.14
 Nodes (20): __dirname, generateApiRoute(), generateReadme(), gitAdd(), gitCommit(), gitInit(), gitPush(), gitStatus() (+12 more)
 
 ### Community 19 - "automationRegistry.js"
-Cohesion: 0.27
-Nodes (7): DashboardLayout(), NAV_GROUPS, NavItem(), Sidebar(), ROUTE_META, TopBar(), useSidebarStore
+Cohesion: 0.29
+Nodes (8): DashboardLayout(), NAV_GROUPS, NavItem(), Sidebar(), HologramCard(), Spotlight(), useSidebarStore, cn()
 
 ### Community 20 - "auth.js"
 Cohesion: 0.15
-Nodes (7): BrainMemorySettings(), Billing(), api, memoryAPI, paymentsAPI, profileAPI, userAPI
+Nodes (7): BrainMemorySettings(), api, authAPI, memoryAPI, paymentsAPI, settingsAPI, userAPI
 
 ### Community 21 - "server.js"
 Cohesion: 0.05
-Nodes (40): connectDB(), getDBHealth(), ensurePublicRecords(), forgotPassword(), getMe(), login(), register(), sendUser() (+32 more)
+Nodes (41): connectDB(), getDBHealth(), ensurePublicRecords(), forgotPassword(), getMe(), login(), register(), sendUser() (+33 more)
+
+### Community 22 - "Chat.jsx"
+Cohesion: 0.14
+Nodes (5): ChatErrorBoundary, MODES, ModeSelector(), getModelById(), Chat()
 
 ### Community 23 - "cn"
-Cohesion: 0.43
-Nodes (7): composeEmail(), openGmail(), openGmailCompose(), openGmailInbox(), openOutlook(), openUrl(), searchGmail()
+Cohesion: 0.13
+Nodes (15): hasAction(), _modules, registerModule(), _registry, composeEmail(), openGmail(), openGmailCompose(), openGmailInbox() (+7 more)
 
 ### Community 24 - "api.js"
-Cohesion: 0.08
-Nodes (48): mediaMute(), mediaNext(), mediaPlayPause(), mediaPrev(), mediaStop(), mediaVolumeDown(), mediaVolumeUp(), openDisneyPlus() (+40 more)
+Cohesion: 0.13
+Nodes (33): openDisneyPlus(), openNetflix(), openPrimeVideo(), openYouTubeMusic(), spotifyLikedSongs(), spotifyOpen(), youtubeOpen(), youtubePlay() (+25 more)
 
 ### Community 25 - "fileModule.js"
 Cohesion: 0.26
 Nodes (14): compressFolder(), createFile(), createFolder(), deleteFile(), __dirname, extractZip(), findFile(), moveFile() (+6 more)
 
 ### Community 26 - "db.js"
-Cohesion: 0.25
-Nodes (7): lockComputer(), logoutUser(), restartComputer(), shutdownComputer(), __dirname, runPSCommand(), TEMP_DIR
+Cohesion: 0.17
+Nodes (21): mediaMute(), mediaNext(), mediaPlayPause(), mediaPrev(), mediaStop(), mediaVolumeDown(), mediaVolumeUp(), spotifyNext() (+13 more)
 
 ### Community 27 - "Dashboard.jsx"
 Cohesion: 0.20
@@ -200,8 +208,8 @@ Cohesion: 0.27
 Nodes (10): buildTree(), createFileOrFolder(), __dirname, ensureWorkspace(), __filename, getFileContent(), getFileTree(), getSafePath() (+2 more)
 
 ### Community 29 - "ChatMessage.jsx"
-Cohesion: 0.29
-Nodes (6): Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
+Cohesion: 0.15
+Nodes (6): PERSONALITIES, PROMPTS, operatorMemories, testUsers, ACTION_MAP, FIELD_MAP
 
 ### Community 30 - "Chat.jsx"
 Cohesion: 0.22
@@ -211,25 +219,41 @@ Nodes (4): C, Chat(), useMediaQuery(), chatAPI
 Cohesion: 0.20
 Nodes (9): build, builder, dockerfilePath, deploy, healthcheckPath, healthcheckTimeout, restartPolicyMaxRetries, restartPolicyType (+1 more)
 
+### Community 32 - "authController.js"
+Cohesion: 0.30
+Nodes (12): autoTagMemory(), createMemory(), deleteMemory(), detectConflicts(), exportMemories(), getMemories(), mapMemory(), summarizeIdentity() (+4 more)
+
 ### Community 33 - "RightPanel.jsx"
-Cohesion: 0.07
-Nodes (46): PERSONALITIES, PROMPTS, chatAI(), getAIMetrics(), getAIOptions(), debugCode(), explainCode(), generateCode() (+38 more)
+Cohesion: 0.21
+Nodes (17): chatAI(), getAIMetrics(), getAIOptions(), debugCode(), explainCode(), generateCode(), analyzeFile(), generateProject() (+9 more)
 
 ### Community 34 - "UserAnalytics.js"
 Cohesion: 0.60
 Nodes (5): createProject(), getProjectDetails(), getProjects(), mapProject(), updateProjectLayout()
 
 ### Community 36 - "settingsRoutes.js"
-Cohesion: 0.60
-Nodes (3): HologramCard(), Spotlight(), cn()
+Cohesion: 0.22
+Nodes (4): languages, PRESETS, aiAPI, noteAPI
+
+### Community 37 - "memoryService.js"
+Cohesion: 0.28
+Nodes (4): ensureDefaultMemories(), getContextPrompt(), CentralEventBus, eventBus
 
 ### Community 38 - "Client Entry Point"
 Cohesion: 0.40
 Nodes (5): Client Entry Point, AI Chat 3D Illustration, Holographic Brain AI Visualization, Main React Entry, CI Workflow
 
+### Community 39 - "ChatMessage.jsx"
+Cohesion: 0.33
+Nodes (3): AGENT_BADGES, TaskPlanWidget(), automationAPI
+
 ### Community 48 - "Chat.jsx"
 Cohesion: 0.33
 Nodes (5): buildCommand, framework, installCommand, outputDirectory, rewrites
+
+### Community 49 - "studyModule.js"
+Cohesion: 0.29
+Nodes (6): __dirname, generateFlashcards(), generateMCQs(), generateNotes(), logStudy(), WORKSPACE_DIR
 
 ### Community 51 - "CommandPalette.jsx"
 Cohesion: 0.60
@@ -237,31 +261,31 @@ Nodes (5): run(), testCerebras(), testGemini(), testGroq(), testOpenRouter()
 
 ### Community 52 - "vercel.json"
 Cohesion: 0.33
-Nodes (5): buildCommand, framework, installCommand, outputDirectory, rewrites
+Nodes (5): buildCommand, installCommand, outputDirectory, rewrites, version
 
 ### Community 53 - "subscription.js"
-Cohesion: 0.20
-Nodes (5): HologramOrb(), LoadingOrb(), SplineComponent(), SplineErrorBoundary, SplineReact
+Cohesion: 0.40
+Nodes (4): react, automationActions, CommandPalette(), navigationActions
 
 ## Knowledge Gaps
-- **218 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+213 more)
+- **230 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+225 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `showToast()` connect `productivityModule.js` to `api.js`, `auth.js`, `Settings.jsx`?**
-  _High betweenness centrality (0.251) - this node is a cross-community bridge._
-- **Why does `logActivity()` connect `automationService.js` to `RightPanel.jsx`, `mediaModule.js`, `productivityModule.js`, `automationController.js`, `browserModule.js`, `logActivity`, `cn`, `api.js`, `fileModule.js`, `db.js`?**
-  _High betweenness centrality (0.207) - this node is a cross-community bridge._
-- **Why does `useAuthStore` connect `useAuthStore` to `aiController.js`, `NeonButton.jsx`, `Settings.jsx`, `App.jsx`, `VoiceAssistant.jsx`, `automationRegistry.js`, `auth.js`, `Dashboard.jsx`?**
-  _High betweenness centrality (0.191) - this node is a cross-community bridge._
+- **Why does `showToast()` connect `productivityModule.js` to `db.js`, `auth.js`, `Settings.jsx`?**
+  _High betweenness centrality (0.288) - this node is a cross-community bridge._
+- **Why does `useAuthStore` connect `useAuthStore` to `aiController.js`, `dependencies`, `NeonButton.jsx`, `Settings.jsx`, `App.jsx`, `VoiceAssistant.jsx`, `Register.jsx`, `automationRegistry.js`, `auth.js`, `Chat.jsx`, `Dashboard.jsx`?**
+  _High betweenness centrality (0.233) - this node is a cross-community bridge._
+- **Why does `logActivity()` connect `api.js` to `authController.js`, `RightPanel.jsx`, `mediaModule.js`, `automationService.js`, `memoryService.js`, `productivityModule.js`, `automationController.js`, `browserModule.js`, `logActivity`, `studyModule.js`, `cn`, `fileModule.js`, `db.js`, `ChatMessage.jsx`?**
+  _High betweenness centrality (0.212) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _218 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _230 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Landing.jsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.14166666666666666 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05555555555555555 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**
-  _Cohesion score 0.0425531914893617 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.04081632653061224 - nodes in this community are weakly interconnected._
 - **Should `automationService.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.12310606060606061 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09846153846153846 - nodes in this community are weakly interconnected._

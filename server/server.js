@@ -187,7 +187,7 @@ app.use('/api/memory', memoryRoutes);
 app.use('/api/automation', automationRoutes);
 
 // ── Static Client (Production) ─────────────────────────────────────────────────
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
   const distPath = path.join(path.resolve(), 'client/dist');
   app.use(express.static(distPath));
   app.get('*', (req, res, next) => {
@@ -200,56 +200,64 @@ app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({ message: err.message || 'Server error' });
 });
 
-// ── WebSocket / Socket.IO ──────────────────────────────────────────────────────
+// ── WebSocket / Socket.IO & Listen (Only outside Vercel Serverless) ─────────────
 const httpServer = http.createServer(app);
-const io = new Server(httpServer, {
-  cors: {
-    origin(origin, callback) {
-      if (corsWildcard || !origin) return callback(null, true);
-      if (
-        origin.endsWith('.railway.app') ||
-        origin.endsWith('.up.railway.app') ||
-        origin.endsWith('.vercel.app')
-      ) {
-        return callback(null, true);
-      }
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      callback(new Error('Not allowed by CORS'));
+
+if (!process.env.VERCEL) {
+  const io = new Server(httpServer, {
+    cors: {
+      origin(origin, callback) {
+        if (corsWildcard || !origin) return callback(null, true);
+        if (
+          origin.endsWith('.railway.app') ||
+          origin.endsWith('.up.railway.app') ||
+          origin.endsWith('.vercel.app')
+        ) {
+          return callback(null, true);
+        }
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        callback(new Error('Not allowed by CORS'));
+      },
+      credentials: true,
     },
-    credentials: true,
-  },
-});
-
-initializeTerminalSocket(io);
-
-startServer().then(() => {
-  httpServer.listen(PORT, () => {
-    console.log(`🚀 HARVOX AI server running on port ${PORT}`);
-    if (!isAIConfigured()) {
-      console.warn('⚠️  Warning: GROQ_API_KEY not set — AI features will fail');
-    }
   });
 
-  httpServer.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-      console.error(`Port ${PORT} is already in use.`);
-      process.exit(1);
+  initializeTerminalSocket(io);
+
+  startServer().then(() => {
+    httpServer.listen(PORT, () => {
+      console.log(`🚀 HARVOX AI server running on port ${PORT}`);
+      if (!isAIConfigured()) {
+        console.warn('⚠️  Warning: GROQ_API_KEY not set — AI features will fail');
+      }
+    });
+
+    httpServer.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use.`);
+        process.exit(1);
+      } else {
+        throw err;
+      }
+    });
+  });
+
+  process.on('uncaughtException', (err) => {
+    if (
+      err.message &&
+      (err.message.includes('AttachConsole') ||
+        err.message.includes('conpty') ||
+        err.message.includes('forEach'))
+    ) {
+      console.warn('[PTY] Caught node-pty Windows error (non-fatal):', err.message);
     } else {
-      throw err;
+      console.error('[FATAL] Uncaught exception:', err);
+      process.exit(1);
     }
   });
-});
+} else {
+  // In Vercel serverless functions, only connect DB and trigger seed
+  startServer();
+}
 
-process.on('uncaughtException', (err) => {
-  if (
-    err.message &&
-    (err.message.includes('AttachConsole') ||
-      err.message.includes('conpty') ||
-      err.message.includes('forEach'))
-  ) {
-    console.warn('[PTY] Caught node-pty Windows error (non-fatal):', err.message);
-  } else {
-    console.error('[FATAL] Uncaught exception:', err);
-    process.exit(1);
-  }
-});
+export default app;
