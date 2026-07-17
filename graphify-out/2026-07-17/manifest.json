@@ -10,9 +10,9 @@
     "semantic_hash": "33fad9c02cb0ec6d6030369ef6347d57"
   },
   "client/src/App.jsx": {
-    "mtime": 1784229987.632956,
-    "ast_hash": "3663d477c8cee502a37b40528a7b9048",
-    "semantic_hash": ""
+    "mtime": 1782542370.050099,
+    "ast_hash": "40dd4b544032e15e9dc0635101d7b3a1",
+    "semantic_hash": "40dd4b544032e15e9dc0635101d7b3a1"
   },
   "client/src/components/auth/AdminRoute.jsx": {
     "mtime": 1780216529.3657286,
@@ -340,9 +340,9 @@
     "semantic_hash": "679cecd8c1abfc1916c6b2570115bde4"
   },
   "client/src/pages/auth/Register.jsx": {
-    "mtime": 1784230034.8058774,
-    "ast_hash": "37315dd07c36b18d69aa7639363576c4",
-    "semantic_hash": ""
+    "mtime": 1782397156.3537016,
+    "ast_hash": "68e91d67f71a9569f68913b00df0c722",
+    "semantic_hash": "68e91d67f71a9569f68913b00df0c722"
   },
   "client/src/pages/public/About.jsx": {
     "mtime": 1780655635.7792268,
@@ -425,8 +425,8 @@
     "semantic_hash": ""
   },
   "server/controllers/authController.js": {
-    "mtime": 1784294852.115309,
-    "ast_hash": "04d77e1050ea6b7dd4d617ee463e1d83",
+    "mtime": 1784227591.7667186,
+    "ast_hash": "148fc7f0ed6b1c4cf44f7267f5b6708f",
     "semantic_hash": ""
   },
   "server/controllers/automationController.js": {
@@ -455,8 +455,8 @@
     "semantic_hash": ""
   },
   "server/middleware/auth.js": {
-    "mtime": 1784294861.225545,
-    "ast_hash": "8cb0cf3a626fa261792f0e2b4a0ce863",
+    "mtime": 1784227562.4180942,
+    "ast_hash": "8f89852d17082de49d2f3a67ee3a41b0",
     "semantic_hash": ""
   },
   "server/middleware/subscription.js": {
@@ -842,36 +842,6 @@
   "supabase_schema.sql": {
     "mtime": 1784227637.6562238,
     "ast_hash": "410aaeac28da821b74fc1747e7316f4a",
-    "semantic_hash": ""
-  },
-  "client/src/pages/auth/ForgotPassword.jsx": {
-    "mtime": 1784229585.3281896,
-    "ast_hash": "0624778eb8429731b839cac6f826dc33",
-    "semantic_hash": ""
-  },
-  "client/src/pages/auth/ResetPassword.jsx": {
-    "mtime": 1784230051.822845,
-    "ast_hash": "bfaf5a0f59c3239d78224d327aec6d23",
-    "semantic_hash": ""
-  },
-  "server/scratch/test_admin_create.js": {
-    "mtime": 1784294577.2520158,
-    "ast_hash": "a83f0362f6c043d9d63f71ecc23035d7",
-    "semantic_hash": ""
-  },
-  "server/scratch/test_supabase.js": {
-    "mtime": 1784294534.2257018,
-    "ast_hash": "803ef206306520a16d90a9840894f62e",
-    "semantic_hash": ""
-  },
-  "server/scripts/seed_operator_memory.js": {
-    "mtime": 1784295372.6223035,
-    "ast_hash": "ee6de83919645b1bf81685b9c0bc1582",
-    "semantic_hash": ""
-  },
-  "server/scripts/seed_test_data.js": {
-    "mtime": 1784295320.281181,
-    "ast_hash": "e747dc4ba823641e82e52aca8824d76f",
     "semantic_hash": ""
   }
 }

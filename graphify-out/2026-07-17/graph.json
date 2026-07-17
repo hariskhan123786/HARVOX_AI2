@@ -310,7 +310,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "client_package_dependencies_jszip",
-      "community": 15,
+      "community": 2,
       "norm_label": "jszip"
     },
     {
@@ -340,7 +340,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "client_package_dependencies_react",
-      "community": 9,
+      "community": 36,
       "norm_label": "react"
     },
     {
@@ -594,30 +594,10 @@
       "norm_label": "register"
     },
     {
-      "label": "ForgotPassword",
-      "file_type": "code",
-      "source_file": "client/src/App.jsx",
-      "source_location": "L15",
-      "_origin": "ast",
-      "id": "client_src_app_forgotpassword",
-      "community": 9,
-      "norm_label": "forgotpassword"
-    },
-    {
-      "label": "ResetPassword",
-      "file_type": "code",
-      "source_file": "client/src/App.jsx",
-      "source_location": "L16",
-      "_origin": "ast",
-      "id": "client_src_app_resetpassword",
-      "community": 9,
-      "norm_label": "resetpassword"
-    },
-    {
       "label": "Dashboard",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L19",
+      "source_location": "L17",
       "_origin": "ast",
       "id": "client_src_app_dashboard",
       "community": 9,
@@ -627,7 +607,7 @@
       "label": "Chat",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L20",
+      "source_location": "L18",
       "_origin": "ast",
       "id": "client_src_app_chat",
       "community": 9,
@@ -637,7 +617,7 @@
       "label": "CodeGenerator",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L21",
+      "source_location": "L19",
       "_origin": "ast",
       "id": "client_src_app_codegenerator",
       "community": 9,
@@ -647,7 +627,7 @@
       "label": "DebugAssistant",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L22",
+      "source_location": "L20",
       "_origin": "ast",
       "id": "client_src_app_debugassistant",
       "community": 9,
@@ -657,7 +637,7 @@
       "label": "Notes",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L23",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "client_src_app_notes",
       "community": 9,
@@ -667,7 +647,7 @@
       "label": "Profile",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L24",
+      "source_location": "L22",
       "_origin": "ast",
       "id": "client_src_app_profile",
       "community": 9,
@@ -677,7 +657,7 @@
       "label": "Settings",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L25",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "client_src_app_settings",
       "community": 9,
@@ -687,7 +667,7 @@
       "label": "Billing",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L26",
+      "source_location": "L24",
       "_origin": "ast",
       "id": "client_src_app_billing",
       "community": 9,
@@ -697,7 +677,7 @@
       "label": "VoiceAssistant",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L27",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "client_src_app_voiceassistant",
       "community": 9,
@@ -707,7 +687,7 @@
       "label": "FileAnalyzer",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L28",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "client_src_app_fileanalyzer",
       "community": 9,
@@ -717,7 +697,7 @@
       "label": "ProjectGenerator",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L29",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "client_src_app_projectgenerator",
       "community": 9,
@@ -727,7 +707,7 @@
       "label": "WorkspaceOS",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L30",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "client_src_app_workspaceos",
       "community": 9,
@@ -737,7 +717,7 @@
       "label": "BrainCore",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L31",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "client_src_app_braincore",
       "community": 9,
@@ -747,7 +727,7 @@
       "label": "AutomationCenter",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L32",
+      "source_location": "L30",
       "_origin": "ast",
       "id": "client_src_app_automationcenter",
       "community": 9,
@@ -757,7 +737,7 @@
       "label": "AdminDashboard",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L35",
+      "source_location": "L33",
       "_origin": "ast",
       "id": "client_src_app_admindashboard",
       "community": 9,
@@ -767,7 +747,7 @@
       "label": "AdminUsers",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L36",
+      "source_location": "L34",
       "_origin": "ast",
       "id": "client_src_app_adminusers",
       "community": 9,
@@ -777,7 +757,7 @@
       "label": "AdminPayments",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L37",
+      "source_location": "L35",
       "_origin": "ast",
       "id": "client_src_app_adminpayments",
       "community": 9,
@@ -787,7 +767,7 @@
       "label": "AdminSettings",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L38",
+      "source_location": "L36",
       "_origin": "ast",
       "id": "client_src_app_adminsettings",
       "community": 9,
@@ -797,7 +777,7 @@
       "label": "App()",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L44",
+      "source_location": "L42",
       "_origin": "ast",
       "id": "client_src_app_app",
       "community": 9,
@@ -810,7 +790,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_auth_adminroute",
-      "community": 15,
+      "community": 9,
       "norm_label": "adminroute.jsx"
     },
     {
@@ -820,7 +800,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "client_src_components_auth_adminroute_adminroute",
-      "community": 15,
+      "community": 9,
       "norm_label": "adminroute()"
     },
     {
@@ -870,7 +850,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_backgroundeffects",
-      "community": 9,
+      "community": 1,
       "norm_label": "backgroundeffects.jsx"
     },
     {
@@ -880,7 +860,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "client_src_components_background_backgroundeffects_backgroundeffects",
-      "community": 9,
+      "community": 1,
       "norm_label": "backgroundeffects()"
     },
     {
@@ -890,7 +870,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_cybergrid",
-      "community": 9,
+      "community": 1,
       "norm_label": "cybergrid.jsx"
     },
     {
@@ -900,7 +880,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_cybergrid_cybergrid",
-      "community": 9,
+      "community": 1,
       "norm_label": "cybergrid()"
     },
     {
@@ -930,7 +910,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_gradientblobs",
-      "community": 9,
+      "community": 1,
       "norm_label": "gradientblobs.jsx"
     },
     {
@@ -940,7 +920,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_gradientblobs_gradientblobs",
-      "community": 9,
+      "community": 1,
       "norm_label": "gradientblobs()"
     },
     {
@@ -950,7 +930,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_hologramwaves",
-      "community": 9,
+      "community": 1,
       "norm_label": "hologramwaves.jsx"
     },
     {
@@ -960,7 +940,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_hologramwaves_hologramwaves",
-      "community": 9,
+      "community": 1,
       "norm_label": "hologramwaves()"
     },
     {
@@ -970,7 +950,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_starfield3d",
-      "community": 9,
+      "community": 1,
       "norm_label": "starfield3d.jsx"
     },
     {
@@ -980,7 +960,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "client_src_components_background_starfield3d_starfield3d",
-      "community": 9,
+      "community": 1,
       "norm_label": "starfield3d()"
     },
     {
@@ -1080,7 +1060,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_chat_chatmessage",
-      "community": 13,
+      "community": 50,
       "norm_label": "chatmessage.jsx"
     },
     {
@@ -1090,7 +1070,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "client_src_components_chat_chatmessage_safemarkdown",
-      "community": 13,
+      "community": 50,
       "norm_label": "safemarkdown()"
     },
     {
@@ -1100,7 +1080,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "client_src_components_chat_chatmessage_chatmessage",
-      "community": 13,
+      "community": 50,
       "norm_label": "chatmessage()"
     },
     {
@@ -1110,7 +1090,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_chat_modeselector",
-      "community": 6,
+      "community": 22,
       "norm_label": "modeselector.jsx"
     },
     {
@@ -1120,7 +1100,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "client_src_components_chat_modeselector_modes",
-      "community": 6,
+      "community": 22,
       "norm_label": "modes"
     },
     {
@@ -1130,7 +1110,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "client_src_components_chat_modeselector_modeselector",
-      "community": 6,
+      "community": 22,
       "norm_label": "modeselector()"
     },
     {
@@ -1200,7 +1180,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_chat_taskplanwidget",
-      "community": 13,
+      "community": 50,
       "norm_label": "taskplanwidget.jsx"
     },
     {
@@ -1210,7 +1190,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "client_src_components_chat_taskplanwidget_agent_badges",
-      "community": 13,
+      "community": 50,
       "norm_label": "agent_badges"
     },
     {
@@ -1220,7 +1200,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "client_src_components_chat_taskplanwidget_taskplanwidget",
-      "community": 13,
+      "community": 50,
       "norm_label": "taskplanwidget()"
     },
     {
@@ -1280,7 +1260,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_layout_adminlayout",
-      "community": 15,
+      "community": 5,
       "norm_label": "adminlayout.jsx"
     },
     {
@@ -1290,7 +1270,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "client_src_components_layout_adminlayout_adminlayout",
-      "community": 15,
+      "community": 9,
       "norm_label": "adminlayout()"
     },
     {
@@ -1300,7 +1280,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_layout_dashboardlayout",
-      "community": 19,
+      "community": 15,
       "norm_label": "dashboardlayout.jsx"
     },
     {
@@ -1320,7 +1300,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_layout_rightpanel",
-      "community": 0,
+      "community": 15,
       "norm_label": "rightpanel.jsx"
     },
     {
@@ -1330,7 +1310,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "client_src_components_layout_rightpanel_hudcard",
-      "community": 0,
+      "community": 15,
       "norm_label": "hudcard()"
     },
     {
@@ -1340,7 +1320,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "client_src_components_layout_rightpanel_progressbar",
-      "community": 0,
+      "community": 15,
       "norm_label": "progressbar()"
     },
     {
@@ -1350,7 +1330,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "client_src_components_layout_rightpanel_metricrow",
-      "community": 0,
+      "community": 15,
       "norm_label": "metricrow()"
     },
     {
@@ -1360,7 +1340,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "client_src_components_layout_rightpanel_uptimeclock",
-      "community": 0,
+      "community": 15,
       "norm_label": "uptimeclock()"
     },
     {
@@ -1370,7 +1350,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "client_src_components_layout_rightpanel_quicktile",
-      "community": 0,
+      "community": 15,
       "norm_label": "quicktile()"
     },
     {
@@ -1380,7 +1360,7 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "client_src_components_layout_rightpanel_kbdrow",
-      "community": 0,
+      "community": 15,
       "norm_label": "kbdrow()"
     },
     {
@@ -1390,7 +1370,7 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "client_src_components_layout_rightpanel_rightpanel",
-      "community": 0,
+      "community": 15,
       "norm_label": "rightpanel()"
     },
     {
@@ -1450,7 +1430,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_layout_topbar",
-      "community": 19,
+      "community": 15,
       "norm_label": "topbar.jsx"
     },
     {
@@ -1460,7 +1440,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "client_src_components_layout_topbar_route_meta",
-      "community": 19,
+      "community": 15,
       "norm_label": "route_meta"
     },
     {
@@ -1470,7 +1450,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "client_src_components_layout_topbar_topbar",
-      "community": 19,
+      "community": 15,
       "norm_label": "topbar()"
     },
     {
@@ -1490,7 +1470,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "client_src_components_settings_brainmemorysettings_brainmemorysettings",
-      "community": 20,
+      "community": 11,
       "norm_label": "brainmemorysettings()"
     },
     {
@@ -1560,7 +1540,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_commandpalette",
-      "community": 9,
+      "community": 36,
       "norm_label": "commandpalette.jsx"
     },
     {
@@ -1570,7 +1550,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "client_src_components_ui_commandpalette_navigationactions",
-      "community": 9,
+      "community": 36,
       "norm_label": "navigationactions"
     },
     {
@@ -1580,7 +1560,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "client_src_components_ui_commandpalette_automationactions",
-      "community": 9,
+      "community": 36,
       "norm_label": "automationactions"
     },
     {
@@ -1590,7 +1570,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "client_src_components_ui_commandpalette_commandpalette",
-      "community": 9,
+      "community": 36,
       "norm_label": "commandpalette()"
     },
     {
@@ -1680,7 +1660,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_hologramorb",
-      "community": 53,
+      "community": 1,
       "norm_label": "hologramorb.jsx"
     },
     {
@@ -1690,7 +1670,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "client_src_components_ui_hologramorb_hologramorb",
-      "community": 53,
+      "community": 1,
       "norm_label": "hologramorb()"
     },
     {
@@ -1800,7 +1780,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_card",
-      "community": 29,
+      "community": 1,
       "norm_label": "card.jsx"
     },
     {
@@ -1810,7 +1790,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "client_src_components_ui_card_card",
-      "community": 29,
+      "community": 1,
       "norm_label": "card"
     },
     {
@@ -1820,7 +1800,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "client_src_components_ui_card_cardheader",
-      "community": 29,
+      "community": 1,
       "norm_label": "cardheader"
     },
     {
@@ -1830,7 +1810,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "client_src_components_ui_card_cardtitle",
-      "community": 29,
+      "community": 1,
       "norm_label": "cardtitle"
     },
     {
@@ -1840,7 +1820,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "client_src_components_ui_card_carddescription",
-      "community": 29,
+      "community": 1,
       "norm_label": "carddescription"
     },
     {
@@ -1850,7 +1830,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "client_src_components_ui_card_cardcontent",
-      "community": 29,
+      "community": 1,
       "norm_label": "cardcontent"
     },
     {
@@ -1860,7 +1840,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "client_src_components_ui_card_cardfooter",
-      "community": 29,
+      "community": 1,
       "norm_label": "cardfooter"
     },
     {
@@ -1870,7 +1850,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_hologram_card",
-      "community": 36,
+      "community": 19,
       "norm_label": "hologram-card.jsx"
     },
     {
@@ -1880,7 +1860,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "client_src_components_ui_hologram_card_hologramcard",
-      "community": 36,
+      "community": 19,
       "norm_label": "hologramcard()"
     },
     {
@@ -1890,7 +1870,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_spline",
-      "community": 53,
+      "community": 1,
       "norm_label": "spline.jsx"
     },
     {
@@ -1900,7 +1880,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splinereact",
-      "community": 53,
+      "community": 1,
       "norm_label": "splinereact"
     },
     {
@@ -1910,7 +1890,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splineerrorboundary",
-      "community": 53,
+      "community": 1,
       "norm_label": "splineerrorboundary"
     },
     {
@@ -1920,7 +1900,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splineerrorboundary_constructor",
-      "community": 53,
+      "community": 1,
       "norm_label": ".constructor()"
     },
     {
@@ -1930,7 +1910,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splineerrorboundary_getderivedstatefromerror",
-      "community": 53,
+      "community": 1,
       "norm_label": ".getderivedstatefromerror()"
     },
     {
@@ -1940,7 +1920,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splineerrorboundary_componentdidcatch",
-      "community": 53,
+      "community": 1,
       "norm_label": ".componentdidcatch()"
     },
     {
@@ -1950,7 +1930,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splineerrorboundary_render",
-      "community": 53,
+      "community": 1,
       "norm_label": ".render()"
     },
     {
@@ -1960,7 +1940,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splinecomponent",
-      "community": 53,
+      "community": 1,
       "norm_label": "splinecomponent()"
     },
     {
@@ -1970,7 +1950,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_spotlight",
-      "community": 36,
+      "community": 19,
       "norm_label": "spotlight.jsx"
     },
     {
@@ -1980,7 +1960,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "client_src_components_ui_spotlight_spotlight",
-      "community": 36,
+      "community": 19,
       "norm_label": "spotlight()"
     },
     {
@@ -2500,7 +2480,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_admin_codegenerator",
-      "community": 5,
+      "community": 53,
       "norm_label": "codegenerator.jsx"
     },
     {
@@ -2510,7 +2490,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "client_src_pages_admin_codegenerator_languages",
-      "community": 5,
+      "community": 53,
       "norm_label": "languages"
     },
     {
@@ -2520,7 +2500,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "client_src_pages_admin_codegenerator_codegenerator",
-      "community": 5,
+      "community": 53,
       "norm_label": "codegenerator()"
     },
     {
@@ -2610,7 +2590,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_app_chat",
-      "community": 6,
+      "community": 22,
       "norm_label": "chat.jsx"
     },
     {
@@ -2620,7 +2600,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "client_src_pages_app_chat_particlebackground",
-      "community": 6,
+      "community": 22,
       "norm_label": "particlebackground()"
     },
     {
@@ -2630,7 +2610,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "client_src_pages_app_chat_purpleglassorb",
-      "community": 6,
+      "community": 22,
       "norm_label": "purpleglassorb()"
     },
     {
@@ -2640,7 +2620,7 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "client_src_pages_app_chat_systemstatuspanel",
-      "community": 6,
+      "community": 22,
       "norm_label": "systemstatuspanel()"
     },
     {
@@ -2650,7 +2630,7 @@
       "source_location": "L244",
       "_origin": "ast",
       "id": "client_src_pages_app_chat_chathistoryitem",
-      "community": 6,
+      "community": 22,
       "norm_label": "chathistoryitem()"
     },
     {
@@ -2660,7 +2640,7 @@
       "source_location": "L287",
       "_origin": "ast",
       "id": "client_src_pages_app_chat_messagebubble",
-      "community": 6,
+      "community": 22,
       "norm_label": "messagebubble()"
     },
     {
@@ -2670,7 +2650,7 @@
       "source_location": "L388",
       "_origin": "ast",
       "id": "client_src_pages_app_chat_chat",
-      "community": 6,
+      "community": 19,
       "norm_label": "chat()"
     },
     {
@@ -2890,7 +2870,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_app_profile",
-      "community": 15,
+      "community": 20,
       "norm_label": "profile.jsx"
     },
     {
@@ -2900,7 +2880,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "client_src_pages_app_profile_radarchart",
-      "community": 15,
+      "community": 20,
       "norm_label": "radarchart()"
     },
     {
@@ -2910,7 +2890,7 @@
       "source_location": "L126",
       "_origin": "ast",
       "id": "client_src_pages_app_profile_profile",
-      "community": 15,
+      "community": 20,
       "norm_label": "profile()"
     },
     {
@@ -2950,7 +2930,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "client_src_pages_app_projectgenerator_projectgenerator",
-      "community": 15,
+      "community": 2,
       "norm_label": "projectgenerator()"
     },
     {
@@ -3284,46 +3264,6 @@
       "norm_label": "workspaceos()"
     },
     {
-      "label": "ForgotPassword.jsx",
-      "file_type": "code",
-      "source_file": "client/src/pages/auth/ForgotPassword.jsx",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "client_src_pages_auth_forgotpassword",
-      "community": 20,
-      "norm_label": "forgotpassword.jsx"
-    },
-    {
-      "label": "AuthBg()",
-      "file_type": "code",
-      "source_file": "client/src/pages/auth/ForgotPassword.jsx",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "client_src_pages_auth_forgotpassword_authbg",
-      "community": 20,
-      "norm_label": "authbg()"
-    },
-    {
-      "label": "NeonInput()",
-      "file_type": "code",
-      "source_file": "client/src/pages/auth/ForgotPassword.jsx",
-      "source_location": "L23",
-      "_origin": "ast",
-      "id": "client_src_pages_auth_forgotpassword_neoninput",
-      "community": 20,
-      "norm_label": "neoninput()"
-    },
-    {
-      "label": "ForgotPassword()",
-      "file_type": "code",
-      "source_file": "client/src/pages/auth/ForgotPassword.jsx",
-      "source_location": "L50",
-      "_origin": "ast",
-      "id": "client_src_pages_auth_forgotpassword_forgotpassword",
-      "community": 20,
-      "norm_label": "forgotpassword()"
-    },
-    {
       "label": "Login.jsx",
       "file_type": "code",
       "source_file": "client/src/pages/auth/Login.jsx",
@@ -3380,7 +3320,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_auth_register",
-      "community": 15,
+      "community": 32,
       "norm_label": "register.jsx"
     },
     {
@@ -3390,7 +3330,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "client_src_pages_auth_register_authbg",
-      "community": 15,
+      "community": 32,
       "norm_label": "authbg()"
     },
     {
@@ -3400,7 +3340,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "client_src_pages_auth_register_neoninput",
-      "community": 15,
+      "community": 32,
       "norm_label": "neoninput()"
     },
     {
@@ -3410,7 +3350,7 @@
       "source_location": "L86",
       "_origin": "ast",
       "id": "client_src_pages_auth_register_strengthbar",
-      "community": 15,
+      "community": 32,
       "norm_label": "strengthbar()"
     },
     {
@@ -3420,7 +3360,7 @@
       "source_location": "L119",
       "_origin": "ast",
       "id": "client_src_pages_auth_register_perk",
-      "community": 15,
+      "community": 32,
       "norm_label": "perk()"
     },
     {
@@ -3430,48 +3370,8 @@
       "source_location": "L132",
       "_origin": "ast",
       "id": "client_src_pages_auth_register_register",
-      "community": 15,
+      "community": 32,
       "norm_label": "register()"
-    },
-    {
-      "label": "ResetPassword.jsx",
-      "file_type": "code",
-      "source_file": "client/src/pages/auth/ResetPassword.jsx",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "client_src_pages_auth_resetpassword",
-      "community": 55,
-      "norm_label": "resetpassword.jsx"
-    },
-    {
-      "label": "AuthBg()",
-      "file_type": "code",
-      "source_file": "client/src/pages/auth/ResetPassword.jsx",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "client_src_pages_auth_resetpassword_authbg",
-      "community": 55,
-      "norm_label": "authbg()"
-    },
-    {
-      "label": "NeonInput()",
-      "file_type": "code",
-      "source_file": "client/src/pages/auth/ResetPassword.jsx",
-      "source_location": "L23",
-      "_origin": "ast",
-      "id": "client_src_pages_auth_resetpassword_neoninput",
-      "community": 55,
-      "norm_label": "neoninput()"
-    },
-    {
-      "label": "ResetPassword()",
-      "file_type": "code",
-      "source_file": "client/src/pages/auth/ResetPassword.jsx",
-      "source_location": "L51",
-      "_origin": "ast",
-      "id": "client_src_pages_auth_resetpassword_resetpassword",
-      "community": 55,
-      "norm_label": "resetpassword()"
     },
     {
       "label": "About.jsx",
@@ -3680,7 +3580,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "client_src_services_api_authapi",
-      "community": 15,
+      "community": 20,
       "norm_label": "authapi"
     },
     {
@@ -3710,7 +3610,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "client_src_services_api_chatapi",
-      "community": 30,
+      "community": 27,
       "norm_label": "chatapi"
     },
     {
@@ -3740,7 +3640,7 @@
       "source_location": "L175",
       "_origin": "ast",
       "id": "client_src_services_api_settingsapi",
-      "community": 6,
+      "community": 20,
       "norm_label": "settingsapi"
     },
     {
@@ -3800,7 +3700,7 @@
       "source_location": "L228",
       "_origin": "ast",
       "id": "client_src_services_api_automationapi",
-      "community": 13,
+      "community": 50,
       "norm_label": "automationapi"
     },
     {
@@ -3870,7 +3770,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_utils_cn",
-      "community": 36,
+      "community": 19,
       "norm_label": "cn.js"
     },
     {
@@ -3880,7 +3780,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "client_src_utils_cn_cn",
-      "community": 36,
+      "community": 19,
       "norm_label": "cn()"
     },
     {
@@ -4380,7 +4280,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_config_supabase",
-      "community": 21,
+      "community": 33,
       "norm_label": "supabase.js"
     },
     {
@@ -4390,7 +4290,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "server_config_supabase_getsupabaseuserclient",
-      "community": 21,
+      "community": 33,
       "norm_label": "getsupabaseuserclient()"
     },
     {
@@ -4530,7 +4430,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_controllers_ai_voicecontroller",
-      "community": 33,
+      "community": 49,
       "norm_label": "voicecontroller.js"
     },
     {
@@ -4540,7 +4440,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "server_controllers_ai_voicecontroller_transcribespeech",
-      "community": 33,
+      "community": 49,
       "norm_label": "transcribespeech()"
     },
     {
@@ -4550,7 +4450,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "server_controllers_ai_voicecontroller_speaktext",
-      "community": 33,
+      "community": 49,
       "norm_label": "speaktext()"
     },
     {
@@ -4574,20 +4474,10 @@
       "norm_label": "senduser()"
     },
     {
-      "label": "ensurePublicRecords()",
-      "file_type": "code",
-      "source_file": "server/controllers/authController.js",
-      "source_location": "L26",
-      "_origin": "ast",
-      "id": "server_controllers_authcontroller_ensurepublicrecords",
-      "community": 21,
-      "norm_label": "ensurepublicrecords()"
-    },
-    {
       "label": "register()",
       "file_type": "code",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L88",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "server_controllers_authcontroller_register",
       "community": 21,
@@ -4597,7 +4487,7 @@
       "label": "login()",
       "file_type": "code",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L141",
+      "source_location": "L114",
       "_origin": "ast",
       "id": "server_controllers_authcontroller_login",
       "community": 21,
@@ -4607,7 +4497,7 @@
       "label": "getMe()",
       "file_type": "code",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L181",
+      "source_location": "L158",
       "_origin": "ast",
       "id": "server_controllers_authcontroller_getme",
       "community": 21,
@@ -4617,7 +4507,7 @@
       "label": "updateProfile()",
       "file_type": "code",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L185",
+      "source_location": "L162",
       "_origin": "ast",
       "id": "server_controllers_authcontroller_updateprofile",
       "community": 21,
@@ -4627,7 +4517,7 @@
       "label": "forgotPassword()",
       "file_type": "code",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L239",
+      "source_location": "L216",
       "_origin": "ast",
       "id": "server_controllers_authcontroller_forgotpassword",
       "community": 21,
@@ -5050,7 +4940,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller",
-      "community": 33,
+      "community": 0,
       "norm_label": "memorycontroller.js"
     },
     {
@@ -5060,7 +4950,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_mapmemory",
-      "community": 33,
+      "community": 0,
       "norm_label": "mapmemory()"
     },
     {
@@ -5070,7 +4960,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_getmemories",
-      "community": 33,
+      "community": 0,
       "norm_label": "getmemories()"
     },
     {
@@ -5080,7 +4970,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_creatememory",
-      "community": 33,
+      "community": 0,
       "norm_label": "creatememory()"
     },
     {
@@ -5090,7 +4980,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_updatememory",
-      "community": 33,
+      "community": 0,
       "norm_label": "updatememory()"
     },
     {
@@ -5100,7 +4990,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_togglepinmemory",
-      "community": 33,
+      "community": 0,
       "norm_label": "togglepinmemory()"
     },
     {
@@ -5110,7 +5000,7 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_deletememory",
-      "community": 33,
+      "community": 0,
       "norm_label": "deletememory()"
     },
     {
@@ -5120,7 +5010,7 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_exportmemories",
-      "community": 33,
+      "community": 0,
       "norm_label": "exportmemories()"
     },
     {
@@ -5130,7 +5020,7 @@
       "source_location": "L157",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_summarizeidentity",
-      "community": 33,
+      "community": 0,
       "norm_label": "summarizeidentity()"
     },
     {
@@ -5140,7 +5030,7 @@
       "source_location": "L193",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_detectconflicts",
-      "community": 33,
+      "community": 0,
       "norm_label": "detectconflicts()"
     },
     {
@@ -5150,7 +5040,7 @@
       "source_location": "L263",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_autotagmemory",
-      "community": 33,
+      "community": 0,
       "norm_label": "autotagmemory()"
     },
     {
@@ -5160,7 +5050,7 @@
       "source_location": "L298",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_triggerlearning",
-      "community": 33,
+      "community": 0,
       "norm_label": "triggerlearning()"
     },
     {
@@ -5287,7 +5177,7 @@
       "label": "requireAdmin()",
       "file_type": "code",
       "source_file": "server/middleware/auth.js",
-      "source_location": "L106",
+      "source_location": "L66",
       "_origin": "ast",
       "id": "server_middleware_auth_requireadmin",
       "community": 21,
@@ -5300,7 +5190,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_middleware_subscription",
-      "community": 33,
+      "community": 37,
       "norm_label": "subscription.js"
     },
     {
@@ -5310,7 +5200,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_middleware_subscription_requirepro",
-      "community": 33,
+      "community": 37,
       "norm_label": "requirepro()"
     },
     {
@@ -5320,7 +5210,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "server_middleware_subscription_quotas",
-      "community": 33,
+      "community": 37,
       "norm_label": "quotas"
     },
     {
@@ -5330,7 +5220,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "server_middleware_subscription_checksubscriptionquota",
-      "community": 33,
+      "community": 37,
       "norm_label": "checksubscriptionquota()"
     },
     {
@@ -5340,7 +5230,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_middleware_upload",
-      "community": 33,
+      "community": 37,
       "norm_label": "upload.js"
     },
     {
@@ -5350,7 +5240,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "server_middleware_upload_storage",
-      "community": 33,
+      "community": 37,
       "norm_label": "storage"
     },
     {
@@ -5360,7 +5250,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "server_middleware_upload_filefilter",
-      "community": 33,
+      "community": 37,
       "norm_label": "filefilter()"
     },
     {
@@ -5370,7 +5260,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "server_middleware_upload_upload",
-      "community": 33,
+      "community": 37,
       "norm_label": "upload"
     },
     {
@@ -5380,7 +5270,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "server_middleware_upload_audiofilter",
-      "community": 33,
+      "community": 37,
       "norm_label": "audiofilter()"
     },
     {
@@ -5390,7 +5280,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "server_middleware_upload_uploadaudio",
-      "community": 33,
+      "community": 37,
       "norm_label": "uploadaudio"
     },
     {
@@ -5400,7 +5290,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_middleware_usagelimit",
-      "community": 33,
+      "community": 37,
       "norm_label": "usagelimit.js"
     },
     {
@@ -5410,7 +5300,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_middleware_usagelimit_checkusagelimit",
-      "community": 33,
+      "community": 37,
       "norm_label": "checkusagelimit()"
     },
     {
@@ -5680,7 +5570,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_routes_airoutes",
-      "community": 33,
+      "community": 37,
       "norm_label": "airoutes.js"
     },
     {
@@ -5790,7 +5680,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_routes_memoryroutes",
-      "community": 33,
+      "community": 0,
       "norm_label": "memoryroutes.js"
     },
     {
@@ -5934,26 +5824,6 @@
       "norm_label": "install-fly.ps1"
     },
     {
-      "label": "test_admin_create.js",
-      "file_type": "code",
-      "source_file": "server/scratch/test_admin_create.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "server_scratch_test_admin_create",
-      "community": 21,
-      "norm_label": "test_admin_create.js"
-    },
-    {
-      "label": "testAdminCreate()",
-      "file_type": "code",
-      "source_file": "server/scratch/test_admin_create.js",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "server_scratch_test_admin_create_testadmincreate",
-      "community": 21,
-      "norm_label": "testadmincreate()"
-    },
-    {
       "label": "test_backend_connection.js",
       "file_type": "code",
       "source_file": "server/scratch/test_backend_connection.js",
@@ -6034,26 +5904,6 @@
       "norm_label": "run()"
     },
     {
-      "label": "test_supabase.js",
-      "file_type": "code",
-      "source_file": "server/scratch/test_supabase.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "server_scratch_test_supabase",
-      "community": 21,
-      "norm_label": "test_supabase.js"
-    },
-    {
-      "label": "runDiagnostics()",
-      "file_type": "code",
-      "source_file": "server/scratch/test_supabase.js",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "server_scratch_test_supabase_rundiagnostics",
-      "community": 21,
-      "norm_label": "rundiagnostics()"
-    },
-    {
       "label": "test_yt.js",
       "file_type": "code",
       "source_file": "server/scratch/test_yt.js",
@@ -6072,66 +5922,6 @@
       "id": "server_scratch_test_yt_test",
       "community": 35,
       "norm_label": "test()"
-    },
-    {
-      "label": "seed_operator_memory.js",
-      "file_type": "code",
-      "source_file": "server/scripts/seed_operator_memory.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "server_scripts_seed_operator_memory",
-      "community": 21,
-      "norm_label": "seed_operator_memory.js"
-    },
-    {
-      "label": "operatorMemories",
-      "file_type": "code",
-      "source_file": "server/scripts/seed_operator_memory.js",
-      "source_location": "L8",
-      "_origin": "ast",
-      "id": "server_scripts_seed_operator_memory_operatormemories",
-      "community": 21,
-      "norm_label": "operatormemories"
-    },
-    {
-      "label": "seedOperatorMemory()",
-      "file_type": "code",
-      "source_file": "server/scripts/seed_operator_memory.js",
-      "source_location": "L31",
-      "_origin": "ast",
-      "id": "server_scripts_seed_operator_memory_seedoperatormemory",
-      "community": 21,
-      "norm_label": "seedoperatormemory()"
-    },
-    {
-      "label": "seed_test_data.js",
-      "file_type": "code",
-      "source_file": "server/scripts/seed_test_data.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "server_scripts_seed_test_data",
-      "community": 21,
-      "norm_label": "seed_test_data.js"
-    },
-    {
-      "label": "testUsers",
-      "file_type": "code",
-      "source_file": "server/scripts/seed_test_data.js",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "server_scripts_seed_test_data_testusers",
-      "community": 21,
-      "norm_label": "testusers"
-    },
-    {
-      "label": "seedData()",
-      "file_type": "code",
-      "source_file": "server/scripts/seed_test_data.js",
-      "source_location": "L38",
-      "_origin": "ast",
-      "id": "server_scripts_seed_test_data_seeddata",
-      "community": 21,
-      "norm_label": "seeddata()"
     },
     {
       "label": "server.js",
@@ -6370,7 +6160,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "server_services_automationservice_resolveappcommand",
-      "community": 17,
+      "community": 4,
       "norm_label": "resolveappcommand()"
     },
     {
@@ -6650,7 +6440,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "server_services_automation_automationregistry_registermodule",
-      "community": 3,
+      "community": 26,
       "norm_label": "registermodule()"
     },
     {
@@ -7440,7 +7230,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule",
-      "community": 24,
+      "community": 29,
       "norm_label": "mediamodule.js"
     },
     {
@@ -7450,7 +7240,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_spotifyplay",
-      "community": 24,
+      "community": 29,
       "norm_label": "spotifyplay()"
     },
     {
@@ -7460,7 +7250,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_spotifynext",
-      "community": 24,
+      "community": 29,
       "norm_label": "spotifynext()"
     },
     {
@@ -7470,7 +7260,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_spotifyprev",
-      "community": 24,
+      "community": 29,
       "norm_label": "spotifyprev()"
     },
     {
@@ -7480,7 +7270,7 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_spotifypause",
-      "community": 24,
+      "community": 29,
       "norm_label": "spotifypause()"
     },
     {
@@ -7490,7 +7280,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_spotifyshuffle",
-      "community": 24,
+      "community": 29,
       "norm_label": "spotifyshuffle()"
     },
     {
@@ -7500,7 +7290,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_spotifyrepeat",
-      "community": 24,
+      "community": 29,
       "norm_label": "spotifyrepeat()"
     },
     {
@@ -7560,7 +7350,7 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_youtubefullscreen",
-      "community": 24,
+      "community": 29,
       "norm_label": "youtubefullscreen()"
     },
     {
@@ -7570,7 +7360,7 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_youtubespeedup",
-      "community": 24,
+      "community": 29,
       "norm_label": "youtubespeedup()"
     },
     {
@@ -7580,7 +7370,7 @@
       "source_location": "L164",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_youtubespeeddown",
-      "community": 24,
+      "community": 29,
       "norm_label": "youtubespeeddown()"
     },
     {
@@ -7590,7 +7380,7 @@
       "source_location": "L175",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_youtubesubtitles",
-      "community": 24,
+      "community": 29,
       "norm_label": "youtubesubtitles()"
     },
     {
@@ -7600,7 +7390,7 @@
       "source_location": "L186",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_youtubelike",
-      "community": 24,
+      "community": 29,
       "norm_label": "youtubelike()"
     },
     {
@@ -7610,7 +7400,7 @@
       "source_location": "L198",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_youtubewatchlater",
-      "community": 24,
+      "community": 29,
       "norm_label": "youtubewatchlater()"
     },
     {
@@ -7620,7 +7410,7 @@
       "source_location": "L203",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_youtubeskip",
-      "community": 24,
+      "community": 29,
       "norm_label": "youtubeskip()"
     },
     {
@@ -7670,7 +7460,7 @@
       "source_location": "L242",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_mediavolumeup",
-      "community": 24,
+      "community": 29,
       "norm_label": "mediavolumeup()"
     },
     {
@@ -7680,7 +7470,7 @@
       "source_location": "L248",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_mediavolumedown",
-      "community": 24,
+      "community": 29,
       "norm_label": "mediavolumedown()"
     },
     {
@@ -7690,7 +7480,7 @@
       "source_location": "L254",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_mediamute",
-      "community": 24,
+      "community": 29,
       "norm_label": "mediamute()"
     },
     {
@@ -7700,7 +7490,7 @@
       "source_location": "L260",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_mediaplaypause",
-      "community": 24,
+      "community": 29,
       "norm_label": "mediaplaypause()"
     },
     {
@@ -7710,7 +7500,7 @@
       "source_location": "L266",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_medianext",
-      "community": 24,
+      "community": 29,
       "norm_label": "medianext()"
     },
     {
@@ -7720,7 +7510,7 @@
       "source_location": "L272",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_mediaprev",
-      "community": 24,
+      "community": 29,
       "norm_label": "mediaprev()"
     },
     {
@@ -7730,7 +7520,7 @@
       "source_location": "L278",
       "_origin": "ast",
       "id": "server_services_automation_modules_mediamodule_mediastop",
-      "community": 24,
+      "community": 29,
       "norm_label": "mediastop()"
     },
     {
@@ -8010,7 +7800,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_automation_modules_studymodule",
-      "community": 33,
+      "community": 39,
       "norm_label": "studymodule.js"
     },
     {
@@ -8020,7 +7810,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "server_services_automation_modules_studymodule_dirname",
-      "community": 33,
+      "community": 39,
       "norm_label": "__dirname"
     },
     {
@@ -8030,7 +7820,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "server_services_automation_modules_studymodule_workspace_dir",
-      "community": 33,
+      "community": 39,
       "norm_label": "workspace_dir"
     },
     {
@@ -8040,7 +7830,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "server_services_automation_modules_studymodule_generatenotes",
-      "community": 33,
+      "community": 39,
       "norm_label": "generatenotes()"
     },
     {
@@ -8050,7 +7840,7 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "server_services_automation_modules_studymodule_generatemcqs",
-      "community": 33,
+      "community": 39,
       "norm_label": "generatemcqs()"
     },
     {
@@ -8060,7 +7850,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "server_services_automation_modules_studymodule_generateflashcards",
-      "community": 33,
+      "community": 39,
       "norm_label": "generateflashcards()"
     },
     {
@@ -8070,7 +7860,7 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "server_services_automation_modules_studymodule_logstudy",
-      "community": 33,
+      "community": 39,
       "norm_label": "logstudy()"
     },
     {
@@ -8090,7 +7880,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "server_services_automation_modules_systemmodule_shutdowncomputer",
-      "community": 26,
+      "community": 24,
       "norm_label": "shutdowncomputer()"
     },
     {
@@ -8110,7 +7900,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "server_services_automation_modules_systemmodule_restartcomputer",
-      "community": 26,
+      "community": 24,
       "norm_label": "restartcomputer()"
     },
     {
@@ -8140,7 +7930,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "server_services_automation_modules_systemmodule_lockcomputer",
-      "community": 26,
+      "community": 24,
       "norm_label": "lockcomputer()"
     },
     {
@@ -8150,7 +7940,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "server_services_automation_modules_systemmodule_logoutuser",
-      "community": 26,
+      "community": 24,
       "norm_label": "logoutuser()"
     },
     {
@@ -8300,7 +8090,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_automation_modules_whatsappmodule",
-      "community": 4,
+      "community": 26,
       "norm_label": "whatsappmodule.js"
     },
     {
@@ -8310,7 +8100,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "server_services_automation_modules_whatsappmodule_openwhatsapp",
-      "community": 4,
+      "community": 26,
       "norm_label": "openwhatsapp()"
     },
     {
@@ -8320,7 +8110,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "server_services_automation_modules_whatsappmodule_openwhatsappchat",
-      "community": 4,
+      "community": 26,
       "norm_label": "openwhatsappchat()"
     },
     {
@@ -8330,7 +8120,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "server_services_automation_modules_whatsappmodule_sendwhatsappmessage",
-      "community": 4,
+      "community": 26,
       "norm_label": "sendwhatsappmessage()"
     },
     {
@@ -8340,7 +8130,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "server_services_automation_modules_whatsappmodule_searchwhatsappcontact",
-      "community": 4,
+      "community": 26,
       "norm_label": "searchwhatsappcontact()"
     },
     {
@@ -8350,7 +8140,7 @@
       "source_location": "L158",
       "_origin": "ast",
       "id": "server_services_automation_modules_whatsappmodule_openunreadchats",
-      "community": 4,
+      "community": 26,
       "norm_label": "openunreadchats()"
     },
     {
@@ -8360,7 +8150,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_geminiservice",
-      "community": 8,
+      "community": 54,
       "norm_label": "geminiservice.js"
     },
     {
@@ -8370,7 +8160,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "server_services_geminiservice_getclient",
-      "community": 8,
+      "community": 54,
       "norm_label": "getclient()"
     },
     {
@@ -8380,7 +8170,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "server_services_geminiservice_chat",
-      "community": 8,
+      "community": 54,
       "norm_label": "chat()"
     },
     {
@@ -8390,7 +8180,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "server_services_geminiservice_isaiconfigured",
-      "community": 8,
+      "community": 54,
       "norm_label": "isaiconfigured()"
     },
     {
@@ -8530,7 +8320,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_learningengine",
-      "community": 33,
+      "community": 0,
       "norm_label": "learningengine.js"
     },
     {
@@ -8540,7 +8330,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "server_services_learningengine_analyzeactivityandlearn",
-      "community": 33,
+      "community": 0,
       "norm_label": "analyzeactivityandlearn()"
     },
     {
@@ -8550,7 +8340,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_memoryservice",
-      "community": 33,
+      "community": 56,
       "norm_label": "memoryservice.js"
     },
     {
@@ -8560,7 +8350,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "server_services_memoryservice_ensuredefaultmemories",
-      "community": 33,
+      "community": 56,
       "norm_label": "ensuredefaultmemories()"
     },
     {
@@ -8570,7 +8360,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "server_services_memoryservice_getcontextprompt",
-      "community": 33,
+      "community": 56,
       "norm_label": "getcontextprompt()"
     },
     {
@@ -8580,7 +8370,7 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "server_services_memoryservice_logactivity",
-      "community": 4,
+      "community": 24,
       "norm_label": "logactivity()"
     },
     {
@@ -9060,7 +8850,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_voiceservice",
-      "community": 33,
+      "community": 49,
       "norm_label": "voiceservice.js"
     },
     {
@@ -9070,7 +8860,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "server_services_voiceservice_transcribeaudio",
-      "community": 33,
+      "community": 49,
       "norm_label": "transcribeaudio()"
     },
     {
@@ -9080,7 +8870,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "server_services_voiceservice_synthesizespeech",
-      "community": 33,
+      "community": 49,
       "norm_label": "synthesizespeech()"
     },
     {
@@ -9180,7 +8970,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "server_terminal_ptymanager_ptymanager",
-      "community": 32,
+      "community": 13,
       "norm_label": "ptymanager"
     },
     {
@@ -9190,7 +8980,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "server_terminal_ptymanager_ptymanager_constructor",
-      "community": 32,
+      "community": 13,
       "norm_label": ".constructor()"
     },
     {
@@ -9200,7 +8990,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "server_terminal_ptymanager_ptymanager_createsession",
-      "community": 32,
+      "community": 13,
       "norm_label": ".createsession()"
     },
     {
@@ -9210,7 +9000,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "server_terminal_ptymanager_ptymanager_getsession",
-      "community": 32,
+      "community": 13,
       "norm_label": ".getsession()"
     },
     {
@@ -9220,7 +9010,7 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "server_terminal_ptymanager_ptymanager_removesession",
-      "community": 32,
+      "community": 13,
       "norm_label": ".removesession()"
     },
     {
@@ -9230,7 +9020,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "server_terminal_ptymanager_ptymanager_write",
-      "community": 32,
+      "community": 13,
       "norm_label": ".write()"
     },
     {
@@ -9240,7 +9030,7 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "server_terminal_ptymanager_ptymanager_resize",
-      "community": 32,
+      "community": 13,
       "norm_label": ".resize()"
     },
     {
@@ -9270,7 +9060,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_utils_eventbus",
-      "community": 33,
+      "community": 56,
       "norm_label": "eventbus.js"
     },
     {
@@ -9280,7 +9070,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "server_utils_eventbus_centraleventbus",
-      "community": 33,
+      "community": 56,
       "norm_label": "centraleventbus"
     },
     {
@@ -9290,7 +9080,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "server_utils_eventbus_centraleventbus_constructor",
-      "community": 33,
+      "community": 56,
       "norm_label": ".constructor()"
     },
     {
@@ -9300,7 +9090,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "server_utils_eventbus_centraleventbus_emitactivity",
-      "community": 33,
+      "community": 56,
       "norm_label": ".emitactivity()"
     },
     {
@@ -9310,7 +9100,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "server_utils_eventbus_centraleventbus_emitalert",
-      "community": 33,
+      "community": 56,
       "norm_label": ".emitalert()"
     },
     {
@@ -9320,7 +9110,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "server_utils_eventbus_eventbus",
-      "community": 33,
+      "community": 56,
       "norm_label": "eventbus"
     },
     {
@@ -9360,7 +9150,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "server_utils_powershell_runps",
-      "community": 24,
+      "community": 29,
       "norm_label": "runps()"
     },
     {
@@ -9370,7 +9160,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "server_utils_powershell_runpscommand",
-      "community": 26,
+      "community": 24,
       "norm_label": "runpscommand()"
     },
     {
@@ -10110,7 +9900,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L35",
+      "source_location": "L33",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_admindashboard",
@@ -10120,7 +9910,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L37",
+      "source_location": "L35",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_adminpayments",
@@ -10130,7 +9920,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L38",
+      "source_location": "L36",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_adminsettings",
@@ -10140,7 +9930,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L36",
+      "source_location": "L34",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_adminusers",
@@ -10150,7 +9940,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L44",
+      "source_location": "L42",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_app",
@@ -10160,7 +9950,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L32",
+      "source_location": "L30",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_automationcenter",
@@ -10170,7 +9960,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L26",
+      "source_location": "L24",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_billing",
@@ -10180,7 +9970,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L31",
+      "source_location": "L29",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_braincore",
@@ -10190,7 +9980,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L20",
+      "source_location": "L18",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_chat",
@@ -10200,7 +9990,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L21",
+      "source_location": "L19",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_codegenerator",
@@ -10210,7 +10000,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L19",
+      "source_location": "L17",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_dashboard",
@@ -10220,7 +10010,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L22",
+      "source_location": "L20",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_debugassistant",
@@ -10230,20 +10020,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L28",
+      "source_location": "L26",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_fileanalyzer",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/App.jsx",
-      "source_location": "L15",
-      "weight": 1.0,
-      "source": "client_src_app",
-      "target": "client_src_app_forgotpassword",
       "confidence_score": 1.0
     },
     {
@@ -10270,7 +10050,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L23",
+      "source_location": "L21",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_notes",
@@ -10290,7 +10070,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L24",
+      "source_location": "L22",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_profile",
@@ -10300,7 +10080,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L29",
+      "source_location": "L27",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_projectgenerator",
@@ -10320,17 +10100,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L16",
-      "weight": 1.0,
-      "source": "client_src_app",
-      "target": "client_src_app_resetpassword",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/App.jsx",
-      "source_location": "L25",
+      "source_location": "L23",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_settings",
@@ -10340,7 +10110,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L27",
+      "source_location": "L25",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_voiceassistant",
@@ -10350,7 +10120,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L30",
+      "source_location": "L28",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_workspaceos",
@@ -10405,7 +10175,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L41",
+      "source_location": "L39",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_components_background_backgroundeffects",
@@ -10416,7 +10186,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L41",
+      "source_location": "L39",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_components_background_backgroundeffects_backgroundeffects",
@@ -10471,7 +10241,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L42",
+      "source_location": "L40",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_components_ui_commandpalette",
@@ -10482,7 +10252,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L42",
+      "source_location": "L40",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_components_ui_commandpalette_commandpalette",
@@ -10493,7 +10263,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L40",
+      "source_location": "L38",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_components_ui_customcursor",
@@ -10504,7 +10274,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L40",
+      "source_location": "L38",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_components_ui_customcursor_customcursor",
@@ -10548,7 +10318,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L77",
+      "source_location": "L75",
       "weight": 1.0,
       "source": "client_src_app_app",
       "target": "client_src_services_api",
@@ -10560,7 +10330,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "client/src/App.jsx",
-      "source_location": "L45",
+      "source_location": "L43",
       "weight": 1.0,
       "source": "client_src_app_app",
       "target": "client_src_store_authstore_useauthstore"
@@ -14027,28 +13797,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/auth/ResetPassword.jsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "client_src_pages_auth_resetpassword",
-      "target": "client_src_config_supabaseclient",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/auth/ResetPassword.jsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "client_src_pages_auth_resetpassword",
-      "target": "client_src_config_supabaseclient_supabase",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/admin/AdminDashboard.jsx",
@@ -15942,58 +15690,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/auth/ForgotPassword.jsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "source": "client_src_pages_auth_forgotpassword",
-      "target": "client_src_pages_auth_forgotpassword_authbg",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/auth/ForgotPassword.jsx",
-      "source_location": "L50",
-      "weight": 1.0,
-      "source": "client_src_pages_auth_forgotpassword",
-      "target": "client_src_pages_auth_forgotpassword_forgotpassword",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/auth/ForgotPassword.jsx",
-      "source_location": "L23",
-      "weight": 1.0,
-      "source": "client_src_pages_auth_forgotpassword",
-      "target": "client_src_pages_auth_forgotpassword_neoninput",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/auth/ForgotPassword.jsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "client_src_pages_auth_forgotpassword",
-      "target": "client_src_services_api",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/auth/ForgotPassword.jsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "client_src_pages_auth_forgotpassword",
-      "target": "client_src_services_api_authapi",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "client/src/pages/auth/Login.jsx",
       "source_location": "L8",
       "weight": 1.0,
@@ -16153,7 +15849,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "client/src/pages/auth/Register.jsx",
-      "source_location": "L138",
+      "source_location": "L137",
       "weight": 1.0,
       "source": "client_src_pages_auth_register_register",
       "target": "client_src_store_authstore_useauthstore"
@@ -16164,40 +15860,10 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "client/src/pages/auth/Register.jsx",
-      "source_location": "L144",
+      "source_location": "L143",
       "weight": 1.0,
       "source": "client_src_pages_auth_register_register",
       "target": "server_controllers_authcontroller_register"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/auth/ResetPassword.jsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "source": "client_src_pages_auth_resetpassword",
-      "target": "client_src_pages_auth_resetpassword_authbg",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/auth/ResetPassword.jsx",
-      "source_location": "L23",
-      "weight": 1.0,
-      "source": "client_src_pages_auth_resetpassword",
-      "target": "client_src_pages_auth_resetpassword_neoninput",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/auth/ResetPassword.jsx",
-      "source_location": "L51",
-      "weight": 1.0,
-      "source": "client_src_pages_auth_resetpassword",
-      "target": "client_src_pages_auth_resetpassword_resetpassword",
-      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -17397,50 +17063,6 @@
       "source_location": "L3",
       "weight": 1.0,
       "source": "server_routes_userroutes",
-      "target": "server_config_supabase",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "server/scratch/test_admin_create.js",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "server_scratch_test_admin_create",
-      "target": "server_config_supabase",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "server/scratch/test_supabase.js",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "server_scratch_test_supabase",
-      "target": "server_config_supabase",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "server/scripts/seed_operator_memory.js",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "server_scripts_seed_operator_memory",
-      "target": "server_config_supabase",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "server/scripts/seed_test_data.js",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "server_scripts_seed_test_data",
       "target": "server_config_supabase",
       "confidence_score": 1.0
     },
@@ -18648,17 +18270,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L26",
-      "weight": 1.0,
-      "source": "server_controllers_authcontroller",
-      "target": "server_controllers_authcontroller_ensurepublicrecords",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/controllers/authController.js",
-      "source_location": "L239",
+      "source_location": "L216",
       "weight": 1.0,
       "source": "server_controllers_authcontroller",
       "target": "server_controllers_authcontroller_forgotpassword",
@@ -18668,7 +18280,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L181",
+      "source_location": "L158",
       "weight": 1.0,
       "source": "server_controllers_authcontroller",
       "target": "server_controllers_authcontroller_getme",
@@ -18678,7 +18290,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L141",
+      "source_location": "L114",
       "weight": 1.0,
       "source": "server_controllers_authcontroller",
       "target": "server_controllers_authcontroller_login",
@@ -18688,7 +18300,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L88",
+      "source_location": "L26",
       "weight": 1.0,
       "source": "server_controllers_authcontroller",
       "target": "server_controllers_authcontroller_register",
@@ -18708,7 +18320,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L185",
+      "source_location": "L162",
       "weight": 1.0,
       "source": "server_controllers_authcontroller",
       "target": "server_controllers_authcontroller_updateprofile",
@@ -18730,7 +18342,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L182",
+      "source_location": "L159",
       "weight": 1.0,
       "source": "server_controllers_authcontroller_getme",
       "target": "server_controllers_authcontroller_senduser",
@@ -18741,7 +18353,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L174",
+      "source_location": "L151",
       "weight": 1.0,
       "source": "server_controllers_authcontroller_login",
       "target": "server_controllers_authcontroller_senduser",
@@ -18752,7 +18364,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L128",
+      "source_location": "L101",
       "weight": 1.0,
       "source": "server_controllers_authcontroller_register",
       "target": "server_controllers_authcontroller_senduser",
@@ -18763,32 +18375,10 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/authController.js",
-      "source_location": "L233",
+      "source_location": "L210",
       "weight": 1.0,
       "source": "server_controllers_authcontroller_updateprofile",
       "target": "server_controllers_authcontroller_senduser",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "server/controllers/authController.js",
-      "source_location": "L162",
-      "weight": 1.0,
-      "source": "server_controllers_authcontroller_login",
-      "target": "server_controllers_authcontroller_ensurepublicrecords",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "server/controllers/authController.js",
-      "source_location": "L117",
-      "weight": 1.0,
-      "source": "server_controllers_authcontroller_register",
-      "target": "server_controllers_authcontroller_ensurepublicrecords",
       "confidence_score": 1.0
     },
     {
@@ -20892,7 +20482,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/middleware/auth.js",
-      "source_location": "L106",
+      "source_location": "L66",
       "weight": 1.0,
       "source": "server_middleware_auth",
       "target": "server_middleware_auth_requireadmin",
@@ -22034,16 +21624,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "server/scratch/test_admin_create.js",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "server_scratch_test_admin_create",
-      "target": "server_scratch_test_admin_create_testadmincreate",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "server/scratch/test_backend_connection.js",
       "source_location": "L1",
       "weight": 1.0,
@@ -22148,61 +21728,11 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "server/scratch/test_supabase.js",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "server_scratch_test_supabase",
-      "target": "server_scratch_test_supabase_rundiagnostics",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "server/scratch/test_yt.js",
       "source_location": "L3",
       "weight": 1.0,
       "source": "server_scratch_test_yt",
       "target": "server_scratch_test_yt_test",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/scripts/seed_operator_memory.js",
-      "source_location": "L8",
-      "weight": 1.0,
-      "source": "server_scripts_seed_operator_memory",
-      "target": "server_scripts_seed_operator_memory_operatormemories",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/scripts/seed_operator_memory.js",
-      "source_location": "L31",
-      "weight": 1.0,
-      "source": "server_scripts_seed_operator_memory",
-      "target": "server_scripts_seed_operator_memory_seedoperatormemory",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/scripts/seed_test_data.js",
-      "source_location": "L38",
-      "weight": 1.0,
-      "source": "server_scripts_seed_test_data",
-      "target": "server_scripts_seed_test_data_seeddata",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/scripts/seed_test_data.js",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "server_scripts_seed_test_data",
-      "target": "server_scripts_seed_test_data_testusers",
       "confidence_score": 1.0
     },
     {
@@ -29866,5 +29396,5 @@
       "source_file": ".github/workflows/ci.yml"
     }
   ],
-  "built_at_commit": "48e1adddf0b37046d47bb490e87d9b622f6229ac"
+  "built_at_commit": "5dc6eccb36b69bf2aec6597a6d38df5b892c43ff"
 }
