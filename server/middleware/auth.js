@@ -16,14 +16,54 @@ export const protect = async (req, res, next) => {
       return res.status(401).json({ message: 'Not authorized, token failed' });
     }
 
-    const { data: user, error: userError } = await supabase
+    // Fetch user profile and auto-heal if missing
+    let { data: user, error: userError } = await supabase
       .from('users')
       .select('*, profiles(*)')
       .eq('id', authUser.id)
       .maybeSingle();
 
-    if (!user) {
-      return res.status(401).json({ message: 'User record not found' });
+    if (!user || !user.profiles) {
+      console.log(`[Auto-Heal Protect] Healing public records for user ${authUser.email}`);
+      const name = authUser.user_metadata?.name || authUser.email.split('@')[0];
+      
+      // Ensure user entry
+      if (!user) {
+        const { data: newUser, error: createErr } = await supabase
+          .from('users')
+          .insert({
+            id: authUser.id,
+            email: authUser.email,
+            role: 'free',
+            subscription: 'free',
+          })
+          .select('*')
+          .single();
+        if (createErr) return res.status(401).json({ message: 'User record creation failed' });
+        user = newUser;
+      }
+
+      // Ensure profile entry
+      let profile = user ? user.profiles : null;
+      if (!profile) {
+        const { data: newProfile, error: createProfErr } = await supabase
+          .from('profiles')
+          .insert({
+            id: authUser.id,
+            name: name,
+          })
+          .select('*')
+          .single();
+        if (createProfErr) return res.status(401).json({ message: 'Profile record creation failed' });
+        profile = newProfile;
+      }
+
+      // Ensure other related tables
+      await supabase.from('settings').insert({ user_id: authUser.id }).onConflict('user_id').ignore();
+      await supabase.from('subscriptions').insert({ user_id: authUser.id, plan: 'free', status: 'active' }).onConflict('user_id').ignore();
+      await supabase.from('user_preferences').insert({ user_id: authUser.id }).onConflict('user_id').ignore();
+
+      user.profiles = profile;
     }
 
     if (user.is_banned) {

@@ -23,6 +23,68 @@ const sendUser = (user, profile) => ({
   createdAt: user.created_at,
 });
 
+const ensurePublicRecords = async (userId, email, name) => {
+  // Check users
+  let { data: user, error: userErr } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (!user) {
+    const { data: newUser, error: createErr } = await supabase
+      .from('users')
+      .insert({
+        id: userId,
+        email: email,
+        role: 'free',
+        subscription: 'free',
+      })
+      .select('*')
+      .single();
+    if (createErr) throw createErr;
+    user = newUser;
+  }
+
+  // Check profiles
+  let { data: profile, error: profErr } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (!profile) {
+    const { data: newProfile, error: createProfErr } = await supabase
+      .from('profiles')
+      .insert({
+        id: userId,
+        name: name || email.split('@')[0],
+      })
+      .select('*')
+      .single();
+    if (createProfErr) throw createProfErr;
+    profile = newProfile;
+  }
+
+  // Ensure settings, subscriptions, and preferences exist
+  const { data: settings } = await supabase.from('settings').select('id').eq('user_id', userId).maybeSingle();
+  if (!settings) {
+    await supabase.from('settings').insert({ user_id: userId });
+  }
+
+  const { data: subscription } = await supabase.from('subscriptions').select('id').eq('user_id', userId).maybeSingle();
+  if (!subscription) {
+    await supabase.from('subscriptions').insert({ user_id: userId, plan: 'free', status: 'active' });
+  }
+
+  const { data: pref } = await supabase.from('user_preferences').select('id').eq('user_id', userId).maybeSingle();
+  if (!pref) {
+    await supabase.from('user_preferences').insert({ user_id: userId });
+  }
+
+  return { user, profile };
+};
+
 export const register = async (req, res) => {
   try {
     let { name, email, password } = req.body;
@@ -34,13 +96,12 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: 'Password must be at least 6 characters' });
     }
 
-    // 1. Sign up user in Supabase Auth
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+    // 1. Sign up user in Supabase Auth via Admin API (which auto-confirms email)
+    const { data: signUpData, error: signUpError } = await supabase.auth.admin.createUser({
       email,
       password,
-      options: {
-        data: { name },
-      },
+      email_confirm: true,
+      user_metadata: { name },
     });
 
     if (signUpError) {
@@ -52,50 +113,16 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: 'Failed to create authentication user.' });
     }
 
-    // 2. Create rows in public tables using admin client
-    // Insert public.users
-    const { data: user, error: userErr } = await supabase
-      .from('users')
-      .insert({
-        id: authUser.id,
-        email,
-        role: 'free',
-        subscription: 'free',
-      })
-      .select('*')
-      .single();
+    // 2. Ensure all public records are created and populated (Self-Healing)
+    const { user, profile } = await ensurePublicRecords(authUser.id, email, name);
 
-    if (userErr) throw userErr;
-
-    // Insert public.profiles
-    const { data: profile, error: profErr } = await supabase
-      .from('profiles')
-      .insert({
-        id: authUser.id,
-        name,
-      })
-      .select('*')
-      .single();
-
-    if (profErr) throw profErr;
-
-    // Insert public.settings
-    await supabase.from('settings').insert({ user_id: authUser.id });
-
-    // Insert public.subscriptions
-    await supabase.from('subscriptions').insert({ user_id: authUser.id, plan: 'free', status: 'active' });
-
-    // Insert public.user_preferences
-    await supabase.from('user_preferences').insert({ user_id: authUser.id });
-
-    // 3. Log in to get session token
+    // 3. Log in to get session token (which will now succeed immediately since email is confirmed)
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (signInError) {
-      // Return user without token if login fails (e.g. email confirmation pending)
       return res.status(201).json({
         token: '',
         user: sendUser(user, profile),
@@ -131,16 +158,12 @@ export const login = async (req, res) => {
 
     const authUser = signInData.user;
 
-    // 2. Fetch public user and profile records
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .select('*, profiles(*)')
-      .eq('id', authUser.id)
-      .maybeSingle();
-
-    if (!user) {
-      return res.status(404).json({ message: 'User record not found in database' });
-    }
+    // 2. Fetch public user and profile records & auto-heal if missing
+    const { user, profile } = await ensurePublicRecords(
+      authUser.id,
+      authUser.email,
+      authUser.user_metadata?.name
+    );
 
     if (user.is_banned) {
       return res.status(403).json({ message: 'Account has been suspended' });
@@ -148,7 +171,7 @@ export const login = async (req, res) => {
 
     res.json({
       token: signInData.session.access_token,
-      user: sendUser(user, user.profiles),
+      user: sendUser(user, profile),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
