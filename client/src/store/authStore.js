@@ -33,6 +33,9 @@ export const useAuthStore = create((set) => ({
     // ── 1. Try the Express/Railway backend first ────────────────────────────
     try {
       const { data } = await authAPI.login(credentials);
+      if (!data?.token || !data?.user) {
+        throw new Error('Backend returned an invalid authentication response');
+      }
       localStorage.setItem('harvox_token', data.token);
       set({ token: data.token, user: data.user, loading: false });
       return data;
@@ -84,6 +87,9 @@ export const useAuthStore = create((set) => ({
     // ── 1. Try the Express/Railway backend first (creates all DB records) ───
     try {
       const { data } = await authAPI.register(userData);
+      if (!data || typeof data !== 'object' || (!data.token && !data.user)) {
+        throw new Error('Backend returned an invalid registration response');
+      }
       if (data.token) {
         localStorage.setItem('harvox_token', data.token);
         set({ token: data.token, user: data.user, loading: false });
@@ -142,6 +148,9 @@ export const useAuthStore = create((set) => ({
   loadUser: async () => {
     try {
       const { data } = await authAPI.me();
+      if (!data?.user) {
+        throw new Error('Backend returned an invalid user response');
+      }
       set({ user: data.user });
     } catch {
       // Backend unreachable — try to restore user from active Supabase session
