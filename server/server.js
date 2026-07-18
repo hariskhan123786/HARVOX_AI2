@@ -1,7 +1,6 @@
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
-import { initializeTerminalSocket } from './socket/terminalSocket.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -204,6 +203,9 @@ app.use((err, _req, res, _next) => {
 const httpServer = http.createServer(app);
 
 if (!process.env.VERCEL) {
+  // node-pty and Socket.IO terminal sessions require a persistent process.
+  // Do not import them in Vercel's serverless runtime.
+  const { initializeTerminalSocket } = await import('./socket/terminalSocket.js');
   const io = new Server(httpServer, {
     cors: {
       origin(origin, callback) {
