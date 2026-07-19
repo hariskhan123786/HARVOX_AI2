@@ -5,7 +5,6 @@
  */
 
 import { transcribeAudio, synthesizeSpeech } from '../../services/voiceService.js';
-import fs from 'fs/promises';
 
 export const transcribeSpeech = async (req, res) => {
   try {
@@ -13,16 +12,10 @@ export const transcribeSpeech = async (req, res) => {
       return res.status(400).json({ message: 'No audio file uploaded.' });
     }
     
-    const result = await transcribeAudio(req.user._id, req.file.path);
-    
-    // Clean up uploaded temp file
-    await fs.unlink(req.file.path).catch(() => {});
+    const result = await transcribeAudio(req.user._id, req.file.buffer);
     
     res.json(result);
   } catch (err) {
-    if (req.file) {
-      await fs.unlink(req.file.path).catch(() => {});
-    }
     res.status(500).json({ message: 'Speech transcription failed', error: err.message });
   }
 };

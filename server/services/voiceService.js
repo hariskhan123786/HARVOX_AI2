@@ -6,6 +6,7 @@
  */
 
 import fs from 'fs';
+import { File } from 'node:buffer';
 import Groq from 'groq-sdk';
 import { getAIOptions } from '../controllers/ai/chatController.js';
 
@@ -17,7 +18,7 @@ import { getAIOptions } from '../controllers/ai/chatController.js';
  * @param {string} filePath - Path to uploaded audio file (mp3, wav, m4a, webm)
  * @returns {Promise<{text: string, language: string}>}
  */
-export async function transcribeAudio(userId, filePath) {
+export async function transcribeAudio(userId, audio) {
   try {
     const aiOptions = await getAIOptions(userId).catch(() => ({ apiKeys: {} }));
     const apiKey = aiOptions.apiKeys?.groq || process.env.GROQ_API_KEY;
@@ -28,9 +29,13 @@ export async function transcribeAudio(userId, filePath) {
 
     const groq = new Groq({ apiKey });
     
-    console.log(`[VoiceService] Sending ${filePath} to Whisper via Groq...`);
+    const file = Buffer.isBuffer(audio)
+      ? new File([audio], 'recording.webm', { type: 'audio/webm' })
+      : fs.createReadStream(audio);
+
+    console.log('[VoiceService] Sending audio to Whisper via Groq...');
     const response = await groq.audio.transcriptions.create({
-      file: fs.createReadStream(filePath),
+      file,
       model: 'whisper-large-v3',
       response_format: 'json',
       temperature: 0.0, // Low temperature for higher transcription accuracy

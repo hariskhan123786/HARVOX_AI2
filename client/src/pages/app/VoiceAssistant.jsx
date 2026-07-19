@@ -634,6 +634,9 @@ export default function VoiceAssistant() {
   const isProcessingRef         = useRef(false);
   const canvasRef               = useRef(null);
   const elevenLabsAudioRef      = useRef(null); // active ElevenLabs Audio element
+  const mediaRecorderRef        = useRef(null);
+  const mediaStreamRef          = useRef(null);
+  const recordingTimerRef       = useRef(null);
 
   // State refs — keep up-to-date so callbacks always see fresh values
   const continuousRef           = useRef(continuousMode);
@@ -745,8 +748,53 @@ export default function VoiceAssistant() {
   speakRef.current = speak;
 
   // ── startListening — stable callback ──────────────────────────────────────
+  const startFallbackRecording = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks = [];
+      mediaStreamRef.current = stream;
+      mediaRecorderRef.current = recorder;
+      setListening(true);
+      setTranscript('Recording voice… tap again to send.');
+      recorder.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); };
+      recorder.onstop = async () => {
+        clearTimeout(recordingTimerRef.current);
+        stream.getTracks().forEach((track) => track.stop());
+        setListening(false);
+        const audio = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+        if (!audio.size) return;
+        try {
+          setThinking(true);
+          const formData = new FormData();
+          formData.append('file', audio, 'harvox-voice.webm');
+          const { data } = await aiAPI.transcribe(formData);
+          const text = data?.text?.trim();
+          if (!text) throw new Error('No speech was detected.');
+          setTranscript(text);
+          isProcessingRef.current = true;
+          askAIRef.current(text);
+        } catch (error) {
+          setThinking(false);
+          setHasError(true);
+          setErrorMsg(error.response?.data?.message || error.message || 'Voice transcription failed.');
+        }
+      };
+      recorder.start();
+      recordingTimerRef.current = setTimeout(() => recorder.state === 'recording' && recorder.stop(), 12000);
+    } catch (error) {
+      setListening(false);
+      setHasError(true);
+      setErrorMsg('Microphone access is required for voice input.');
+    }
+  }, []);
+
   const startListening = useCallback(() => {
-    if (!recognitionRef.current) return;
+    if (!recognitionRef.current) {
+      if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop();
+      else startFallbackRecording();
+      return;
+    }
     if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); setSpeaking(false); }
     finalTranscriptRef.current = '';
     isProcessingRef.current    = false;
@@ -758,7 +806,7 @@ export default function VoiceAssistant() {
     setThinking(false);
     try { recognitionRef.current.start(); }
     catch (e) { console.warn('[SR] start error:', e.message); setListening(false); }
-  }, []);
+  }, [startFallbackRecording]);
 
   startListeningRef.current = startListening;
 
@@ -939,7 +987,10 @@ export default function VoiceAssistant() {
   // ── Speech recognition ─────────────────────────────────────────────────────
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { setSupported(false); return; }
+    if (!SR) {
+      setSupported(Boolean(navigator.mediaDevices?.getUserMedia && window.MediaRecorder));
+      return;
+    }
 
     const rec = new SR();
     rec.continuous     = true;
