@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](#-license)
 [![Made with React](https://img.shields.io/badge/frontend-React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](#-tech-stack)
 [![Node.js](https://img.shields.io/badge/backend-Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)](#-tech-stack)
-[![MongoDB](https://img.shields.io/badge/database-MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](#-tech-stack)
+[![Supabase](https://img.shields.io/badge/database-Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](#-tech-stack)
 [![Deployed on Vercel](https://img.shields.io/badge/deploy-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](#-deployment)
 
 <br/>
@@ -80,7 +80,7 @@ A cohesive glass + neon + holographic visual language, complete with 3D effects,
 | **Frontend** | React · Tailwind CSS · Framer Motion · `@xterm/xterm` · html2canvas · jsPDF |
 | **State** | Zustand-style stores (`useAuthStore`, `useSidebarStore`) |
 | **Backend** | Node.js · Express · CORS · dotenv · express-rate-limit |
-| **Database** | MongoDB |
+| **Database** | Supabase (PostgreSQL) |
 | **Auth** | JWT-based auth with route-level `protect()` middleware |
 | **AI Providers** | Google Gemini · Groq · Cerebras · OpenRouter · ElevenLabs (voice) |
 | **Infra** | Docker Compose · Vercel · Railway · GitHub Actions CI |
@@ -120,7 +120,7 @@ A cohesive glass + neon + holographic visual language, complete with 3D effects,
 │   memoryService.js → persistent AI memory + event bus          │
 └───────────────────────────────┬────────────────────────────────┘
                                  ▼
-              MongoDB  ·  AI Provider APIs  ·  Vercel / Railway
+              Supabase  ·  AI Provider APIs  ·  Vercel / Railway
 ```
 
 <details>
@@ -145,7 +145,7 @@ Harvox is built around a small set of shared primitives that every feature route
 
 ### Prerequisites
 - Node.js ≥ 18
-- MongoDB instance (local or Atlas)
+- A Supabase project (URL + API keys)
 - API keys for at least one AI provider (Gemini / Groq / Cerebras / OpenRouter)
 - *(Optional)* ElevenLabs API key for voice features
 
@@ -167,7 +167,9 @@ cp .env.example .env
 
 ```env
 # Server
-MONGO_URI=your_mongodb_connection_string
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 JWT_SECRET=your_jwt_secret
 
 # AI Providers
