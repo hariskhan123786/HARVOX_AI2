@@ -226,7 +226,18 @@ export const memoryAPI = {
 };
 
 export const automationAPI = {
-  executeStep: (step) => api.post('/automation/execute-step', { step }),
+  executeStep: async (step) => {
+    const token = localStorage.getItem('harvox_token');
+    try {
+      const response = await fetch('http://127.0.0.1:8765/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ step }),
+      });
+      if (response.ok) return { data: await response.json() };
+    } catch { /* Companion is not running; use cloud-safe automation below. */ }
+    return api.post('/automation/execute-step', { step });
+  },
   getDashboard: () => api.get('/automation/dashboard'),
   createTask: (data) => api.post('/automation/tasks', data),
   updateTask: (id, data) => api.put(`/automation/tasks/${id}`, data),
