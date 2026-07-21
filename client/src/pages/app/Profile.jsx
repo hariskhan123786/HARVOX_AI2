@@ -4,6 +4,7 @@ import { useAuthStore } from '../../store/authStore';
 import { profileAPI, authAPI } from '../../services/api';
 import GlassCard from '../../components/ui/GlassCard';
 import NeonButton from '../../components/ui/NeonButton';
+import PerformanceMonitor from '../../components/performance/PerformanceMonitor';
 import { 
   Award, Shield, Terminal, Zap, Cpu, BarChart2, 
   Activity, Star, User, History, CheckCircle, Flame, Target, Lock, Crown, Info
@@ -325,6 +326,22 @@ export default function Profile() {
                     {userXP.toLocaleString()} XP
                   </div>
                 </div>
+
+                {/* Compact account summary keeps core profile information scannable. */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 text-left">
+                  <div className="rounded-lg border border-white/5 bg-black/15 px-3 py-2">
+                    <p className="text-[8px] font-mono tracking-widest text-gray-600">ACCOUNT EMAIL</p>
+                    <p className="mt-1 truncate text-[10px] font-medium text-gray-300">{user?.email || 'Not connected'}</p>
+                  </div>
+                  <div className="rounded-lg border border-white/5 bg-black/15 px-3 py-2">
+                    <p className="text-[8px] font-mono tracking-widest text-gray-600">WORKSPACE</p>
+                    <p className="mt-1 flex items-center gap-1.5 text-[10px] font-medium text-emerald-400"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Online</p>
+                  </div>
+                  <div className="rounded-lg border border-white/5 bg-black/15 px-3 py-2">
+                    <p className="text-[8px] font-mono tracking-widest text-gray-600">MEMBERSHIP</p>
+                    <p className="mt-1 text-[10px] font-medium text-neon-blue capitalize">{user?.subscription || 'Free'} plan</p>
+                  </div>
+                </div>
               </div>
 
             </div>
@@ -455,6 +472,7 @@ export default function Profile() {
 
         {/* Right Column Section */}
         <div className="lg:col-span-1 space-y-6">
+          <PerformanceMonitor />
           
           {/* Combined Progression & Skill Radar Matrix */}
           <GlassCard hover={false} className="border-white/5 p-6 space-y-5">

@@ -7,6 +7,7 @@ import GlassCard from '../../components/ui/GlassCard';
 import NeonButton from '../../components/ui/NeonButton';
 import { AI_PROVIDERS, AI_PROVIDER_META, getDefaultModelForProvider, getModelsByProvider, GROQ_MODELS, GEMINI_MODELS } from '../../config/aiModels';
 import BrainMemorySettings from '../../components/settings/BrainMemorySettings';
+import { usePerformanceMode } from '../../components/performance/PerformanceProvider';
 import {
   Paintbrush, Cpu, Volume2, Shield,
   Bell, Layout, Database, LogOut, Check, User,
@@ -138,6 +139,7 @@ export default function Settings() {
   const logout = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
   const toastIdRef = useRef(0);
+  const { graphicsMode, setGraphicsMode } = usePerformanceMode();
 
   const [activeTab, setActiveTab] = useState('identity');
   const [toast, setToast] = useState(null);
@@ -239,7 +241,11 @@ export default function Settings() {
         const { data } = await settingsAPI.get();
         if (data.settings) {
           const s = data.settings;
-          if (s.appearance) { setTheme(s.appearance.theme); setAccent(s.appearance.accentColor); }
+          if (s.appearance) {
+            setTheme(s.appearance.theme);
+            setAccent(s.appearance.accentColor);
+            if (s.appearance.graphicsMode) setGraphicsMode(s.appearance.graphicsMode);
+          }
           if (s.ai) {
             setProvider(s.ai.provider || AI_PROVIDERS.GROQ);
             setModel(s.ai.model);
@@ -642,6 +648,40 @@ export default function Settings() {
                             <option>Compact HUD Density (Dense)</option>
                             <option>Minimalist Aesthetic (Spacious)</option>
                           </select>
+                        </div>
+                        <div className="space-y-3 pt-2 border-t border-white/5">
+                          <div>
+                            <label className="text-xs font-semibold font-orbitron tracking-wider text-muted">GRAPHICS MODE</label>
+                            <p className="mt-1 text-[10px] text-muted">Choose a fixed visual quality or let HARVOX tune effects from device resources and live frame rate.</p>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {[
+                              { key: 'auto', label: 'Auto Detect', desc: 'Matches effects to your device and FPS.', accent: 'border-neon-blue/40 bg-neon-blue/5 text-neon-blue' },
+                              { key: 'balanced', label: 'Balanced', desc: 'A steady mix of effects and responsiveness.', accent: 'border-neon-purple/40 bg-neon-purple/5 text-neon-purple' },
+                              { key: 'performance', label: 'Performance', desc: 'Minimizes effects for lower-end devices.', accent: 'border-emerald-400/40 bg-emerald-400/5 text-emerald-400' },
+                              { key: 'ultra', label: 'Ultra', desc: 'Enables all visual effects for powerful hardware.', accent: 'border-amber-400/40 bg-amber-400/5 text-amber-400' },
+                            ].map((graphics) => {
+                              const selected = graphicsMode === graphics.key;
+                              return (
+                                <button
+                                  key={graphics.key}
+                                  onClick={() => {
+                                    setGraphicsMode(graphics.key);
+                                    saveSetting('appearance', { graphicsMode: graphics.key });
+                                  }}
+                                  className={`rounded-xl border p-3 text-left transition-all ${selected ? graphics.accent : 'border-white/5 bg-secondary/10 hover:border-white/15'}`}
+                                >
+                                  <div className="flex items-center justify-between gap-3">
+                                    <span className="font-orbitron text-[10px] font-bold tracking-wider text-white">{graphics.label}</span>
+                                    <span className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${selected ? 'border-current' : 'border-white/20'}`}>
+                                      {selected && <span className="w-1.5 h-1.5 rounded-full bg-current" />}
+                                    </span>
+                                  </div>
+                                  <p className="mt-1.5 text-[9px] leading-relaxed text-muted">{graphics.desc}</p>
+                                </button>
+                              );
+                            })}
+                          </div>
                         </div>
                       </div>
                     </div>

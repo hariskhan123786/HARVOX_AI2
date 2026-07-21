@@ -96,6 +96,21 @@ select {
   }
 }
 
+/* Applied by the runtime performance monitor; the core palette remains unchanged. */
+html[data-performance-mode='lite'] *,
+html[data-performance-mode='lite'] *::before,
+html[data-performance-mode='lite'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+html[data-performance-mode='lite'] .glass,
+html[data-performance-mode='lite'] .glass-hover {
+  backdrop-filter: none;
+}
+
 @layer components {
   .glass {
     @apply rounded-2xl border border-white/10 bg-secondary/60 backdrop-blur-xl;

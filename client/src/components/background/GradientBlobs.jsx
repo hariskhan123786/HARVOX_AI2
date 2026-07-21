@@ -1,7 +1,7 @@
-export default function GradientBlobs() {
+export default function GradientBlobs({ simplified = false }) {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-40">
-      <style>{`
+      {!simplified && <style>{`
         @keyframes blob1 {
           0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
           50% { transform: translate3d(100px, -100px, 0) scale(1.2); }
@@ -17,16 +17,16 @@ export default function GradientBlobs() {
         .animate-blob1 { animation: blob1 25s infinite linear; }
         .animate-blob2 { animation: blob2 30s infinite linear; }
         .animate-blob3 { animation: blob3 28s infinite linear; }
-      `}</style>
+      `}</style>}
       <div
-        className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-neon-purple blur-[120px] opacity-30 mix-blend-screen will-change-transform animate-blob1"
+        className={`absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-neon-purple blur-[120px] opacity-30 mix-blend-screen ${simplified ? '' : 'will-change-transform animate-blob1'}`}
       />
-      <div
+      {!simplified && <div
         className="absolute top-[20%] -right-[10%] w-[40vw] h-[40vw] rounded-full bg-neon-blue blur-[100px] opacity-20 mix-blend-screen will-change-transform animate-blob2"
-      />
-      <div
+      />}
+      {!simplified && <div
         className="absolute -bottom-[20%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-neon-pink blur-[150px] opacity-20 mix-blend-screen will-change-transform animate-blob3"
-      />
+      />}
     </div>
   );
 }

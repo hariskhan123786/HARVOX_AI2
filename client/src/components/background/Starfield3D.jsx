@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export default function Starfield3D() {
+export default function Starfield3D({ density = 200 }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -11,14 +11,18 @@ export default function Starfield3D() {
     let animationFrameId;
 
     const setCanvasSize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = window.innerWidth * pixelRatio;
+      canvas.height = window.innerHeight * pixelRatio;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     };
 
     setCanvasSize();
     window.addEventListener('resize', setCanvasSize);
 
-    const stars = Array.from({ length: 200 }).map(() => ({
+    const stars = Array.from({ length: density }).map(() => ({
       x: Math.random() * 2000 - 1000,
       y: Math.random() * 2000 - 1000,
       z: Math.random() * 2000,
@@ -63,7 +67,7 @@ export default function Starfield3D() {
       window.removeEventListener('resize', setCanvasSize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [density]);
 
   return (
     <canvas

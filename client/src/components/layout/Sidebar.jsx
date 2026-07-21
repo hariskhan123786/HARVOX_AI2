@@ -175,6 +175,11 @@ export default function Sidebar({ mobileOpen, onClose }) {
   const userInitial = userName.charAt(0).toUpperCase();
   const isPro       = user?.subscription === 'pro' || user?.role === 'admin';
   const collapsed   = isCollapsed && !mobileOpen;
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    onClose();
+  };
 
   return (
     <>
@@ -331,21 +336,22 @@ export default function Sidebar({ mobileOpen, onClose }) {
                   </div>
                 </div>
 
-                {/* Logout */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    logout();
-                    navigate('/login');
-                  }}
-                  className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded-lg flex items-center justify-center text-gray-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all shrink-0"
-                  title="Log Out"
-                >
-                  <LogOut size={12} strokeWidth={2.5} />
-                </button>
               </>
             )}
           </div>
+
+          {/* Keep logout visible without requiring a profile-card hover. */}
+          <button
+            onClick={handleLogout}
+            className={cn(
+              'mt-2 flex items-center justify-center rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-300 transition-colors hover:bg-rose-500/20 hover:text-rose-200',
+              collapsed ? 'mx-auto h-9 w-10' : 'w-full gap-2 px-3 py-2 text-[11px] font-semibold'
+            )}
+            title="Log Out"
+          >
+            <LogOut size={14} strokeWidth={2.25} />
+            {!collapsed && <span>Log Out</span>}
+          </button>
         </div>
       </aside>
     </>

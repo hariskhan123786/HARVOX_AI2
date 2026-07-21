@@ -40,6 +40,12 @@ const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
 import CustomCursor from './components/ui/CustomCursor';
 import BackgroundEffects from './components/background/BackgroundEffects';
 import CommandPalette from './components/ui/CommandPalette';
+import { PerformanceProvider, usePerformanceMode } from './components/performance/PerformanceProvider';
+
+function AdaptiveCustomCursor() {
+  const { mode } = usePerformanceMode();
+  return mode === 'lite' ? null : <CustomCursor />;
+}
 
 export default function App() {
   const { token, loadUser } = useAuthStore();
@@ -86,8 +92,8 @@ export default function App() {
   }, [token, loadUser]);
 
   return (
-    <>
-      <CustomCursor />
+    <PerformanceProvider>
+      <AdaptiveCustomCursor />
       <BackgroundEffects />
       <CommandPalette />
       <Suspense fallback={
@@ -150,6 +156,6 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-    </>
+    </PerformanceProvider>
   );
 }

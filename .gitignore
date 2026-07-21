@@ -36,3 +36,5 @@ Thumbs.db
 # Ignore local agent configuration directory
 .agent/
 
+.vercel
+.env*
