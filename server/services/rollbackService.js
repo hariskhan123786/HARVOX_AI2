@@ -7,7 +7,6 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import { executeAutomationStep } from './automationService.js';
 
 // userId -> Array of rollback operations: { description, undoFn }
 const _rollbackStacks = new Map();

@@ -9,6 +9,7 @@ import {
   getAIMetrics,
   transcribeSpeech,
   speakText,
+  getVoicesList,
 } from '../controllers/aiController.js';
 import { protect } from '../middleware/auth.js';
 import { checkUsageLimit } from '../middleware/usageLimit.js';
@@ -28,7 +29,8 @@ router.post('/explain', checkSubscriptionQuota('chats'), explainCode);
 router.post('/project', requirePro, generateProject);
 router.post('/analyze-file', upload.single('file'), checkSubscriptionQuota('uploads'), analyzeFile);
 
-// ─── Phase 13.6: Voice Pipeline ──────────────────────────────────────────────
+// ─── Phase 13.6 & 15: Voice Pipeline ──────────────────────────────────────────
+router.get('/voice/voices', getVoicesList);
 router.post('/voice/stt', uploadAudio.single('file'), checkSubscriptionQuota('uploads'), transcribeSpeech);
 router.post('/voice/tts', speakText);
 

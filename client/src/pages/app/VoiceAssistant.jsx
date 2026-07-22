@@ -28,29 +28,30 @@ const AI_MODELS = [
   { provider: 'openai',     model: 'gpt-4o',                   label: 'OpenAI',     color: '#10b981', aliases: ['openai', 'chatgpt', 'gpt'] },
 ];
 
-// ── ElevenLabs Pre-made Free Voices ───────────────────────────────────────────
+// ── ElevenLabs Categorized Voice Catalog ─────────────────────────────────────
 const ELEVENLABS_VOICES = [
-  { id: '21m00Tcm4TlvDq8ikWAM', name: 'Rachel',  gender: 'F', style: 'Narration'   },
-  { id: 'pNInz6obpgfrhhF2E4DY', name: 'Adam',    gender: 'M', style: 'Narration'   },
-  { id: '29vD33N1CtxCmqQRPOHJ', name: 'Drew',    gender: 'M', style: 'News'        },
-  { id: '2EiwWnXF2V4jnm7Lb9z2', name: 'Clyde',   gender: 'M', style: 'Conversational'},
-  { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah',   gender: 'F', style: 'Soft'        },
-  { id: 'ErXwobaYiN019PkySvjV', name: 'Antoni',  gender: 'M', style: 'Well-Rounded' },
-  { id: 'GBv7mqt3OCnnkA55qy5z', name: 'Thomas',  gender: 'M', style: 'Calm'        },
-  { id: 'IKne3meq5aKbA1x0m7Ed', name: 'Charlie', gender: 'M', style: 'Conversational'},
-  { id: 'Lcfc5ZowlhAlwG5vBb22', name: 'Emily',   gender: 'F', style: 'Calm'        },
-  { id: 'N2lVS1w7Etoq3r1oG1t2', name: 'Callum',  gender: 'M', style: 'Characters'  },
-  { id: 'VR6AeaYCDIgk55MLRXhk', name: 'Arnold',  gender: 'M', style: 'Narration'   },
-  { id: 'XB0fDUnUDz4sSJJ5qy5z', name: 'Charlotte',gender:'F', style: 'Conversational'},
-  { id: 'Xb7hH8XZ157tM3t08wEw', name: 'Alice',   gender: 'F', style: 'News'        },
-  { id: 'XrExE9yKIg1AlwG5vBb2', name: 'Matilda', gender: 'F', style: 'Narration'   },
-  { id: 'onwF48T1CtxCmqQRPOHJ', name: 'Daniel',  gender: 'M', style: 'News'        },
-  { id: 'piTKgcLEGmPEeZsZasrn', name: 'Nicole',  gender: 'F', style: 'Whisper'     },
-  { id: 'pFZP5JQ4vr4xnSDxMaLp', name: 'Lily',    gender: 'F', style: 'Narration'   },
-  { id: 'jBpfyvQ7N1ctxCmqQRPO', name: 'Gigi',    gender: 'F', style: 'Animated'    },
-  { id: 'oWAoZ11UznfIEsZasrn2', name: 'Grace',   gender: 'F', style: 'Southern'    },
-  { id: 'TX3o48T1CtxCmqQRPOHJ', name: 'Liam',    gender: 'M', style: 'Narration'   },
+  // Female Hindi Voices (Default)
+  { id: 'cgSgspJ2msm6clMCkdW9', name: 'Hindi Female Premium (Priya)', category: 'Female Hindi (Default)', gender: 'F', style: 'Multilingual' },
+  { id: '21m00Tcm4TlvDq8ikWAM', name: 'Hindi Female 1 (Rachel)',       category: 'Female Hindi',           gender: 'F', style: 'Multilingual' },
+  { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Hindi Female 2 (Sarah)',        category: 'Female Hindi',           gender: 'F', style: 'Multilingual' },
+  { id: 'XB0fDUnUDz4sSJJ5qy5z', name: 'Hindi Female 3 (Charlotte)',    category: 'Female Hindi',           gender: 'F', style: 'Multilingual' },
+
+  // Male Hindi Voices
+  { id: 'pNInz6obpgfrhhF2E4DY', name: 'Hindi Male 1 (Adam)',           category: 'Male Hindi',             gender: 'M', style: 'Multilingual' },
+  { id: 'ErXwobaYiN019PkySvjV', name: 'Hindi Male 2 (Antoni)',         category: 'Male Hindi',             gender: 'M', style: 'Multilingual' },
+  { id: 'onwF48T1CtxCmqQRPOHJ', name: 'Hindi Male 3 (Daniel)',         category: 'Male Hindi',             gender: 'M', style: 'Multilingual' },
+
+  // Urdu Voices
+  { id: 'ohvvU75FpBEB8fdaLOMh', name: 'Female Urdu Voice 1',          category: 'Urdu Voices',            gender: 'F', style: 'Urdu / Multilingual' },
+  { id: 'VG7gYikNQ71LJ52W9fAD', name: 'Female Urdu Voice 2 (Priya)',   category: 'Urdu Voices',            gender: 'F', style: 'Urdu / Multilingual' },
+  { id: 'CYZATuZ1tjgW8es1QfPG', name: 'Male Urdu Voice',              category: 'Urdu Voices',            gender: 'M', style: 'Urdu / Multilingual' },
+
+  // English Voices
+  { id: 'Lcfc5ZowlhAlwG5vBb22', name: 'English Female (Emily)',       category: 'English Voices',         gender: 'F', style: 'Calm' },
+  { id: 'IKne3meq5aKbA1x0m7Ed', name: 'English Male (Charlie)',        category: 'English Voices',         gender: 'M', style: 'Conversational' },
 ];
+
+const DEFAULT_VOICE_ID = 'cgSgspJ2msm6clMCkdW9'; // Hindi Female Premium (Default)
 
 // ElevenLabs voice IDs as a Set for O(1) lookup
 const ELEVENLABS_IDS = new Set(ELEVENLABS_VOICES.map((v) => v.id));
@@ -134,6 +135,7 @@ function AudioLevelMeter({ level = 0, active }) {
     </div>
   );
 }
+
 
 // ── Conversation History Item ──────────────────────────────────────────────────
 function HistoryItem({ item, onReplay }) {
@@ -617,7 +619,7 @@ export default function VoiceAssistant() {
   const [voiceConfidence,     setVoiceConfidence]     = useState(98);
   const [ambientNoise,        setAmbientNoise]        = useState(32);
   const [voices,              setVoices]              = useState([]);
-  const [selectedVoice,       setSelectedVoice]       = useState('female');
+  const [selectedVoice,       setSelectedVoice]       = useState(DEFAULT_VOICE_ID);
   const [voiceSpeed,          setVoiceSpeed]          = useState(1.0);
   const [voiceLanguage,       setVoiceLanguage]       = useState('en-US');
 
@@ -649,6 +651,8 @@ export default function VoiceAssistant() {
   const selectedVoiceRef        = useRef(selectedVoice);
   const voiceSpeedRef           = useRef(voiceSpeed);
   const voiceLanguageRef        = useRef(voiceLanguage);
+  const thinkingRef             = useRef(thinking);
+  const speakingRef             = useRef(speaking);
 
   // Forward refs to break circular deps between speak / startListening
   const startListeningRef = useRef(null);
@@ -664,6 +668,8 @@ export default function VoiceAssistant() {
   useEffect(() => { selectedVoiceRef.current       = selectedVoice; },       [selectedVoice]);
   useEffect(() => { voiceSpeedRef.current          = voiceSpeed; },          [voiceSpeed]);
   useEffect(() => { voiceLanguageRef.current       = voiceLanguage; },       [voiceLanguage]);
+  useEffect(() => { thinkingRef.current            = thinking; },            [thinking]);
+  useEffect(() => { speakingRef.current            = speaking; },            [speaking]);
 
   const activeModel = AI_MODELS[selectedModelIdx];
 
@@ -778,6 +784,13 @@ export default function VoiceAssistant() {
           setThinking(false);
           setHasError(true);
           setErrorMsg(error.response?.data?.message || error.message || 'Voice transcription failed.');
+          if (continuousRef.current) {
+            setTimeout(() => {
+              if (continuousRef.current && !thinkingRef.current && !speakingRef.current) {
+                startListeningRef.current?.();
+              }
+            }, 1500);
+          }
         }
       };
       recorder.start();
@@ -795,7 +808,12 @@ export default function VoiceAssistant() {
       else startFallbackRecording();
       return;
     }
-    if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); setSpeaking(false); }
+    if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }
+    if (elevenLabsAudioRef.current) {
+      try { elevenLabsAudioRef.current.pause(); } catch {}
+      elevenLabsAudioRef.current = null;
+    }
+    setSpeaking(false);
     finalTranscriptRef.current = '';
     isProcessingRef.current    = false;
     setTranscript('');
@@ -807,6 +825,21 @@ export default function VoiceAssistant() {
     try { recognitionRef.current.start(); }
     catch (e) { console.warn('[SR] start error:', e.message); setListening(false); }
   }, [startFallbackRecording]);
+
+  const toggleListening = useCallback(() => {
+    if (listening) {
+      setListening(false);
+      isProcessingRef.current = false;
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch {}
+      }
+      if (mediaRecorderRef.current?.state === 'recording') {
+        try { mediaRecorderRef.current.stop(); } catch {}
+      }
+    } else {
+      startListening();
+    }
+  }, [listening, startListening]);
 
   startListeningRef.current = startListening;
 
@@ -1020,6 +1053,15 @@ export default function VoiceAssistant() {
       if (captured && !isProcessingRef.current) {
         isProcessingRef.current = true;
         askAIRef.current(captured);
+      } else {
+        if (continuousRef.current && !isProcessingRef.current && !thinkingRef.current && !speakingRef.current) {
+          setTimeout(() => {
+            if (continuousRef.current && !isProcessingRef.current && !thinkingRef.current && !speakingRef.current) {
+              setListening(true);
+              try { rec.start(); } catch (err) { console.warn('[SR] Restart error:', err.message); }
+            }
+          }, 300);
+        }
       }
     };
 
@@ -1264,10 +1306,19 @@ export default function VoiceAssistant() {
               transition={{ duration: 3, repeat: Infinity }} className="absolute inset-0 rounded-full"
               style={{ background: `radial-gradient(circle, ${listening ? '#00F0FF' : thinking ? '#fbbf24' : '#8A2BE2'}20, transparent 70%)`, margin: '-30px' }} />
             <button
-              onClick={startListening}
-              disabled={listening || thinking || speaking || !supported}
+              onClick={() => {
+                if (speaking) {
+                  if (elevenLabsAudioRef.current) { elevenLabsAudioRef.current.pause(); elevenLabsAudioRef.current = null; }
+                  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                  setSpeaking(false);
+                  startListening();
+                } else {
+                  toggleListening();
+                }
+              }}
+              disabled={thinking || !supported}
               className="focus:outline-none disabled:cursor-not-allowed relative z-10"
-              title={listening ? 'Listening…' : 'Click to speak'}
+              title={listening ? 'Stop listening' : speaking ? 'Interrupt' : 'Click to speak'}
             >
               <VoiceOrb isListening={listening} isSpeaking={speaking} isThinking={thinking} isError={hasError} />
             </button>
@@ -1336,8 +1387,17 @@ export default function VoiceAssistant() {
         {/* ── Action buttons ── */}
         <div className="flex items-center gap-3 w-full max-w-sm">
           <motion.button
-            onClick={startListening}
-            disabled={listening || thinking || speaking || !supported}
+            onClick={() => {
+              if (speaking) {
+                if (elevenLabsAudioRef.current) { elevenLabsAudioRef.current.pause(); elevenLabsAudioRef.current = null; }
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                setSpeaking(false);
+                startListening();
+              } else {
+                toggleListening();
+              }
+            }}
+            disabled={thinking || !supported}
             whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
             className="flex-1 relative flex items-center justify-center gap-2.5 py-3.5 rounded-2xl font-orbitron font-black text-sm tracking-widest uppercase overflow-hidden transition-all disabled:opacity-50 group"
             style={{
@@ -1411,18 +1471,39 @@ export default function VoiceAssistant() {
                     </label>
                     <select value={selectedVoice}
                       onChange={(e) => { setSelectedVoice(e.target.value); settingsAPI.update({ voice: { voiceSelection: e.target.value, speed: voiceSpeed } }).catch(() => {}); }}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-gray-300 outline-none focus:border-neon-purple/40 transition-all">
-                      <optgroup label="── Browser Voices ──">
-                        <option value="female">Default — Aura (Female)</option>
-                        <option value="male">Default — Echo (Male)</option>
-                        {voices.map((v) => (<option key={v.name} value={v.name}>{v.name} [{v.lang}]</option>))}
-                      </optgroup>
-                      <optgroup label="── ElevenLabs Voices (Requires API Key) ──">
-                        {ELEVENLABS_VOICES.map((v) => (
+                      className="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-gray-200 outline-none focus:border-neon-purple/40 transition-all">
+                      <optgroup label="── Female Hindi Voices (Default) ──">
+                        {ELEVENLABS_VOICES.filter(v => v.category.includes('Female Hindi')).map((v) => (
                           <option key={v.id} value={v.id}>
-                            {v.name} — {v.style} ({v.gender === 'F' ? '♀' : '♂'})
+                            {v.name} {v.id === DEFAULT_VOICE_ID ? '(Default)' : ''}
                           </option>
                         ))}
+                      </optgroup>
+                      <optgroup label="── Male Hindi Voices ──">
+                        {ELEVENLABS_VOICES.filter(v => v.category.includes('Male Hindi')).map((v) => (
+                          <option key={v.id} value={v.id}>
+                            {v.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="── Urdu Voices ──">
+                        {ELEVENLABS_VOICES.filter(v => v.category.includes('Urdu')).map((v) => (
+                          <option key={v.id} value={v.id}>
+                            {v.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="── English Voices ──">
+                        {ELEVENLABS_VOICES.filter(v => v.category.includes('English')).map((v) => (
+                          <option key={v.id} value={v.id}>
+                            {v.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="── Native Browser Fallbacks ──">
+                        <option value="female">System Browser — Female</option>
+                        <option value="male">System Browser — Male</option>
+                        {voices.map((v) => (<option key={v.name} value={v.name}>{v.name} [{v.lang}]</option>))}
                       </optgroup>
                     </select>
                     {ELEVENLABS_IDS.has(selectedVoice) && (

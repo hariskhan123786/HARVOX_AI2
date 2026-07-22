@@ -1,7 +1,7 @@
 # Graph Report - harvox_ai  (2026-07-22)
 
 ## Corpus Check
-- 176 files · ~256,341 words
+- 176 files · ~256,386 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -100,8 +100,8 @@
 ## Import Cycles
 - 3-file cycle: `server/controllers/ai/chatController.js -> server/services/postChatSummarizer.js -> server/controllers/aiController.js -> server/controllers/ai/chatController.js`
 - 4-file cycle: `server/controllers/ai/chatController.js -> server/services/postChatSummarizer.js -> server/controllers/aiController.js -> server/controllers/ai/codeController.js -> server/controllers/ai/chatController.js`
-- 4-file cycle: `server/controllers/ai/chatController.js -> server/services/postChatSummarizer.js -> server/controllers/aiController.js -> server/controllers/ai/projectController.js -> server/controllers/ai/chatController.js`
 - 4-file cycle: `server/controllers/ai/chatController.js -> server/services/postChatSummarizer.js -> server/controllers/aiController.js -> server/controllers/ai/fileAnalysisController.js -> server/controllers/ai/chatController.js`
+- 4-file cycle: `server/controllers/ai/chatController.js -> server/services/postChatSummarizer.js -> server/controllers/aiController.js -> server/controllers/ai/projectController.js -> server/controllers/ai/chatController.js`
 - 5-file cycle: `server/controllers/ai/chatController.js -> server/services/postChatSummarizer.js -> server/controllers/aiController.js -> server/controllers/ai/voiceController.js -> server/services/voiceService.js -> server/controllers/ai/chatController.js`
 
 ## Hyperedges (group relationships)

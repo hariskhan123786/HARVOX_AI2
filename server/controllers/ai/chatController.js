@@ -2,6 +2,7 @@ import { PROMPTS, PERSONALITIES } from '../../config/prompts.js';
 import * as aiProviderManager from '../../services/aiProviderManager.js';
 import { incrementUsage } from '../../services/usageService.js';
 import { getContextPrompt, logActivity } from '../../services/memoryService.js';
+import { summarizeConversationAndExtractMemories } from '../../services/postChatSummarizer.js';
 import { detectIntent, looksLikeAutomation } from '../../services/intentEngine.js';
 import { generatePlan } from '../../services/plannerService.js';
 import { supabase } from '../../config/supabase.js';
@@ -330,6 +331,11 @@ export const chatAI = async (req, res) => {
     }
 
     const chatObj = await buildChatResponse();
+
+    // Trigger non-blocking automatic conversation memory extraction
+    summarizeConversationAndExtractMemories(req.user._id, session.id).catch((e) =>
+      console.error('[AutoMemory] Background extraction error:', e.message)
+    );
 
     res.json({
       chat: chatObj,

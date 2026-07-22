@@ -42,6 +42,8 @@ import BackgroundEffects from './components/background/BackgroundEffects';
 import CommandPalette from './components/ui/CommandPalette';
 import { PerformanceProvider, usePerformanceMode } from './components/performance/PerformanceProvider';
 
+import { useThemeStore } from './store/themeStore';
+
 function AdaptiveCustomCursor() {
   const { mode } = usePerformanceMode();
   return mode === 'lite' ? null : <CustomCursor />;
@@ -50,6 +52,11 @@ function AdaptiveCustomCursor() {
 export default function App() {
   const { token, loadUser } = useAuthStore();
   const navigate = useNavigate();
+  const themeStore = useThemeStore();
+
+  useEffect(() => {
+    themeStore.applyTheme();
+  }, []);
 
   useEffect(() => {
     const handleGlobalShortcuts = (e) => {
@@ -82,9 +89,16 @@ export default function App() {
       loadUser();
       import('./services/api').then(({ settingsAPI }) => {
         settingsAPI.get().then(({ data }) => {
-          if (data?.settings?.appearance?.theme) {
-            const t = data.settings.appearance.theme === 'Hologram Blue' ? 'hologram' : 'cyberpunk';
-            document.body.className = t;
+          if (data?.settings?.appearance) {
+            const app = data.settings.appearance;
+            if (app.theme) {
+              const t = app.theme === 'Hologram Blue' ? 'hologram' : 'cyberpunk';
+              document.body.className = t;
+              themeStore.setMode(app.themeMode || (t === 'hologram' ? 'system' : 'dark'));
+            }
+            if (app.accentColor) {
+              themeStore.setAccentColor(app.accentColor);
+            }
           }
         }).catch(() => {});
       });

@@ -320,13 +320,13 @@
     "semantic_hash": "7488f8afcbf346fd928a5657759da694"
   },
   "client/src/pages/app/Settings.jsx": {
-    "mtime": 1784728099.3797274,
-    "ast_hash": "376b6fedf431f849a36fdd4854267e52",
+    "mtime": 1784726471.3204057,
+    "ast_hash": "e97703771b3b6ae25e1657eb88a5f5fc",
     "semantic_hash": ""
   },
   "client/src/pages/app/VoiceAssistant.jsx": {
-    "mtime": 1784728085.2190428,
-    "ast_hash": "35f00d6eced6b35cdd13d65ceb30aa27",
+    "mtime": 1784727896.7903013,
+    "ast_hash": "3579882b3c2dd95b84e6aa66a90df842",
     "semantic_hash": ""
   },
   "client/src/pages/app/WorkspaceOS.jsx": {
@@ -720,8 +720,8 @@
     "semantic_hash": ""
   },
   "server/services/voiceService.js": {
-    "mtime": 1784728072.8946054,
-    "ast_hash": "317feae631345f3927082fb49491d46a",
+    "mtime": 1784726439.6827502,
+    "ast_hash": "dfc92f790e35f78fdd4594a645e8edf9",
     "semantic_hash": ""
   },
   "server/services/workflowEngine.js": {

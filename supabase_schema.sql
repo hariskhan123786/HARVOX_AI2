@@ -169,15 +169,27 @@ CREATE TABLE IF NOT EXISTS public.automation_history (
 );
 
 -- ----------------------------------------------------
--- 11. BRAIN MEMORY
+-- 11. BRAIN MEMORY (User Memory Core + Vector RAG)
 -- ----------------------------------------------------
+CREATE EXTENSION IF NOT EXISTS vector;
+
 CREATE TABLE IF NOT EXISTS public.brain_memory (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-  category text NOT NULL CHECK (category IN ('identity', 'preferences', 'project', 'conversation', 'activity')),
+  category text NOT NULL CHECK (category IN ('identity', 'preferences', 'project', 'conversation', 'activity', 'notes', 'automation', 'goals', 'coding_style')),
   key text NOT NULL,
   value jsonb NOT NULL,
+  title text DEFAULT '',
+  content text DEFAULT '',
+  tags text[] DEFAULT '{}',
+  embedding vector(1536),
+  importance_score numeric DEFAULT 0.5 CHECK (importance_score >= 0 AND importance_score <= 1.0),
+  confidence_score numeric DEFAULT 0.8 CHECK (confidence_score >= 0 AND confidence_score <= 1.0),
   is_pinned boolean DEFAULT false,
+  archived boolean DEFAULT false,
+  source text DEFAULT 'manual' CHECK (source IN ('manual', 'chat_auto', 'file_import', 'system_telemetry', 'historical_import')),
+  related_memories uuid[] DEFAULT '{}',
+  last_accessed timestamptz DEFAULT now(),
   metadata jsonb DEFAULT '{}'::jsonb,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
@@ -529,3 +541,54 @@ CREATE POLICY "Screenshots User All" ON storage.objects FOR ALL USING (bucket_id
 CREATE POLICY "AI Files User All" ON storage.objects FOR ALL USING (bucket_id = 'ai-files' AND auth.uid()::text = (storage.foldername(name))[1]);
 CREATE POLICY "Exports User All" ON storage.objects FOR ALL USING (bucket_id = 'exports' AND auth.uid()::text = (storage.foldername(name))[1]);
 CREATE POLICY "Presentations User All" ON storage.objects FOR ALL USING (bucket_id = 'presentations' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+
+-- ----------------------------------------------------
+-- VECTOR SEARCH RPC FUNCTION FOR BRAIN MEMORY (RAG)
+-- ----------------------------------------------------
+CREATE OR REPLACE FUNCTION public.match_memories(
+  query_embedding vector(1536),
+  match_threshold float DEFAULT 0.2,
+  match_count int DEFAULT 10,
+  filter_user_id uuid DEFAULT NULL
+)
+RETURNS TABLE (
+  id uuid,
+  category text,
+  key text,
+  value jsonb,
+  title text,
+  content text,
+  tags text[],
+  importance_score numeric,
+  confidence_score numeric,
+  is_pinned boolean,
+  archived boolean,
+  similarity float
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    bm.id,
+    bm.category,
+    bm.key,
+    bm.value,
+    bm.title,
+    bm.content,
+    bm.tags,
+    bm.importance_score,
+    bm.confidence_score,
+    bm.is_pinned,
+    bm.archived,
+    1 - (bm.embedding <=> query_embedding) AS similarity
+  FROM public.brain_memory bm
+  WHERE bm.user_id = filter_user_id
+    AND bm.archived = false
+    AND 1 - (bm.embedding <=> query_embedding) > match_threshold
+  ORDER BY bm.is_pinned DESC, (1 - (bm.embedding <=> query_embedding)) DESC
+  LIMIT match_count;
+END;
+$$;

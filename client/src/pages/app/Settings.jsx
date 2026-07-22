@@ -8,6 +8,7 @@ import NeonButton from '../../components/ui/NeonButton';
 import { AI_PROVIDERS, AI_PROVIDER_META, getDefaultModelForProvider, getModelsByProvider, GROQ_MODELS, GEMINI_MODELS } from '../../config/aiModels';
 import BrainMemorySettings from '../../components/settings/BrainMemorySettings';
 import { usePerformanceMode } from '../../components/performance/PerformanceProvider';
+import { useThemeStore } from '../../store/themeStore';
 import {
   Paintbrush, Cpu, Volume2, Shield,
   Bell, Layout, Database, LogOut, Check, User,
@@ -140,6 +141,7 @@ export default function Settings() {
   const navigate = useNavigate();
   const toastIdRef = useRef(0);
   const { graphicsMode, setGraphicsMode } = usePerformanceMode();
+  const themeStore = useThemeStore();
 
   const [activeTab, setActiveTab] = useState('identity');
   const [toast, setToast] = useState(null);
@@ -245,6 +247,8 @@ export default function Settings() {
             setTheme(s.appearance.theme);
             setAccent(s.appearance.accentColor);
             if (s.appearance.graphicsMode) setGraphicsMode(s.appearance.graphicsMode);
+            themeStore.setAccentColor(s.appearance.accentColor || 'purple');
+            themeStore.setMode(s.appearance.theme === 'hologram' ? 'system' : 'dark');
           }
           if (s.ai) {
             setProvider(s.ai.provider || AI_PROVIDERS.GROQ);
@@ -606,7 +610,11 @@ export default function Settings() {
                             ].map((color) => (
                               <button
                                 key={color.name}
-                                onClick={() => { setAccent(color.name); saveSetting('appearance', { accentColor: color.name }); }}
+                                onClick={() => { 
+                                  setAccent(color.name); 
+                                  themeStore.setAccentColor(color.name);
+                                  saveSetting('appearance', { accentColor: color.name }); 
+                                }}
                                 className={`w-9 h-9 rounded-full ${color.class} flex items-center justify-center border-2 transition-all ${accent === color.name ? 'border-white scale-110' : 'border-transparent opacity-60 hover:opacity-100'}`}
                               >
                                 {accent === color.name && <Check className="w-4 h-4 text-white" />}
@@ -625,6 +633,7 @@ export default function Settings() {
                                 key={t.key}
                                 onClick={() => { 
                                   setTheme(t.key); 
+                                  themeStore.setMode(t.key === 'hologram' ? 'system' : 'dark');
                                   saveSetting('appearance', { theme: t.key }); 
                                   document.body.className = t.key;
                                 }}
@@ -900,38 +909,66 @@ export default function Settings() {
                       <h3 className="font-orbitron font-semibold text-sm text-white tracking-widest uppercase border-b border-white/5 pb-2">Voice Assistant Link</h3>
                       <div className="space-y-5">
                         <div className="space-y-2">
-                          <label className="text-xs font-semibold font-orbitron tracking-wider text-muted">SYSTEM VOICE SELECTOR</label>
+                          <label className="text-xs font-semibold font-orbitron tracking-wider text-muted">ELEVENLABS & NEURAL VOICE SELECTOR</label>
                           <div className="flex gap-2">
                             <select
                               value={voiceGender}
                               onChange={(e) => { setVoiceGender(e.target.value); saveSetting('voice', { voiceSelection: e.target.value }); }}
-                              className="input-neon text-xs font-mono flex-1"
+                              className="input-neon text-xs font-mono flex-1 bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-white"
                             >
-                              <option value="female">Default — Aura (Female)</option>
-                              <option value="male">Default — Echo (Male)</option>
-                              {voices.map((v) => (
-                                <option key={v.name} value={v.name}>{v.name} [{v.lang}]</option>
-                              ))}
+                              <optgroup label="── Female Hindi Voices (Default) ──">
+                                <option value="cgSgspJ2msm6clMCkdW9">Hindi Female Premium (Priya) — Default</option>
+                                <option value="21m00Tcm4TlvDq8ikWAM">Hindi Female 1 (Rachel)</option>
+                                <option value="EXAVITQu4vr4xnSDxMaL">Hindi Female 2 (Sarah)</option>
+                                <option value="XB0fDUnUDz4sSJJ5qy5z">Hindi Female 3 (Charlotte)</option>
+                              </optgroup>
+                              <optgroup label="── Male Hindi Voices ──">
+                                <option value="pNInz6obpgfrhhF2E4DY">Hindi Male 1 (Adam)</option>
+                                <option value="ErXwobaYiN019PkySvjV">Hindi Male 2 (Antoni)</option>
+                                <option value="onwF48T1CtxCmqQRPOHJ">Hindi Male 3 (Daniel)</option>
+                              </optgroup>
+                              <optgroup label="── Urdu Voices ──">
+                                <option value="ohvvU75FpBEB8fdaLOMh">Female Urdu Voice 1 (ohvvU75F)</option>
+                                <option value="VG7gYikNQ71LJ52W9fAD">Female Urdu Voice 2 (VG7gYikN)</option>
+                                <option value="CYZATuZ1tjgW8es1QfPG">Male Urdu Voice (CYZATuZ1)</option>
+                              </optgroup>
+                              <optgroup label="── English Voices ──">
+                                <option value="Lcfc5ZowlhAlwG5vBb22">English Female (Emily)</option>
+                                <option value="IKne3meq5aKbA1x0m7Ed">English Male (Charlie)</option>
+                              </optgroup>
+                              <optgroup label="── Browser Native Fallbacks ──">
+                                <option value="female">System Browser — Female</option>
+                                <option value="male">System Browser — Male</option>
+                                {voices.map((v) => (
+                                  <option key={v.name} value={v.name}>{v.name} [{v.lang}]</option>
+                                ))}
+                              </optgroup>
                             </select>
                             <button
                               type="button"
                               onClick={() => {
-                                if ('speechSynthesis' in window) {
-                                  window.speechSynthesis.cancel();
-                                  const text = voiceLanguage === 'ur-PK' 
-                                    ? 'ہاروکس آواز کا رابطہ بحال ہو گیا ہے۔ میں آپ کی خدمت کے لیے تیار ہوں۔'
-                                    : 'Neural voice telemetry uplink stabilized. HARVOX AI online.';
-                                  const utter = new SpeechSynthesisUtterance(text);
-                                  utter.rate = voiceSpeed;
-                                  if (voiceLanguage === 'ur-PK') utter.lang = 'ur-PK';
-                                  const matched = voices.find(v => v.name === voiceGender || (voiceLanguage === 'ur-PK' && v.lang.startsWith('ur')));
-                                  if (matched) utter.voice = matched;
-                                  window.speechSynthesis.speak(utter);
-                                }
+                                // Request dynamic TTS playback from server for voice testing
+                                settingsAPI.update({ voice: { voiceSelection: voiceGender } })
+                                  .then(() => {
+                                    const sampleText = voiceLanguage === 'ur-PK' 
+                                      ? 'آپ کا وائس لنک کامیابی سے ترتیب دے دیا گیا ہے۔' 
+                                      : 'Voice link configured successfully.';
+                                    import('../../services/api').then(({ aiAPI }) => {
+                                      aiAPI.tts({ text: sampleText, voiceId: voiceGender })
+                                        .then(({ data }) => {
+                                          if (data.audioBase64) {
+                                            const audio = new Audio(`data:audio/mpeg;base64,${data.audioBase64}`);
+                                            audio.playbackRate = voiceSpeed;
+                                            audio.play();
+                                          }
+                                        }).catch(() => {});
+                                    });
+                                  })
+                                  .catch(() => {});
                               }}
-                              className="shrink-0 px-3 rounded-xl border border-neon-pink/30 bg-neon-pink/10 text-neon-pink hover:bg-neon-pink/20 transition-all font-orbitron text-[9px] font-bold tracking-widest"
+                              className="shrink-0 px-3.5 rounded-xl border border-neon-pink/30 bg-neon-pink/10 text-neon-pink hover:bg-neon-pink/20 transition-all font-orbitron text-[9px] font-bold tracking-widest"
                             >
-                              TEST
+                              TEST VOICE
                             </button>
                           </div>
                         </div>

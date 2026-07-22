@@ -7,4 +7,4 @@ export { getAIOptions, chatAI, getAIMetrics } from './ai/chatController.js';
 export { generateCode, debugCode, explainCode } from './ai/codeController.js';
 export { generateProject } from './ai/projectController.js';
 export { analyzeFile } from './ai/fileAnalysisController.js';
-export { transcribeSpeech, speakText } from './ai/voiceController.js';
+export { transcribeSpeech, speakText, getVoicesList } from './ai/voiceController.js';
