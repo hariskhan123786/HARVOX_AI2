@@ -118,13 +118,19 @@ html[data-performance-mode='lite'] .glass-hover {
     @apply rounded-2xl border border-white/10 bg-secondary/60 backdrop-blur-xl;
   }
   .glass-hover {
-    @apply glass transition-all duration-300 hover:border-neon-purple/40 hover:shadow-neon-purple;
+    @apply glass transition-all duration-300 hover:shadow-neon-purple;
+  }
+  .glass-hover:hover {
+    border-color: color-mix(in srgb, var(--color-accent-primary, #8A2BE2) 40%, transparent);
   }
   .gradient-text {
     @apply bg-gradient-to-r from-neon-purple via-neon-blue to-neon-pink bg-clip-text text-transparent;
   }
   .input-neon {
-    @apply w-full rounded-xl border border-white/10 bg-primary/80 px-4 py-3 text-white placeholder:text-muted/60 outline-none transition-all focus:border-neon-purple/50 focus:shadow-neon-purple;
+    @apply w-full rounded-xl border border-white/10 bg-primary/80 px-4 py-3 text-white placeholder:text-muted/60 outline-none transition-all focus:shadow-neon-purple;
+  }
+  .input-neon:focus {
+    border-color: color-mix(in srgb, var(--color-accent-primary, #8A2BE2) 50%, transparent);
   }
 
   /* 3D perspective utility */
