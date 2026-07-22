@@ -1,16 +1,16 @@
-# Graph Report - harvox_ai  (2026-07-21)
+# Graph Report - harvox_ai  (2026-07-17)
 
 ## Corpus Check
-- 175 files · ~256,003 words
+- 168 files · ~250,709 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1005 nodes · 2003 edges · 73 communities (61 shown, 12 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 57 edges (avg confidence: 0.59)
+- 969 nodes · 1928 edges · 61 communities (53 shown, 8 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 55 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0d75cd77`
+- Built from commit: `4fc320db`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -65,18 +65,6 @@
 - [[_COMMUNITY_vercel.json|vercel.json]]
 - [[_COMMUNITY_subscription.js|subscription.js]]
 - [[_COMMUNITY_geminiService.js|geminiService.js]]
-- [[_COMMUNITY_intentEngine.js|intentEngine.js]]
-- [[_COMMUNITY_cn|cn]]
-- [[_COMMUNITY_PerformanceProvider.jsx|PerformanceProvider.jsx]]
-- [[_COMMUNITY_card.jsx|card.jsx]]
-- [[_COMMUNITY_useThemeStore.js|useThemeStore.js]]
-- [[_COMMUNITY_Profile.jsx|Profile.jsx]]
-- [[_COMMUNITY_ResetPassword.jsx|ResetPassword.jsx]]
-- [[_COMMUNITY_agent.mjs|agent.mjs]]
-- [[_COMMUNITY_voiceController.js|voiceController.js]]
-- [[_COMMUNITY_ModeSelector.jsx|ModeSelector.jsx]]
-- [[_COMMUNITY_AdminRoute.jsx|AdminRoute.jsx]]
-- [[_COMMUNITY_CustomCursor.jsx|CustomCursor.jsx]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `logActivity()` - 162 edges
@@ -84,7 +72,7 @@
 3. `useAuthStore` - 35 edges
 4. `getAIOptions()` - 23 edges
 5. `NeonButton()` - 21 edges
-6. `GlassCard()` - 20 edges
+6. `GlassCard()` - 19 edges
 7. `execCmd()` - 19 edges
 8. `cn()` - 17 edges
 9. `protect()` - 13 edges
@@ -99,8 +87,8 @@
   client/src/pages/auth/Login.jsx → server/controllers/authController.js
 - `Register()` --calls--> `register()`  [INFERRED]
   client/src/pages/auth/Register.jsx → server/controllers/authController.js
-- `handler()` --calls--> `app`  [INFERRED]
-  api/[...path].js → server/server.js
+- `CI Workflow` --references--> `Client Entry Point`  [INFERRED]
+  .github/workflows/ci.yml → client/index.html
 
 ## Import Cycles
 - 3-file cycle: `server/services/automation/modules/fileModule.js -> server/services/rollbackService.js -> server/services/automationService.js -> server/services/automation/modules/fileModule.js`
@@ -109,11 +97,11 @@
 - **Harvox AI Technology Stack** — docker_compose_harvox_app, mongodb, groq_api, gemini_api [EXTRACTED 1.00]
 - **Continuous Integration Pipeline** — github_workflows_ci_yml, docker_compose_yml, client_index_html [INFERRED 0.85]
 
-## Communities (73 total, 12 thin omitted)
+## Communities (61 total, 8 thin omitted)
 
 ### Community 1 - "Landing.jsx"
-Cohesion: 0.14
-Nodes (10): FOMOBadge(), articles, faqs, features, HologramOrb, Landing(), plans, testimonials (+2 more)
+Cohesion: 0.06
+Nodes (26): BackgroundEffects(), CyberGrid(), GradientBlobs(), HologramWaves(), Starfield3D(), Card, CardContent, CardDescription (+18 more)
 
 ### Community 2 - "dependencies"
 Cohesion: 0.04
@@ -128,12 +116,12 @@ Cohesion: 0.10
 Nodes (25): APP_MATRIX, backupProject(), clickElement(), createComponent(), createFile(), createProject(), __dirname, draftEmail() (+17 more)
 
 ### Community 5 - "NeonButton.jsx"
-Cohesion: 0.15
-Nodes (9): GlassCard(), NeonButton(), PremiumLockOverlay(), languages, PRESETS, COMPLEXITY, STACKS, aiAPI (+1 more)
+Cohesion: 0.17
+Nodes (7): GlassCard(), NeonButton(), PremiumLockOverlay(), ICON_MAP, COMPLEXITY, STACKS, profileAPI
 
 ### Community 6 - "Settings.jsx"
 Cohesion: 0.11
-Nodes (20): CATEGORIES, ModelSelector(), PROVIDER_BADGES, SPEED_COLORS, AI_PROVIDER_META, AI_PROVIDERS, ALL_MODELS, CEREBRAS_MODELS (+12 more)
+Nodes (21): CATEGORIES, ModelSelector(), PROVIDER_BADGES, SPEED_COLORS, AI_PROVIDER_META, AI_PROVIDERS, ALL_MODELS, CEREBRAS_MODELS (+13 more)
 
 ### Community 7 - "WorkspaceOS.jsx"
 Cohesion: 0.11
@@ -145,7 +133,7 @@ Nodes (8): calculateCost(), chat(), estimateTokens(), FAILOVER_CHAIN, MODEL_PRIC
 
 ### Community 9 - "App.jsx"
 Cohesion: 0.07
-Nodes (29): About, AdaptiveCustomCursor(), AdminDashboard, AdminPayments, AdminSettings, AdminUsers, App(), AutomationCenter (+21 more)
+Nodes (27): About, AdminDashboard, AdminPayments, AdminSettings, AdminUsers, App(), AutomationCenter, Billing (+19 more)
 
 ### Community 10 - "dependencies"
 Cohesion: 0.08
@@ -157,43 +145,47 @@ Nodes (19): createReminder(), createTask(), __dirname, DISTRACTING_APPS, enableF
 
 ### Community 12 - "automationController.js"
 Cohesion: 0.06
-Nodes (61): createTask(), deleteTask(), detectAndPlan(), executeBuiltinWorkflow(), executeCustomWorkflow(), executePlan(), executeStep(), getActiveRuns() (+53 more)
+Nodes (66): createTask(), deleteTask(), detectAndPlan(), executeBuiltinWorkflow(), executeCustomWorkflow(), executePlan(), executeStep(), getActiveRuns() (+58 more)
 
 ### Community 13 - "VoiceAssistant.jsx"
-Cohesion: 0.08
+Cohesion: 0.09
 Nodes (9): VoiceOrb(), AGENT_BADGES, AI_MODELS, BSCS_SUBJECTS, detectModelSwitch(), ELEVENLABS_IDS, ELEVENLABS_VOICES, VoiceAssistant() (+1 more)
 
 ### Community 14 - "package.json"
-Cohesion: 0.06
-Nodes (35): harvox-app Service, Docker Compose Configuration, Gemini AI API, Groq AI API, MongoDB, dependencies, axios, cors (+27 more)
+Cohesion: 0.05
+Nodes (39): harvox-app Service, Docker Compose Configuration, Gemini AI API, Groq AI API, MongoDB, dependencies, axios, cors (+31 more)
 
 ### Community 15 - "useAuthStore"
-Cohesion: 0.14
-Nodes (7): ROUTE_META, TopBar(), Billing(), Profile(), Login(), Register(), useAuthStore
+Cohesion: 0.12
+Nodes (10): AdminRoute(), ProtectedRoute(), AdminLayout(), ROUTE_META, TopBar(), supabase, Billing(), Profile() (+2 more)
 
 ### Community 17 - "browserModule.js"
-Cohesion: 0.15
-Nodes (22): activateWindow(), browserBookmark(), browserCloseTab(), browserDownloads(), browserNavigate(), browserNewTab(), browserNextTab(), browserReopenTab() (+14 more)
+Cohesion: 0.10
+Nodes (29): activateWindow(), browserBookmark(), browserCloseTab(), browserDownloads(), browserNavigate(), browserNewTab(), browserNextTab(), browserReopenTab() (+21 more)
 
 ### Community 18 - "logActivity"
 Cohesion: 0.14
 Nodes (20): __dirname, generateApiRoute(), generateReadme(), gitAdd(), gitCommit(), gitInit(), gitPush(), gitStatus() (+12 more)
 
 ### Community 19 - "automationRegistry.js"
-Cohesion: 0.22
-Nodes (6): DashboardLayout(), NAV_GROUPS, Sidebar(), getModelById(), Chat(), useSidebarStore
+Cohesion: 0.29
+Nodes (8): DashboardLayout(), NAV_GROUPS, NavItem(), Sidebar(), HologramCard(), Spotlight(), useSidebarStore, cn()
 
 ### Community 20 - "auth.js"
 Cohesion: 0.15
-Nodes (7): BrainMemorySettings(), api, authAPI, memoryAPI, paymentsAPI, profileAPI, userAPI
+Nodes (7): BrainMemorySettings(), api, authAPI, memoryAPI, paymentsAPI, settingsAPI, userAPI
 
 ### Community 21 - "server.js"
 Cohesion: 0.05
-Nodes (40): handler(), connectDB(), getDBHealth(), ensurePublicRecords(), forgotPassword(), getMe(), login(), register() (+32 more)
+Nodes (41): connectDB(), getDBHealth(), ensurePublicRecords(), forgotPassword(), getMe(), login(), register(), sendUser() (+33 more)
+
+### Community 22 - "Chat.jsx"
+Cohesion: 0.14
+Nodes (5): ChatErrorBoundary, MODES, ModeSelector(), getModelById(), Chat()
 
 ### Community 23 - "cn"
-Cohesion: 0.19
-Nodes (12): registerModule(), composeEmail(), openGmail(), openGmailCompose(), openGmailInbox(), openOutlook(), openUrl(), searchGmail() (+4 more)
+Cohesion: 0.13
+Nodes (15): hasAction(), _modules, registerModule(), _registry, composeEmail(), openGmail(), openGmailCompose(), openGmailInbox() (+7 more)
 
 ### Community 24 - "api.js"
 Cohesion: 0.13
@@ -216,8 +208,8 @@ Cohesion: 0.27
 Nodes (10): buildTree(), createFileOrFolder(), __dirname, ensureWorkspace(), __filename, getFileContent(), getFileTree(), getSafePath() (+2 more)
 
 ### Community 29 - "ChatMessage.jsx"
-Cohesion: 0.20
-Nodes (8): getAIMetrics(), checkSubscriptionQuota(), QUOTAS, requirePro(), storage, upload, uploadAudio, checkUsageLimit()
+Cohesion: 0.15
+Nodes (6): PERSONALITIES, PROMPTS, operatorMemories, testUsers, ACTION_MAP, FIELD_MAP
 
 ### Community 30 - "Chat.jsx"
 Cohesion: 0.22
@@ -228,32 +220,32 @@ Cohesion: 0.20
 Nodes (9): build, builder, dockerfilePath, deploy, healthcheckPath, healthcheckTimeout, restartPolicyMaxRetries, restartPolicyType (+1 more)
 
 ### Community 32 - "authController.js"
-Cohesion: 0.12
-Nodes (26): autoTagMemory(), clearMemories(), createMemory(), deleteMemory(), detectConflicts(), exportMemories(), getBrainAnalytics(), getMemories() (+18 more)
+Cohesion: 0.30
+Nodes (12): autoTagMemory(), createMemory(), deleteMemory(), detectConflicts(), exportMemories(), getMemories(), mapMemory(), summarizeIdentity() (+4 more)
 
 ### Community 33 - "RightPanel.jsx"
-Cohesion: 0.34
-Nodes (12): PERSONALITIES, PROMPTS, chatAI(), getAIOptions(), debugCode(), explainCode(), generateCode(), analyzeFile() (+4 more)
+Cohesion: 0.21
+Nodes (17): chatAI(), getAIMetrics(), getAIOptions(), debugCode(), explainCode(), generateCode(), analyzeFile(), generateProject() (+9 more)
 
 ### Community 34 - "UserAnalytics.js"
 Cohesion: 0.60
 Nodes (5): createProject(), getProjectDetails(), getProjects(), mapProject(), updateProjectLayout()
 
 ### Community 36 - "settingsRoutes.js"
-Cohesion: 0.20
-Nodes (5): HologramOrb(), LoadingOrb(), SplineComponent(), SplineErrorBoundary, SplineReact
+Cohesion: 0.22
+Nodes (4): languages, PRESETS, aiAPI, noteAPI
 
 ### Community 37 - "memoryService.js"
-Cohesion: 0.29
-Nodes (5): BackgroundEffects(), CyberGrid(), GradientBlobs(), HologramWaves(), Starfield3D()
+Cohesion: 0.28
+Nodes (4): ensureDefaultMemories(), getContextPrompt(), CentralEventBus, eventBus
 
 ### Community 38 - "Client Entry Point"
 Cohesion: 0.40
 Nodes (5): Client Entry Point, AI Chat 3D Illustration, Holographic Brain AI Visualization, Main React Entry, CI Workflow
 
 ### Community 39 - "ChatMessage.jsx"
-Cohesion: 0.22
-Nodes (5): AGENT_BADGES, TaskPlanWidget(), AutomationCenter(), ICON_MAP, automationAPI
+Cohesion: 0.33
+Nodes (3): AGENT_BADGES, TaskPlanWidget(), automationAPI
 
 ### Community 48 - "Chat.jsx"
 Cohesion: 0.33
@@ -263,72 +255,36 @@ Nodes (5): buildCommand, framework, installCommand, outputDirectory, rewrites
 Cohesion: 0.29
 Nodes (6): __dirname, generateFlashcards(), generateMCQs(), generateNotes(), logStudy(), WORKSPACE_DIR
 
-### Community 50 - "Register.jsx"
-Cohesion: 0.22
-Nodes (7): openUnreadChats(), openWhatsApp(), openWhatsAppChat(), searchWhatsAppContact(), sendWhatsAppMessage(), __dirname, TEMP_DIR
-
 ### Community 51 - "CommandPalette.jsx"
 Cohesion: 0.60
 Nodes (5): run(), testCerebras(), testGemini(), testGroq(), testOpenRouter()
 
 ### Community 52 - "vercel.json"
-Cohesion: 0.29
-Nodes (6): buildCommand, installCommand, outputDirectory, rewrites, $schema, version
+Cohesion: 0.33
+Nodes (5): buildCommand, installCommand, outputDirectory, rewrites, version
 
 ### Community 53 - "subscription.js"
 Cohesion: 0.40
 Nodes (4): react, automationActions, CommandPalette(), navigationActions
 
-### Community 55 - "intentEngine.js"
-Cohesion: 0.42
-Nodes (8): ACTION_KEYWORDS, buildChatIntent(), buildUnknownIntent(), detectIntent(), hasActionKeyword(), INTENT_CATEGORIES, looksLikeAutomation(), parseIntentJSON()
-
-### Community 56 - "cn"
-Cohesion: 0.48
-Nodes (4): NavItem(), HologramCard(), Spotlight(), cn()
-
-### Community 63 - "PerformanceProvider.jsx"
-Cohesion: 0.52
-Nodes (6): getInitialProfile(), getManualProfile(), getStoredGraphicsMode(), GRAPHICS_MODES, PerformanceContext, PerformanceProvider()
-
-### Community 64 - "card.jsx"
-Cohesion: 0.29
-Nodes (6): Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
-
-### Community 65 - "useThemeStore.js"
-Cohesion: 0.29
-Nodes (5): settingsAPI, ACCENT_COLORS, FONT_FAMILIES, FONT_SIZES, useThemeStore
-
-### Community 66 - "Profile.jsx"
-Cohesion: 0.47
-Nodes (3): MODE_LABELS, PerformanceMonitor(), usePerformanceMode()
-
-### Community 68 - "agent.mjs"
-Cohesion: 0.40
-Nodes (4): execute(), ORIGINS, PORT, run()
-
-### Community 69 - "voiceController.js"
-Cohesion: 0.60
-Nodes (4): speakText(), transcribeSpeech(), synthesizeSpeech(), transcribeAudio()
-
 ## Knowledge Gaps
-- **235 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+230 more)
+- **230 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+225 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `showToast()` connect `productivityModule.js` to `db.js`, `auth.js`, `Settings.jsx`?**
-  _High betweenness centrality (0.316) - this node is a cross-community bridge._
-- **Why does `Settings()` connect `Settings.jsx` to `Profile.jsx`, `productivityModule.js`, `useAuthStore`, `ChatMessage.jsx`?**
-  _High betweenness centrality (0.229) - this node is a cross-community bridge._
-- **Why does `logActivity()` connect `api.js` to `authController.js`, `RightPanel.jsx`, `mediaModule.js`, `automationService.js`, `productivityModule.js`, `automationController.js`, `browserModule.js`, `logActivity`, `studyModule.js`, `Register.jsx`, `cn`, `fileModule.js`, `db.js`?**
-  _High betweenness centrality (0.229) - this node is a cross-community bridge._
+  _High betweenness centrality (0.288) - this node is a cross-community bridge._
+- **Why does `useAuthStore` connect `useAuthStore` to `aiController.js`, `dependencies`, `NeonButton.jsx`, `Settings.jsx`, `App.jsx`, `VoiceAssistant.jsx`, `Register.jsx`, `automationRegistry.js`, `auth.js`, `Chat.jsx`, `Dashboard.jsx`?**
+  _High betweenness centrality (0.233) - this node is a cross-community bridge._
+- **Why does `logActivity()` connect `api.js` to `authController.js`, `RightPanel.jsx`, `mediaModule.js`, `automationService.js`, `memoryService.js`, `productivityModule.js`, `automationController.js`, `browserModule.js`, `logActivity`, `studyModule.js`, `cn`, `fileModule.js`, `db.js`, `ChatMessage.jsx`?**
+  _High betweenness centrality (0.212) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _235 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _230 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Landing.jsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.14166666666666666 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05555555555555555 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.04081632653061224 - nodes in this community are weakly interconnected._
 - **Should `automationService.js` be split into smaller, more focused modules?**

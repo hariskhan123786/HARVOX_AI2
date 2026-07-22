@@ -54,22 +54,10 @@
   "52": "vercel.json",
   "53": "subscription.js",
   "54": "geminiService.js",
-  "55": "intentEngine.js",
-  "56": "cn",
   "57": "AuroraBorealis.jsx",
   "58": "FloatingParticles.jsx",
   "59": "WireframeBackground.jsx",
   "60": "test_backend_connection.js",
   "61": "add-fly-path.ps1",
-  "62": "install-fly.ps1",
-  "63": "PerformanceProvider.jsx",
-  "64": "card.jsx",
-  "65": "useThemeStore.js",
-  "66": "Profile.jsx",
-  "67": "ResetPassword.jsx",
-  "68": "agent.mjs",
-  "69": "voiceController.js",
-  "70": "ModeSelector.jsx",
-  "71": "AdminRoute.jsx",
-  "72": "CustomCursor.jsx"
+  "62": "install-fly.ps1"
 }

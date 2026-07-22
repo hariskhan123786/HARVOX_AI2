@@ -34,46 +34,6 @@
   },
   "nodes": [
     {
-      "label": "[...path].js",
-      "file_type": "code",
-      "source_file": "api/[...path].js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "api_path",
-      "community": 21,
-      "norm_label": "[...path].js"
-    },
-    {
-      "label": "handler()",
-      "file_type": "code",
-      "source_file": "api/[...path].js",
-      "source_location": "L6",
-      "_origin": "ast",
-      "id": "api_path_handler",
-      "community": 21,
-      "norm_label": "handler()"
-    },
-    {
-      "label": "health.js",
-      "file_type": "code",
-      "source_file": "api/health.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "api_health",
-      "community": 21,
-      "norm_label": "health.js"
-    },
-    {
-      "label": "handler()",
-      "file_type": "code",
-      "source_file": "api/health.js",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "api_health_handler",
-      "community": 21,
-      "norm_label": "handler()"
-    },
-    {
       "label": "index.js",
       "file_type": "code",
       "source_file": "api/index.js",
@@ -844,20 +804,10 @@
       "norm_label": "adminsettings"
     },
     {
-      "label": "AdaptiveCustomCursor()",
-      "file_type": "code",
-      "source_file": "client/src/App.jsx",
-      "source_location": "L45",
-      "_origin": "ast",
-      "id": "client_src_app_adaptivecustomcursor",
-      "community": 9,
-      "norm_label": "adaptivecustomcursor()"
-    },
-    {
       "label": "App()",
       "file_type": "code",
       "source_file": "client/src/App.jsx",
-      "source_location": "L50",
+      "source_location": "L44",
       "_origin": "ast",
       "id": "client_src_app_app",
       "community": 9,
@@ -870,7 +820,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_auth_adminroute",
-      "community": 71,
+      "community": 15,
       "norm_label": "adminroute.jsx"
     },
     {
@@ -880,7 +830,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "client_src_components_auth_adminroute_adminroute",
-      "community": 71,
+      "community": 15,
       "norm_label": "adminroute()"
     },
     {
@@ -890,7 +840,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_auth_protectedroute",
-      "community": 9,
+      "community": 15,
       "norm_label": "protectedroute.jsx"
     },
     {
@@ -900,7 +850,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "client_src_components_auth_protectedroute_protectedroute",
-      "community": 9,
+      "community": 15,
       "norm_label": "protectedroute()"
     },
     {
@@ -930,17 +880,17 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_backgroundeffects",
-      "community": 37,
+      "community": 1,
       "norm_label": "backgroundeffects.jsx"
     },
     {
       "label": "BackgroundEffects()",
       "file_type": "code",
       "source_file": "client/src/components/background/BackgroundEffects.jsx",
-      "source_location": "L7",
+      "source_location": "L6",
       "_origin": "ast",
       "id": "client_src_components_background_backgroundeffects_backgroundeffects",
-      "community": 37,
+      "community": 1,
       "norm_label": "backgroundeffects()"
     },
     {
@@ -950,7 +900,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_cybergrid",
-      "community": 37,
+      "community": 1,
       "norm_label": "cybergrid.jsx"
     },
     {
@@ -960,7 +910,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_cybergrid_cybergrid",
-      "community": 37,
+      "community": 1,
       "norm_label": "cybergrid()"
     },
     {
@@ -990,7 +940,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_gradientblobs",
-      "community": 37,
+      "community": 1,
       "norm_label": "gradientblobs.jsx"
     },
     {
@@ -1000,7 +950,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_gradientblobs_gradientblobs",
-      "community": 37,
+      "community": 1,
       "norm_label": "gradientblobs()"
     },
     {
@@ -1010,7 +960,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_hologramwaves",
-      "community": 37,
+      "community": 1,
       "norm_label": "hologramwaves.jsx"
     },
     {
@@ -1020,7 +970,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_hologramwaves_hologramwaves",
-      "community": 37,
+      "community": 1,
       "norm_label": "hologramwaves()"
     },
     {
@@ -1030,7 +980,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_background_starfield3d",
-      "community": 37,
+      "community": 1,
       "norm_label": "starfield3d.jsx"
     },
     {
@@ -1040,7 +990,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "client_src_components_background_starfield3d_starfield3d",
-      "community": 37,
+      "community": 1,
       "norm_label": "starfield3d()"
     },
     {
@@ -1170,7 +1120,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_chat_modeselector",
-      "community": 70,
+      "community": 22,
       "norm_label": "modeselector.jsx"
     },
     {
@@ -1180,7 +1130,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "client_src_components_chat_modeselector_modes",
-      "community": 70,
+      "community": 22,
       "norm_label": "modes"
     },
     {
@@ -1190,7 +1140,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "client_src_components_chat_modeselector_modeselector",
-      "community": 70,
+      "community": 22,
       "norm_label": "modeselector()"
     },
     {
@@ -1340,7 +1290,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_layout_adminlayout",
-      "community": 5,
+      "community": 15,
       "norm_label": "adminlayout.jsx"
     },
     {
@@ -1350,7 +1300,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "client_src_components_layout_adminlayout_adminlayout",
-      "community": 9,
+      "community": 15,
       "norm_label": "adminlayout()"
     },
     {
@@ -1480,7 +1430,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "client_src_components_layout_sidebar_navitem",
-      "community": 56,
+      "community": 19,
       "norm_label": "navitem()"
     },
     {
@@ -1532,116 +1482,6 @@
       "id": "client_src_components_layout_topbar_topbar",
       "community": 15,
       "norm_label": "topbar()"
-    },
-    {
-      "label": "PerformanceMonitor.jsx",
-      "file_type": "code",
-      "source_file": "client/src/components/performance/PerformanceMonitor.jsx",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "client_src_components_performance_performancemonitor",
-      "community": 66,
-      "norm_label": "performancemonitor.jsx"
-    },
-    {
-      "label": "MODE_LABELS",
-      "file_type": "code",
-      "source_file": "client/src/components/performance/PerformanceMonitor.jsx",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "client_src_components_performance_performancemonitor_mode_labels",
-      "community": 66,
-      "norm_label": "mode_labels"
-    },
-    {
-      "label": "PerformanceMonitor()",
-      "file_type": "code",
-      "source_file": "client/src/components/performance/PerformanceMonitor.jsx",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "client_src_components_performance_performancemonitor_performancemonitor",
-      "community": 66,
-      "norm_label": "performancemonitor()"
-    },
-    {
-      "label": "PerformanceProvider.jsx",
-      "file_type": "code",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "client_src_components_performance_performanceprovider",
-      "community": 63,
-      "norm_label": "performanceprovider.jsx"
-    },
-    {
-      "label": "PerformanceContext",
-      "file_type": "code",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L3",
-      "_origin": "ast",
-      "id": "client_src_components_performance_performanceprovider_performancecontext",
-      "community": 63,
-      "norm_label": "performancecontext"
-    },
-    {
-      "label": "GRAPHICS_MODES",
-      "file_type": "code",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L4",
-      "_origin": "ast",
-      "id": "client_src_components_performance_performanceprovider_graphics_modes",
-      "community": 63,
-      "norm_label": "graphics_modes"
-    },
-    {
-      "label": "getStoredGraphicsMode()",
-      "file_type": "code",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L6",
-      "_origin": "ast",
-      "id": "client_src_components_performance_performanceprovider_getstoredgraphicsmode",
-      "community": 63,
-      "norm_label": "getstoredgraphicsmode()"
-    },
-    {
-      "label": "getManualProfile()",
-      "file_type": "code",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L11",
-      "_origin": "ast",
-      "id": "client_src_components_performance_performanceprovider_getmanualprofile",
-      "community": 63,
-      "norm_label": "getmanualprofile()"
-    },
-    {
-      "label": "getInitialProfile()",
-      "file_type": "code",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L17",
-      "_origin": "ast",
-      "id": "client_src_components_performance_performanceprovider_getinitialprofile",
-      "community": 63,
-      "norm_label": "getinitialprofile()"
-    },
-    {
-      "label": "PerformanceProvider()",
-      "file_type": "code",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L34",
-      "_origin": "ast",
-      "id": "client_src_components_performance_performanceprovider_performanceprovider",
-      "community": 63,
-      "norm_label": "performanceprovider()"
-    },
-    {
-      "label": "usePerformanceMode()",
-      "file_type": "code",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L91",
-      "_origin": "ast",
-      "id": "client_src_components_performance_performanceprovider_useperformancemode",
-      "community": 66,
-      "norm_label": "useperformancemode()"
     },
     {
       "label": "BrainMemorySettings.jsx",
@@ -1770,7 +1610,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_customcursor",
-      "community": 72,
+      "community": 9,
       "norm_label": "customcursor.jsx"
     },
     {
@@ -1780,7 +1620,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "client_src_components_ui_customcursor_customcursor",
-      "community": 72,
+      "community": 9,
       "norm_label": "customcursor()"
     },
     {
@@ -1850,7 +1690,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_hologramorb",
-      "community": 36,
+      "community": 1,
       "norm_label": "hologramorb.jsx"
     },
     {
@@ -1860,7 +1700,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "client_src_components_ui_hologramorb_hologramorb",
-      "community": 36,
+      "community": 1,
       "norm_label": "hologramorb()"
     },
     {
@@ -1890,7 +1730,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_loadingorb",
-      "community": 36,
+      "community": 1,
       "norm_label": "loadingorb.jsx"
     },
     {
@@ -1900,7 +1740,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "client_src_components_ui_loadingorb_loadingorb",
-      "community": 36,
+      "community": 1,
       "norm_label": "loadingorb()"
     },
     {
@@ -1970,7 +1810,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_card",
-      "community": 64,
+      "community": 1,
       "norm_label": "card.jsx"
     },
     {
@@ -1980,7 +1820,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "client_src_components_ui_card_card",
-      "community": 64,
+      "community": 1,
       "norm_label": "card"
     },
     {
@@ -1990,7 +1830,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "client_src_components_ui_card_cardheader",
-      "community": 64,
+      "community": 1,
       "norm_label": "cardheader"
     },
     {
@@ -2000,7 +1840,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "client_src_components_ui_card_cardtitle",
-      "community": 64,
+      "community": 1,
       "norm_label": "cardtitle"
     },
     {
@@ -2010,7 +1850,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "client_src_components_ui_card_carddescription",
-      "community": 64,
+      "community": 1,
       "norm_label": "carddescription"
     },
     {
@@ -2020,7 +1860,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "client_src_components_ui_card_cardcontent",
-      "community": 64,
+      "community": 1,
       "norm_label": "cardcontent"
     },
     {
@@ -2030,7 +1870,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "client_src_components_ui_card_cardfooter",
-      "community": 64,
+      "community": 1,
       "norm_label": "cardfooter"
     },
     {
@@ -2040,7 +1880,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_hologram_card",
-      "community": 56,
+      "community": 19,
       "norm_label": "hologram-card.jsx"
     },
     {
@@ -2050,7 +1890,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "client_src_components_ui_hologram_card_hologramcard",
-      "community": 56,
+      "community": 19,
       "norm_label": "hologramcard()"
     },
     {
@@ -2060,7 +1900,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_spline",
-      "community": 36,
+      "community": 1,
       "norm_label": "spline.jsx"
     },
     {
@@ -2070,7 +1910,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splinereact",
-      "community": 36,
+      "community": 1,
       "norm_label": "splinereact"
     },
     {
@@ -2080,7 +1920,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splineerrorboundary",
-      "community": 36,
+      "community": 1,
       "norm_label": "splineerrorboundary"
     },
     {
@@ -2090,7 +1930,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splineerrorboundary_constructor",
-      "community": 36,
+      "community": 1,
       "norm_label": ".constructor()"
     },
     {
@@ -2100,7 +1940,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splineerrorboundary_getderivedstatefromerror",
-      "community": 36,
+      "community": 1,
       "norm_label": ".getderivedstatefromerror()"
     },
     {
@@ -2110,7 +1950,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splineerrorboundary_componentdidcatch",
-      "community": 36,
+      "community": 1,
       "norm_label": ".componentdidcatch()"
     },
     {
@@ -2120,7 +1960,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splineerrorboundary_render",
-      "community": 36,
+      "community": 1,
       "norm_label": ".render()"
     },
     {
@@ -2130,7 +1970,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "client_src_components_ui_spline_splinecomponent",
-      "community": 36,
+      "community": 1,
       "norm_label": "splinecomponent()"
     },
     {
@@ -2140,7 +1980,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_components_ui_spotlight",
-      "community": 56,
+      "community": 19,
       "norm_label": "spotlight.jsx"
     },
     {
@@ -2150,7 +1990,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "client_src_components_ui_spotlight_spotlight",
-      "community": 56,
+      "community": 19,
       "norm_label": "spotlight()"
     },
     {
@@ -2330,7 +2170,7 @@
       "source_location": "L373",
       "_origin": "ast",
       "id": "client_src_config_aimodels_getmodelbyid",
-      "community": 19,
+      "community": 22,
       "norm_label": "getmodelbyid()"
     },
     {
@@ -2340,7 +2180,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_config_supabaseclient",
-      "community": 67,
+      "community": 15,
       "norm_label": "supabaseclient.js"
     },
     {
@@ -2350,7 +2190,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "client_src_config_supabaseclient_supabase",
-      "community": 67,
+      "community": 15,
       "norm_label": "supabase"
     },
     {
@@ -2670,7 +2510,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_admin_codegenerator",
-      "community": 5,
+      "community": 36,
       "norm_label": "codegenerator.jsx"
     },
     {
@@ -2680,7 +2520,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "client_src_pages_admin_codegenerator_languages",
-      "community": 5,
+      "community": 36,
       "norm_label": "languages"
     },
     {
@@ -2690,7 +2530,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "client_src_pages_admin_codegenerator_codegenerator",
-      "community": 5,
+      "community": 36,
       "norm_label": "codegenerator()"
     },
     {
@@ -2700,7 +2540,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_app_automationcenter",
-      "community": 39,
+      "community": 5,
       "norm_label": "automationcenter.jsx"
     },
     {
@@ -2710,7 +2550,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "client_src_pages_app_automationcenter_icon_map",
-      "community": 39,
+      "community": 5,
       "norm_label": "icon_map"
     },
     {
@@ -2720,7 +2560,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "client_src_pages_app_automationcenter_automationcenter",
-      "community": 39,
+      "community": 6,
       "norm_label": "automationcenter()"
     },
     {
@@ -2730,7 +2570,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_app_billing",
-      "community": 20,
+      "community": 5,
       "norm_label": "billing.jsx"
     },
     {
@@ -2750,7 +2590,7 @@
       "source_location": "L603",
       "_origin": "ast",
       "id": "client_src_pages_app_billing_check",
-      "community": 20,
+      "community": 5,
       "norm_label": "check()"
     },
     {
@@ -2780,7 +2620,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_app_chat",
-      "community": 19,
+      "community": 22,
       "norm_label": "chat.jsx"
     },
     {
@@ -2790,7 +2630,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "client_src_pages_app_chat_particlebackground",
-      "community": 19,
+      "community": 22,
       "norm_label": "particlebackground()"
     },
     {
@@ -2800,7 +2640,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "client_src_pages_app_chat_purpleglassorb",
-      "community": 19,
+      "community": 22,
       "norm_label": "purpleglassorb()"
     },
     {
@@ -2810,7 +2650,7 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "client_src_pages_app_chat_systemstatuspanel",
-      "community": 19,
+      "community": 22,
       "norm_label": "systemstatuspanel()"
     },
     {
@@ -2820,7 +2660,7 @@
       "source_location": "L244",
       "_origin": "ast",
       "id": "client_src_pages_app_chat_chathistoryitem",
-      "community": 19,
+      "community": 22,
       "norm_label": "chathistoryitem()"
     },
     {
@@ -2830,7 +2670,7 @@
       "source_location": "L287",
       "_origin": "ast",
       "id": "client_src_pages_app_chat_messagebubble",
-      "community": 19,
+      "community": 22,
       "norm_label": "messagebubble()"
     },
     {
@@ -2840,7 +2680,7 @@
       "source_location": "L388",
       "_origin": "ast",
       "id": "client_src_pages_app_chat_chat",
-      "community": 19,
+      "community": 22,
       "norm_label": "chat()"
     },
     {
@@ -2990,7 +2830,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_app_debugassistant",
-      "community": 5,
+      "community": 36,
       "norm_label": "debugassistant.jsx"
     },
     {
@@ -3000,7 +2840,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "client_src_pages_app_debugassistant_presets",
-      "community": 5,
+      "community": 36,
       "norm_label": "presets"
     },
     {
@@ -3010,7 +2850,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "client_src_pages_app_debugassistant_debugassistant",
-      "community": 5,
+      "community": 36,
       "norm_label": "debugassistant()"
     },
     {
@@ -3040,7 +2880,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_app_notes",
-      "community": 5,
+      "community": 36,
       "norm_label": "notes.jsx"
     },
     {
@@ -3050,7 +2890,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "client_src_pages_app_notes_notes",
-      "community": 5,
+      "community": 36,
       "norm_label": "notes()"
     },
     {
@@ -3060,24 +2900,24 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_app_profile",
-      "community": 66,
+      "community": 5,
       "norm_label": "profile.jsx"
     },
     {
       "label": "RadarChart()",
       "file_type": "code",
       "source_file": "client/src/pages/app/Profile.jsx",
-      "source_location": "L13",
+      "source_location": "L12",
       "_origin": "ast",
       "id": "client_src_pages_app_profile_radarchart",
-      "community": 66,
+      "community": 5,
       "norm_label": "radarchart()"
     },
     {
       "label": "Profile()",
       "file_type": "code",
       "source_file": "client/src/pages/app/Profile.jsx",
-      "source_location": "L127",
+      "source_location": "L126",
       "_origin": "ast",
       "id": "client_src_pages_app_profile_profile",
       "community": 15,
@@ -3130,44 +2970,44 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_app_settings",
-      "community": 6,
+      "community": 20,
       "norm_label": "settings.jsx"
     },
     {
       "label": "NeonToast()",
       "file_type": "code",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L20",
+      "source_location": "L18",
       "_origin": "ast",
       "id": "client_src_pages_app_settings_neontoast",
-      "community": 6,
+      "community": 20,
       "norm_label": "neontoast()"
     },
     {
       "label": "Toggle()",
       "file_type": "code",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L71",
+      "source_location": "L69",
       "_origin": "ast",
       "id": "client_src_pages_app_settings_toggle",
-      "community": 6,
+      "community": 20,
       "norm_label": "toggle()"
     },
     {
       "label": "SkillTags()",
       "file_type": "code",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L87",
+      "source_location": "L85",
       "_origin": "ast",
       "id": "client_src_pages_app_settings_skilltags",
-      "community": 6,
+      "community": 20,
       "norm_label": "skilltags()"
     },
     {
       "label": "Settings()",
       "file_type": "code",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L138",
+      "source_location": "L136",
       "_origin": "ast",
       "id": "client_src_pages_app_settings_settings",
       "community": 6,
@@ -3550,7 +3390,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_auth_register",
-      "community": 15,
+      "community": 50,
       "norm_label": "register.jsx"
     },
     {
@@ -3560,7 +3400,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "client_src_pages_auth_register_authbg",
-      "community": 15,
+      "community": 50,
       "norm_label": "authbg()"
     },
     {
@@ -3570,7 +3410,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "client_src_pages_auth_register_neoninput",
-      "community": 15,
+      "community": 50,
       "norm_label": "neoninput()"
     },
     {
@@ -3580,7 +3420,7 @@
       "source_location": "L86",
       "_origin": "ast",
       "id": "client_src_pages_auth_register_strengthbar",
-      "community": 15,
+      "community": 50,
       "norm_label": "strengthbar()"
     },
     {
@@ -3590,7 +3430,7 @@
       "source_location": "L119",
       "_origin": "ast",
       "id": "client_src_pages_auth_register_perk",
-      "community": 15,
+      "community": 50,
       "norm_label": "perk()"
     },
     {
@@ -3600,7 +3440,7 @@
       "source_location": "L132",
       "_origin": "ast",
       "id": "client_src_pages_auth_register_register",
-      "community": 15,
+      "community": 50,
       "norm_label": "register()"
     },
     {
@@ -3610,7 +3450,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_pages_auth_resetpassword",
-      "community": 67,
+      "community": 15,
       "norm_label": "resetpassword.jsx"
     },
     {
@@ -3620,7 +3460,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "client_src_pages_auth_resetpassword_authbg",
-      "community": 67,
+      "community": 15,
       "norm_label": "authbg()"
     },
     {
@@ -3630,7 +3470,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "client_src_pages_auth_resetpassword_neoninput",
-      "community": 67,
+      "community": 15,
       "norm_label": "neoninput()"
     },
     {
@@ -3640,7 +3480,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "client_src_pages_auth_resetpassword_resetpassword",
-      "community": 67,
+      "community": 15,
       "norm_label": "resetpassword()"
     },
     {
@@ -3870,7 +3710,7 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "client_src_services_api_aiapi",
-      "community": 5,
+      "community": 36,
       "norm_label": "aiapi"
     },
     {
@@ -3890,7 +3730,7 @@
       "source_location": "L161",
       "_origin": "ast",
       "id": "client_src_services_api_noteapi",
-      "community": 5,
+      "community": 36,
       "norm_label": "noteapi"
     },
     {
@@ -3910,7 +3750,7 @@
       "source_location": "L175",
       "_origin": "ast",
       "id": "client_src_services_api_settingsapi",
-      "community": 65,
+      "community": 20,
       "norm_label": "settingsapi"
     },
     {
@@ -3930,7 +3770,7 @@
       "source_location": "L187",
       "_origin": "ast",
       "id": "client_src_services_api_profileapi",
-      "community": 20,
+      "community": 5,
       "norm_label": "profileapi"
     },
     {
@@ -3967,7 +3807,7 @@
       "label": "automationAPI",
       "file_type": "code",
       "source_file": "client/src/services/api.js",
-      "source_location": "L236",
+      "source_location": "L228",
       "_origin": "ast",
       "id": "client_src_services_api_automationapi",
       "community": 39,
@@ -3980,7 +3820,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_store_authstore",
-      "community": 20,
+      "community": 15,
       "norm_label": "authstore.js"
     },
     {
@@ -3990,7 +3830,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "client_src_store_authstore_builduserfromsession",
-      "community": 20,
+      "community": 15,
       "norm_label": "builduserfromsession()"
     },
     {
@@ -4024,66 +3864,6 @@
       "norm_label": "usesidebarstore"
     },
     {
-      "label": "useThemeStore.js",
-      "file_type": "code",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "client_src_store_usethemestore",
-      "community": 65,
-      "norm_label": "usethemestore.js"
-    },
-    {
-      "label": "ACCENT_COLORS",
-      "file_type": "code",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "client_src_store_usethemestore_accent_colors",
-      "community": 65,
-      "norm_label": "accent_colors"
-    },
-    {
-      "label": "FONT_FAMILIES",
-      "file_type": "code",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L38",
-      "_origin": "ast",
-      "id": "client_src_store_usethemestore_font_families",
-      "community": 65,
-      "norm_label": "font_families"
-    },
-    {
-      "label": "FONT_SIZES",
-      "file_type": "code",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L46",
-      "_origin": "ast",
-      "id": "client_src_store_usethemestore_font_sizes",
-      "community": 65,
-      "norm_label": "font_sizes"
-    },
-    {
-      "label": "applyThemeToDOM()",
-      "file_type": "code",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L52",
-      "_origin": "ast",
-      "id": "client_src_store_usethemestore_applythemetodom",
-      "community": 65,
-      "norm_label": "applythemetodom()"
-    },
-    {
-      "label": "useThemeStore",
-      "file_type": "code",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L106",
-      "_origin": "ast",
-      "id": "client_src_store_usethemestore_usethemestore",
-      "community": 65,
-      "norm_label": "usethemestore"
-    },
-    {
       "label": "workspaceStore.js",
       "file_type": "code",
       "source_file": "client/src/store/workspaceStore.js",
@@ -4110,7 +3890,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "client_src_utils_cn",
-      "community": 56,
+      "community": 19,
       "norm_label": "cn.js"
     },
     {
@@ -4120,7 +3900,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "client_src_utils_cn_cn",
-      "community": 56,
+      "community": 19,
       "norm_label": "cn()"
     },
     {
@@ -4202,66 +3982,6 @@
       "id": "client_vite_config",
       "community": 42,
       "norm_label": "vite.config.js"
-    },
-    {
-      "label": "agent.mjs",
-      "file_type": "code",
-      "source_file": "desktop-agent/agent.mjs",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "desktop_agent_agent",
-      "community": 68,
-      "norm_label": "agent.mjs"
-    },
-    {
-      "label": "PORT",
-      "file_type": "code",
-      "source_file": "desktop-agent/agent.mjs",
-      "source_location": "L4",
-      "_origin": "ast",
-      "id": "desktop_agent_agent_port",
-      "community": 68,
-      "norm_label": "port"
-    },
-    {
-      "label": "ORIGINS",
-      "file_type": "code",
-      "source_file": "desktop-agent/agent.mjs",
-      "source_location": "L6",
-      "_origin": "ast",
-      "id": "desktop_agent_agent_origins",
-      "community": 68,
-      "norm_label": "origins"
-    },
-    {
-      "label": "run()",
-      "file_type": "code",
-      "source_file": "desktop-agent/agent.mjs",
-      "source_location": "L8",
-      "_origin": "ast",
-      "id": "desktop_agent_agent_run",
-      "community": 68,
-      "norm_label": "run()"
-    },
-    {
-      "label": "verifyToken()",
-      "file_type": "code",
-      "source_file": "desktop-agent/agent.mjs",
-      "source_location": "L15",
-      "_origin": "ast",
-      "id": "desktop_agent_agent_verifytoken",
-      "community": 68,
-      "norm_label": "verifytoken()"
-    },
-    {
-      "label": "execute()",
-      "file_type": "code",
-      "source_file": "desktop-agent/agent.mjs",
-      "source_location": "L20",
-      "_origin": "ast",
-      "id": "desktop_agent_agent_execute",
-      "community": 68,
-      "norm_label": "execute()"
     },
     {
       "label": "package.json",
@@ -4424,10 +4144,30 @@
       "norm_label": "@supabase/supabase-js"
     },
     {
-      "label": "axios",
+      "label": "@tsparticles/react",
       "file_type": "code",
       "source_file": "package.json",
       "source_location": "L18",
+      "_origin": "ast",
+      "id": "package_dependencies_tsparticles_react",
+      "community": 14,
+      "norm_label": "@tsparticles/react"
+    },
+    {
+      "label": "@tsparticles/slim",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "package_dependencies_tsparticles_slim",
+      "community": 14,
+      "norm_label": "@tsparticles/slim"
+    },
+    {
+      "label": "axios",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L20",
       "_origin": "ast",
       "id": "package_dependencies_axios",
       "community": 14,
@@ -4437,7 +4177,7 @@
       "label": "cors",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L19",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "package_dependencies_cors",
       "community": 14,
@@ -4447,7 +4187,7 @@
       "label": "dotenv",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L20",
+      "source_location": "L22",
       "_origin": "ast",
       "id": "package_dependencies_dotenv",
       "community": 14,
@@ -4457,7 +4197,7 @@
       "label": "express",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L21",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "package_dependencies_express",
       "community": 14,
@@ -4467,7 +4207,7 @@
       "label": "express-rate-limit",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L22",
+      "source_location": "L24",
       "_origin": "ast",
       "id": "package_dependencies_express_rate_limit",
       "community": 14,
@@ -4477,7 +4217,7 @@
       "label": "groq-sdk",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L23",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "package_dependencies_groq_sdk",
       "community": 14,
@@ -4487,7 +4227,7 @@
       "label": "helmet",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L24",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "package_dependencies_helmet",
       "community": 14,
@@ -4497,7 +4237,7 @@
       "label": "mammoth",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L25",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "package_dependencies_mammoth",
       "community": 14,
@@ -4507,7 +4247,7 @@
       "label": "mongodb",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L26",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "package_dependencies_mongodb",
       "community": 14,
@@ -4517,7 +4257,7 @@
       "label": "multer",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L27",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "package_dependencies_multer",
       "community": 14,
@@ -4527,7 +4267,7 @@
       "label": "nanoid",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L28",
+      "source_location": "L30",
       "_origin": "ast",
       "id": "package_dependencies_nanoid",
       "community": 14,
@@ -4537,27 +4277,47 @@
       "label": "pdf-parse",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L29",
+      "source_location": "L31",
       "_origin": "ast",
       "id": "package_dependencies_pdf_parse",
       "community": 14,
       "norm_label": "pdf-parse"
     },
     {
+      "label": "react-tsparticles",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "package_dependencies_react_tsparticles",
+      "community": 14,
+      "norm_label": "react-tsparticles"
+    },
+    {
       "label": "socket.io",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L30",
+      "source_location": "L33",
       "_origin": "ast",
       "id": "package_dependencies_socket_io",
       "community": 14,
       "norm_label": "socket.io"
     },
     {
+      "label": "tsparticles",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "package_dependencies_tsparticles",
+      "community": 14,
+      "norm_label": "tsparticles"
+    },
+    {
       "label": "devDependencies",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L32",
+      "source_location": "L37",
       "_origin": "ast",
       "id": "package_devdependencies",
       "community": 14,
@@ -4567,7 +4327,7 @@
       "label": "concurrently",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L33",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "package_devdependencies_concurrently",
       "community": 14,
@@ -4740,7 +4500,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_config_prompts",
-      "community": 33,
+      "community": 29,
       "norm_label": "prompts.js"
     },
     {
@@ -4750,7 +4510,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_config_prompts_prompts",
-      "community": 33,
+      "community": 29,
       "norm_label": "prompts"
     },
     {
@@ -4760,7 +4520,7 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "server_config_prompts_personalities",
-      "community": 33,
+      "community": 29,
       "norm_label": "personalities"
     },
     {
@@ -4770,7 +4530,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_config_supabase",
-      "community": 21,
+      "community": 29,
       "norm_label": "supabase.js"
     },
     {
@@ -4780,7 +4540,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "server_config_supabase_getsupabaseuserclient",
-      "community": 21,
+      "community": 29,
       "norm_label": "getsupabaseuserclient()"
     },
     {
@@ -4800,7 +4560,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_controllers_ai_chatcontroller",
-      "community": 33,
+      "community": 29,
       "norm_label": "chatcontroller.js"
     },
     {
@@ -4830,7 +4590,7 @@
       "source_location": "L349",
       "_origin": "ast",
       "id": "server_controllers_ai_chatcontroller_getaimetrics",
-      "community": 29,
+      "community": 33,
       "norm_label": "getaimetrics()"
     },
     {
@@ -4880,7 +4640,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_controllers_ai_fileanalysiscontroller",
-      "community": 33,
+      "community": 29,
       "norm_label": "fileanalysiscontroller.js"
     },
     {
@@ -4900,7 +4660,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_controllers_ai_projectcontroller",
-      "community": 33,
+      "community": 29,
       "norm_label": "projectcontroller.js"
     },
     {
@@ -4920,27 +4680,27 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_controllers_ai_voicecontroller",
-      "community": 69,
+      "community": 33,
       "norm_label": "voicecontroller.js"
     },
     {
       "label": "transcribeSpeech()",
       "file_type": "code",
       "source_file": "server/controllers/ai/voiceController.js",
-      "source_location": "L9",
+      "source_location": "L10",
       "_origin": "ast",
       "id": "server_controllers_ai_voicecontroller_transcribespeech",
-      "community": 69,
+      "community": 33,
       "norm_label": "transcribespeech()"
     },
     {
       "label": "speakText()",
       "file_type": "code",
       "source_file": "server/controllers/ai/voiceController.js",
-      "source_location": "L23",
+      "source_location": "L30",
       "_origin": "ast",
       "id": "server_controllers_ai_voicecontroller_speaktext",
-      "community": 69,
+      "community": 33,
       "norm_label": "speaktext()"
     },
     {
@@ -5457,7 +5217,7 @@
       "label": "getMemories()",
       "file_type": "code",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L30",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_getmemories",
       "community": 32,
@@ -5467,7 +5227,7 @@
       "label": "createMemory()",
       "file_type": "code",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L55",
+      "source_location": "L46",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_creatememory",
       "community": 32,
@@ -5477,7 +5237,7 @@
       "label": "updateMemory()",
       "file_type": "code",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L82",
+      "source_location": "L73",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_updatememory",
       "community": 32,
@@ -5487,7 +5247,7 @@
       "label": "togglePinMemory()",
       "file_type": "code",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L106",
+      "source_location": "L97",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_togglepinmemory",
       "community": 32,
@@ -5497,7 +5257,7 @@
       "label": "deleteMemory()",
       "file_type": "code",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L133",
+      "source_location": "L124",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_deletememory",
       "community": 32,
@@ -5507,7 +5267,7 @@
       "label": "exportMemories()",
       "file_type": "code",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L148",
+      "source_location": "L139",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_exportmemories",
       "community": 32,
@@ -5517,7 +5277,7 @@
       "label": "summarizeIdentity()",
       "file_type": "code",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L166",
+      "source_location": "L157",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_summarizeidentity",
       "community": 32,
@@ -5527,7 +5287,7 @@
       "label": "detectConflicts()",
       "file_type": "code",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L202",
+      "source_location": "L193",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_detectconflicts",
       "community": 32,
@@ -5537,61 +5297,21 @@
       "label": "autoTagMemory()",
       "file_type": "code",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L272",
+      "source_location": "L263",
       "_origin": "ast",
       "id": "server_controllers_memorycontroller_autotagmemory",
       "community": 32,
       "norm_label": "autotagmemory()"
     },
     {
-      "label": "toggleArchiveMemory()",
+      "label": "triggerLearning()",
       "file_type": "code",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L307",
+      "source_location": "L298",
       "_origin": "ast",
-      "id": "server_controllers_memorycontroller_togglearchivememory",
+      "id": "server_controllers_memorycontroller_triggerlearning",
       "community": 32,
-      "norm_label": "togglearchivememory()"
-    },
-    {
-      "label": "mergeMemories()",
-      "file_type": "code",
-      "source_file": "server/controllers/memoryController.js",
-      "source_location": "L333",
-      "_origin": "ast",
-      "id": "server_controllers_memorycontroller_mergememories",
-      "community": 32,
-      "norm_label": "mergememories()"
-    },
-    {
-      "label": "clearMemories()",
-      "file_type": "code",
-      "source_file": "server/controllers/memoryController.js",
-      "source_location": "L374",
-      "_origin": "ast",
-      "id": "server_controllers_memorycontroller_clearmemories",
-      "community": 32,
-      "norm_label": "clearmemories()"
-    },
-    {
-      "label": "importMemories()",
-      "file_type": "code",
-      "source_file": "server/controllers/memoryController.js",
-      "source_location": "L389",
-      "_origin": "ast",
-      "id": "server_controllers_memorycontroller_importmemories",
-      "community": 32,
-      "norm_label": "importmemories()"
-    },
-    {
-      "label": "getBrainAnalytics()",
-      "file_type": "code",
-      "source_file": "server/controllers/memoryController.js",
-      "source_location": "L424",
-      "_origin": "ast",
-      "id": "server_controllers_memorycontroller_getbrainanalytics",
-      "community": 32,
-      "norm_label": "getbrainanalytics()"
+      "norm_label": "triggerlearning()"
     },
     {
       "label": "projectController.js",
@@ -5730,7 +5450,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_middleware_subscription",
-      "community": 29,
+      "community": 33,
       "norm_label": "subscription.js"
     },
     {
@@ -5740,7 +5460,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_middleware_subscription_requirepro",
-      "community": 29,
+      "community": 33,
       "norm_label": "requirepro()"
     },
     {
@@ -5750,7 +5470,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "server_middleware_subscription_quotas",
-      "community": 29,
+      "community": 33,
       "norm_label": "quotas"
     },
     {
@@ -5760,7 +5480,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "server_middleware_subscription_checksubscriptionquota",
-      "community": 29,
+      "community": 33,
       "norm_label": "checksubscriptionquota()"
     },
     {
@@ -5770,7 +5490,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_middleware_upload",
-      "community": 29,
+      "community": 21,
       "norm_label": "upload.js"
     },
     {
@@ -5780,7 +5500,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "server_middleware_upload_storage",
-      "community": 29,
+      "community": 21,
       "norm_label": "storage"
     },
     {
@@ -5790,7 +5510,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "server_middleware_upload_filefilter",
-      "community": 29,
+      "community": 21,
       "norm_label": "filefilter()"
     },
     {
@@ -5800,7 +5520,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "server_middleware_upload_upload",
-      "community": 29,
+      "community": 21,
       "norm_label": "upload"
     },
     {
@@ -5810,7 +5530,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "server_middleware_upload_audiofilter",
-      "community": 29,
+      "community": 21,
       "norm_label": "audiofilter()"
     },
     {
@@ -5820,7 +5540,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "server_middleware_upload_uploadaudio",
-      "community": 29,
+      "community": 21,
       "norm_label": "uploadaudio"
     },
     {
@@ -5830,7 +5550,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_middleware_usagelimit",
-      "community": 29,
+      "community": 33,
       "norm_label": "usagelimit.js"
     },
     {
@@ -5840,7 +5560,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_middleware_usagelimit_checkusagelimit",
-      "community": 29,
+      "community": 33,
       "norm_label": "checkusagelimit()"
     },
     {
@@ -6110,7 +5830,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_routes_airoutes",
-      "community": 29,
+      "community": 33,
       "norm_label": "airoutes.js"
     },
     {
@@ -6227,7 +5947,7 @@
       "label": "router",
       "file_type": "code",
       "source_file": "server/routes/memoryRoutes.js",
-      "source_location": "L22",
+      "source_location": "L16",
       "_origin": "ast",
       "id": "server_routes_memoryroutes_router",
       "community": 21,
@@ -6370,7 +6090,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_scratch_test_admin_create",
-      "community": 21,
+      "community": 29,
       "norm_label": "test_admin_create.js"
     },
     {
@@ -6380,7 +6100,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "server_scratch_test_admin_create_testadmincreate",
-      "community": 21,
+      "community": 29,
       "norm_label": "testadmincreate()"
     },
     {
@@ -6470,7 +6190,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_scratch_test_supabase",
-      "community": 21,
+      "community": 29,
       "norm_label": "test_supabase.js"
     },
     {
@@ -6480,7 +6200,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "server_scratch_test_supabase_rundiagnostics",
-      "community": 21,
+      "community": 29,
       "norm_label": "rundiagnostics()"
     },
     {
@@ -6510,27 +6230,27 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_scripts_seed_operator_memory",
-      "community": 21,
+      "community": 29,
       "norm_label": "seed_operator_memory.js"
     },
     {
       "label": "operatorMemories",
       "file_type": "code",
       "source_file": "server/scripts/seed_operator_memory.js",
-      "source_location": "L9",
+      "source_location": "L8",
       "_origin": "ast",
       "id": "server_scripts_seed_operator_memory_operatormemories",
-      "community": 21,
+      "community": 29,
       "norm_label": "operatormemories"
     },
     {
       "label": "seedOperatorMemory()",
       "file_type": "code",
       "source_file": "server/scripts/seed_operator_memory.js",
-      "source_location": "L120",
+      "source_location": "L31",
       "_origin": "ast",
       "id": "server_scripts_seed_operator_memory_seedoperatormemory",
-      "community": 21,
+      "community": 29,
       "norm_label": "seedoperatormemory()"
     },
     {
@@ -6540,7 +6260,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_scripts_seed_test_data",
-      "community": 21,
+      "community": 29,
       "norm_label": "seed_test_data.js"
     },
     {
@@ -6550,7 +6270,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "server_scripts_seed_test_data_testusers",
-      "community": 21,
+      "community": 29,
       "norm_label": "testusers"
     },
     {
@@ -6560,7 +6280,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "server_scripts_seed_test_data_seeddata",
-      "community": 21,
+      "community": 29,
       "norm_label": "seeddata()"
     },
     {
@@ -6577,7 +6297,7 @@
       "label": "app",
       "file_type": "code",
       "source_file": "server/server.js",
-      "source_location": "L28",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "server_server_app",
       "community": 21,
@@ -6587,7 +6307,7 @@
       "label": "startServer()",
       "file_type": "code",
       "source_file": "server/server.js",
-      "source_location": "L32",
+      "source_location": "L33",
       "_origin": "ast",
       "id": "server_server_startserver",
       "community": 21,
@@ -6597,7 +6317,7 @@
       "label": "allowedOrigins",
       "file_type": "code",
       "source_file": "server/server.js",
-      "source_location": "L116",
+      "source_location": "L117",
       "_origin": "ast",
       "id": "server_server_allowedorigins",
       "community": 21,
@@ -6607,7 +6327,7 @@
       "label": "origin()",
       "file_type": "code",
       "source_file": "server/server.js",
-      "source_location": "L126",
+      "source_location": "L127",
       "_origin": "ast",
       "id": "server_server_origin",
       "community": 21,
@@ -6617,7 +6337,7 @@
       "label": "authLimiter",
       "file_type": "code",
       "source_file": "server/server.js",
-      "source_location": "L144",
+      "source_location": "L145",
       "_origin": "ast",
       "id": "server_server_authlimiter",
       "community": 21,
@@ -6627,7 +6347,7 @@
       "label": "limiter",
       "file_type": "code",
       "source_file": "server/server.js",
-      "source_location": "L154",
+      "source_location": "L155",
       "_origin": "ast",
       "id": "server_server_limiter",
       "community": 21,
@@ -6637,7 +6357,7 @@
       "label": "httpServer",
       "file_type": "code",
       "source_file": "server/server.js",
-      "source_location": "L203",
+      "source_location": "L204",
       "_origin": "ast",
       "id": "server_server_httpserver",
       "community": 21,
@@ -7040,7 +6760,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_automation_automationregistry",
-      "community": 12,
+      "community": 23,
       "norm_label": "automationregistry.js"
     },
     {
@@ -7050,7 +6770,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "server_services_automation_automationregistry_registry",
-      "community": 12,
+      "community": 23,
       "norm_label": "_registry"
     },
     {
@@ -7060,7 +6780,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "server_services_automation_automationregistry_modules",
-      "community": 12,
+      "community": 23,
       "norm_label": "_modules"
     },
     {
@@ -7090,7 +6810,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "server_services_automation_automationregistry_hasaction",
-      "community": 12,
+      "community": 23,
       "norm_label": "hasaction()"
     },
     {
@@ -7130,7 +6850,7 @@
       "source_location": "L169",
       "_origin": "ast",
       "id": "server_services_automation_automationregistry_gettopskills",
-      "community": 12,
+      "community": 23,
       "norm_label": "gettopskills()"
     },
     {
@@ -7140,7 +6860,7 @@
       "source_location": "L186",
       "_origin": "ast",
       "id": "server_services_automation_automationregistry_findbyvoicealias",
-      "community": 12,
+      "community": 23,
       "norm_label": "findbyvoicealias()"
     },
     {
@@ -8720,7 +8440,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_automation_modules_whatsappmodule",
-      "community": 50,
+      "community": 17,
       "norm_label": "whatsappmodule.js"
     },
     {
@@ -8730,7 +8450,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "server_services_automation_modules_whatsappmodule_openwhatsapp",
-      "community": 50,
+      "community": 17,
       "norm_label": "openwhatsapp()"
     },
     {
@@ -8740,7 +8460,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "server_services_automation_modules_whatsappmodule_openwhatsappchat",
-      "community": 50,
+      "community": 17,
       "norm_label": "openwhatsappchat()"
     },
     {
@@ -8750,7 +8470,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "server_services_automation_modules_whatsappmodule_sendwhatsappmessage",
-      "community": 50,
+      "community": 17,
       "norm_label": "sendwhatsappmessage()"
     },
     {
@@ -8760,7 +8480,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "server_services_automation_modules_whatsappmodule_searchwhatsappcontact",
-      "community": 50,
+      "community": 17,
       "norm_label": "searchwhatsappcontact()"
     },
     {
@@ -8770,68 +8490,8 @@
       "source_location": "L158",
       "_origin": "ast",
       "id": "server_services_automation_modules_whatsappmodule_openunreadchats",
-      "community": 50,
+      "community": 17,
       "norm_label": "openunreadchats()"
-    },
-    {
-      "label": "chatImportService.js",
-      "file_type": "code",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "server_services_chatimportservice",
-      "community": 32,
-      "norm_label": "chatimportservice.js"
-    },
-    {
-      "label": "userBuildStatus",
-      "file_type": "code",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L4",
-      "_origin": "ast",
-      "id": "server_services_chatimportservice_userbuildstatus",
-      "community": 32,
-      "norm_label": "userbuildstatus"
-    },
-    {
-      "label": "getBuildStatus()",
-      "file_type": "code",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L9",
-      "_origin": "ast",
-      "id": "server_services_chatimportservice_getbuildstatus",
-      "community": 32,
-      "norm_label": "getbuildstatus()"
-    },
-    {
-      "label": "startBrainBuild()",
-      "file_type": "code",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L25",
-      "_origin": "ast",
-      "id": "server_services_chatimportservice_startbrainbuild",
-      "community": 32,
-      "norm_label": "startbrainbuild()"
-    },
-    {
-      "label": "controlBrainBuild()",
-      "file_type": "code",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L58",
-      "_origin": "ast",
-      "id": "server_services_chatimportservice_controlbrainbuild",
-      "community": 32,
-      "norm_label": "controlbrainbuild()"
-    },
-    {
-      "label": "runBackgroundImport()",
-      "file_type": "code",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L77",
-      "_origin": "ast",
-      "id": "server_services_chatimportservice_runbackgroundimport",
-      "community": 32,
-      "norm_label": "runbackgroundimport()"
     },
     {
       "label": "geminiService.js",
@@ -8920,7 +8580,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_intentengine",
-      "community": 55,
+      "community": 12,
       "norm_label": "intentengine.js"
     },
     {
@@ -8930,7 +8590,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "server_services_intentengine_intent_categories",
-      "community": 55,
+      "community": 12,
       "norm_label": "intent_categories"
     },
     {
@@ -8940,7 +8600,7 @@
       "source_location": "L120",
       "_origin": "ast",
       "id": "server_services_intentengine_detectintent",
-      "community": 55,
+      "community": 12,
       "norm_label": "detectintent()"
     },
     {
@@ -8950,7 +8610,7 @@
       "source_location": "L171",
       "_origin": "ast",
       "id": "server_services_intentengine_action_keywords",
-      "community": 55,
+      "community": 12,
       "norm_label": "action_keywords"
     },
     {
@@ -8960,7 +8620,7 @@
       "source_location": "L184",
       "_origin": "ast",
       "id": "server_services_intentengine_hasactionkeyword",
-      "community": 55,
+      "community": 12,
       "norm_label": "hasactionkeyword()"
     },
     {
@@ -8970,7 +8630,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "server_services_intentengine_parseintentjson",
-      "community": 55,
+      "community": 12,
       "norm_label": "parseintentjson()"
     },
     {
@@ -8980,7 +8640,7 @@
       "source_location": "L223",
       "_origin": "ast",
       "id": "server_services_intentengine_buildchatintent",
-      "community": 55,
+      "community": 12,
       "norm_label": "buildchatintent()"
     },
     {
@@ -8990,7 +8650,7 @@
       "source_location": "L236",
       "_origin": "ast",
       "id": "server_services_intentengine_buildunknownintent",
-      "community": 55,
+      "community": 12,
       "norm_label": "buildunknownintent()"
     },
     {
@@ -9000,7 +8660,7 @@
       "source_location": "L255",
       "_origin": "ast",
       "id": "server_services_intentengine_lookslikeautomation",
-      "community": 55,
+      "community": 12,
       "norm_label": "lookslikeautomation()"
     },
     {
@@ -9030,7 +8690,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_memoryservice",
-      "community": 32,
+      "community": 37,
       "norm_label": "memoryservice.js"
     },
     {
@@ -9040,34 +8700,24 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "server_services_memoryservice_ensuredefaultmemories",
-      "community": 32,
+      "community": 37,
       "norm_label": "ensuredefaultmemories()"
-    },
-    {
-      "label": "searchAndRankMemories()",
-      "file_type": "code",
-      "source_file": "server/services/memoryService.js",
-      "source_location": "L73",
-      "_origin": "ast",
-      "id": "server_services_memoryservice_searchandrankmemories",
-      "community": 32,
-      "norm_label": "searchandrankmemories()"
     },
     {
       "label": "getContextPrompt()",
       "file_type": "code",
       "source_file": "server/services/memoryService.js",
-      "source_location": "L121",
+      "source_location": "L73",
       "_origin": "ast",
       "id": "server_services_memoryservice_getcontextprompt",
-      "community": 32,
+      "community": 37,
       "norm_label": "getcontextprompt()"
     },
     {
       "label": "logActivity()",
       "file_type": "code",
       "source_file": "server/services/memoryService.js",
-      "source_location": "L162",
+      "source_location": "L130",
       "_origin": "ast",
       "id": "server_services_memoryservice_logactivity",
       "community": 24,
@@ -9510,7 +9160,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_usageservice",
-      "community": 33,
+      "community": 29,
       "norm_label": "usageservice.js"
     },
     {
@@ -9520,7 +9170,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "server_services_usageservice_field_map",
-      "community": 33,
+      "community": 29,
       "norm_label": "field_map"
     },
     {
@@ -9530,7 +9180,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "server_services_usageservice_action_map",
-      "community": 33,
+      "community": 29,
       "norm_label": "action_map"
     },
     {
@@ -9550,27 +9200,27 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_services_voiceservice",
-      "community": 69,
+      "community": 33,
       "norm_label": "voiceservice.js"
     },
     {
       "label": "transcribeAudio()",
       "file_type": "code",
       "source_file": "server/services/voiceService.js",
-      "source_location": "L21",
+      "source_location": "L20",
       "_origin": "ast",
       "id": "server_services_voiceservice_transcribeaudio",
-      "community": 69,
+      "community": 33,
       "norm_label": "transcribeaudio()"
     },
     {
       "label": "synthesizeSpeech()",
       "file_type": "code",
       "source_file": "server/services/voiceService.js",
-      "source_location": "L59",
+      "source_location": "L54",
       "_origin": "ast",
       "id": "server_services_voiceservice_synthesizespeech",
-      "community": 69,
+      "community": 33,
       "norm_label": "synthesizespeech()"
     },
     {
@@ -9640,7 +9290,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_socket_terminalsocket",
-      "community": 13,
+      "community": 21,
       "norm_label": "terminalsocket.js"
     },
     {
@@ -9650,7 +9300,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "server_socket_terminalsocket_initializeterminalsocket",
-      "community": 13,
+      "community": 21,
       "norm_label": "initializeterminalsocket()"
     },
     {
@@ -9660,7 +9310,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_terminal_ptymanager",
-      "community": 13,
+      "community": 21,
       "norm_label": "ptymanager.js"
     },
     {
@@ -9760,7 +9410,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_utils_eventbus",
-      "community": 32,
+      "community": 37,
       "norm_label": "eventbus.js"
     },
     {
@@ -9770,7 +9420,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "server_utils_eventbus_centraleventbus",
-      "community": 32,
+      "community": 37,
       "norm_label": "centraleventbus"
     },
     {
@@ -9780,7 +9430,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "server_utils_eventbus_centraleventbus_constructor",
-      "community": 32,
+      "community": 37,
       "norm_label": ".constructor()"
     },
     {
@@ -9790,7 +9440,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "server_utils_eventbus_centraleventbus_emitactivity",
-      "community": 32,
+      "community": 37,
       "norm_label": ".emitactivity()"
     },
     {
@@ -9800,7 +9450,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "server_utils_eventbus_centraleventbus_emitalert",
-      "community": 32,
+      "community": 37,
       "norm_label": ".emitalert()"
     },
     {
@@ -9810,7 +9460,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "server_utils_eventbus_eventbus",
-      "community": 32,
+      "community": 37,
       "norm_label": "eventbus"
     },
     {
@@ -9820,7 +9470,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_utils_powershell",
-      "community": 50,
+      "community": 17,
       "norm_label": "powershell.js"
     },
     {
@@ -9830,7 +9480,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "server_utils_powershell_dirname",
-      "community": 50,
+      "community": 17,
       "norm_label": "__dirname"
     },
     {
@@ -9840,7 +9490,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "server_utils_powershell_temp_dir",
-      "community": 50,
+      "community": 17,
       "norm_label": "temp_dir"
     },
     {
@@ -9894,20 +9544,10 @@
       "norm_label": "vercel.json"
     },
     {
-      "label": "$schema",
-      "file_type": "code",
-      "source_file": "vercel.json",
-      "source_location": "L2",
-      "_origin": "ast",
-      "id": "vercel_schema",
-      "community": 52,
-      "norm_label": "$schema"
-    },
-    {
       "label": "version",
       "file_type": "code",
       "source_file": "vercel.json",
-      "source_location": "L3",
+      "source_location": "L2",
       "_origin": "ast",
       "id": "vercel_version",
       "community": 52,
@@ -9917,7 +9557,7 @@
       "label": "buildCommand",
       "file_type": "code",
       "source_file": "vercel.json",
-      "source_location": "L4",
+      "source_location": "L3",
       "_origin": "ast",
       "id": "vercel_buildcommand",
       "community": 52,
@@ -9927,7 +9567,7 @@
       "label": "outputDirectory",
       "file_type": "code",
       "source_file": "vercel.json",
-      "source_location": "L5",
+      "source_location": "L4",
       "_origin": "ast",
       "id": "vercel_outputdirectory",
       "community": 52,
@@ -9937,7 +9577,7 @@
       "label": "installCommand",
       "file_type": "code",
       "source_file": "vercel.json",
-      "source_location": "L6",
+      "source_location": "L5",
       "_origin": "ast",
       "id": "vercel_installcommand",
       "community": 52,
@@ -9947,7 +9587,7 @@
       "label": "rewrites",
       "file_type": "code",
       "source_file": "vercel.json",
-      "source_location": "L7",
+      "source_location": "L6",
       "_origin": "ast",
       "id": "vercel_rewrites",
       "community": 52,
@@ -10072,70 +9712,6 @@
     }
   ],
   "links": [
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "api/health.js",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "api_health",
-      "target": "api_path",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "api/[...path].js",
-      "source_location": "L6",
-      "weight": 1.0,
-      "source": "api_path",
-      "target": "api_path_handler",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "api/health.js",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "api_health",
-      "target": "api_path_handler",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "api/[...path].js",
-      "source_location": "L8",
-      "weight": 1.0,
-      "source": "api_path_handler",
-      "target": "server_server",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "api/[...path].js",
-      "source_location": "L10",
-      "weight": 1.0,
-      "source": "api_path_handler",
-      "target": "server_server_app"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "api/health.js",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "api_health",
-      "target": "api_health_handler",
-      "confidence_score": 1.0
-    },
     {
       "relation": "re_exports",
       "context": "export",
@@ -10696,16 +10272,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L45",
-      "weight": 1.0,
-      "source": "client_src_app",
-      "target": "client_src_app_adaptivecustomcursor",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/App.jsx",
       "source_location": "L35",
       "weight": 1.0,
       "source": "client_src_app",
@@ -10746,7 +10312,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L50",
+      "source_location": "L44",
       "weight": 1.0,
       "source": "client_src_app",
       "target": "client_src_app_app",
@@ -11067,39 +10633,6 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L43",
-      "weight": 1.0,
-      "source": "client_src_app",
-      "target": "client_src_components_performance_performanceprovider",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/App.jsx",
-      "source_location": "L43",
-      "weight": 1.0,
-      "source": "client_src_app",
-      "target": "client_src_components_performance_performanceprovider_performanceprovider",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/App.jsx",
-      "source_location": "L43",
-      "weight": 1.0,
-      "source": "client_src_app",
-      "target": "client_src_components_performance_performanceprovider_useperformancemode",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/App.jsx",
       "source_location": "L42",
       "weight": 1.0,
       "source": "client_src_app",
@@ -11173,22 +10706,11 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/App.jsx",
-      "source_location": "L46",
-      "weight": 1.0,
-      "source": "client_src_app_adaptivecustomcursor",
-      "target": "client_src_components_performance_performanceprovider_useperformancemode",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/App.jsx",
-      "source_location": "L83",
+      "source_location": "L77",
       "weight": 1.0,
       "source": "client_src_app_app",
       "target": "client_src_services_api",
@@ -11200,7 +10722,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "client/src/App.jsx",
-      "source_location": "L51",
+      "source_location": "L45",
       "weight": 1.0,
       "source": "client_src_app_app",
       "target": "client_src_store_authstore_useauthstore"
@@ -11316,7 +10838,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/components/background/BackgroundEffects.jsx",
-      "source_location": "L7",
+      "source_location": "L6",
       "weight": 1.0,
       "source": "client_src_components_background_backgroundeffects",
       "target": "client_src_components_background_backgroundeffects_backgroundeffects",
@@ -11414,45 +10936,12 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "client/src/components/background/BackgroundEffects.jsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "client_src_components_background_backgroundeffects",
-      "target": "client_src_components_performance_performanceprovider",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/background/BackgroundEffects.jsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "client_src_components_background_backgroundeffects",
-      "target": "client_src_components_performance_performanceprovider_useperformancemode",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "client/src/pages/public/Landing.jsx",
       "source_location": "L16",
       "weight": 1.0,
       "source": "client_src_pages_public_landing",
       "target": "client_src_components_background_backgroundeffects",
       "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "client/src/components/background/BackgroundEffects.jsx",
-      "source_location": "L8",
-      "weight": 1.0,
-      "source": "client_src_components_background_backgroundeffects_backgroundeffects",
-      "target": "client_src_components_performance_performanceprovider_useperformancemode"
     },
     {
       "relation": "imports",
@@ -12500,7 +11989,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "client/src/components/layout/Sidebar.jsx",
-      "source_location": "L195",
+      "source_location": "L190",
       "weight": 1.0,
       "source": "client_src_components_layout_sidebar_sidebar",
       "target": "client_src_utils_cn_cn"
@@ -12572,261 +12061,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceMonitor.jsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performancemonitor",
-      "target": "client_src_components_performance_performancemonitor_mode_labels",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceMonitor.jsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performancemonitor",
-      "target": "client_src_components_performance_performancemonitor_performancemonitor",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceMonitor.jsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performancemonitor",
-      "target": "client_src_components_performance_performanceprovider",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceMonitor.jsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performancemonitor",
-      "target": "client_src_components_performance_performanceprovider_useperformancemode",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceMonitor.jsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performancemonitor",
-      "target": "client_src_components_ui_glasscard",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceMonitor.jsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performancemonitor",
-      "target": "client_src_components_ui_glasscard_glasscard",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/app/Profile.jsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "source": "client_src_pages_app_profile",
-      "target": "client_src_components_performance_performancemonitor",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "client/src/components/performance/PerformanceMonitor.jsx",
-      "source_location": "L8",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performancemonitor_performancemonitor",
-      "target": "client_src_components_performance_performanceprovider_useperformancemode"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/app/Profile.jsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "source": "client_src_pages_app_profile",
-      "target": "client_src_components_performance_performancemonitor_performancemonitor",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L17",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performanceprovider",
-      "target": "client_src_components_performance_performanceprovider_getinitialprofile",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L11",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performanceprovider",
-      "target": "client_src_components_performance_performanceprovider_getmanualprofile",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L6",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performanceprovider",
-      "target": "client_src_components_performance_performanceprovider_getstoredgraphicsmode",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performanceprovider",
-      "target": "client_src_components_performance_performanceprovider_graphics_modes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performanceprovider",
-      "target": "client_src_components_performance_performanceprovider_performancecontext",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L34",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performanceprovider",
-      "target": "client_src_components_performance_performanceprovider_performanceprovider",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L91",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performanceprovider",
-      "target": "client_src_components_performance_performanceprovider_useperformancemode",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L11",
-      "weight": 1.0,
-      "source": "client_src_pages_app_settings",
-      "target": "client_src_components_performance_performanceprovider",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L8",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performanceprovider_getstoredgraphicsmode",
-      "target": "client_src_components_performance_performanceprovider_graphics_modes"
-    },
-    {
-      "relation": "references",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L40",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performanceprovider_performanceprovider",
-      "target": "client_src_components_performance_performanceprovider_graphics_modes"
-    },
-    {
-      "relation": "indirect_call",
-      "context": "argument",
-      "confidence": "INFERRED",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L35",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performanceprovider_performanceprovider",
-      "target": "client_src_components_performance_performanceprovider_getstoredgraphicsmode",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L36",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performanceprovider_performanceprovider",
-      "target": "client_src_components_performance_performanceprovider_getmanualprofile",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/components/performance/PerformanceProvider.jsx",
-      "source_location": "L36",
-      "weight": 1.0,
-      "source": "client_src_components_performance_performanceprovider_performanceprovider",
-      "target": "client_src_components_performance_performanceprovider_getinitialprofile",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L11",
-      "weight": 1.0,
-      "source": "client_src_pages_app_settings",
-      "target": "client_src_components_performance_performanceprovider_useperformancemode",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L143",
-      "weight": 1.0,
-      "source": "client_src_pages_app_settings_settings",
-      "target": "client_src_components_performance_performanceprovider_useperformancemode"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "client/src/components/settings/BrainMemorySettings.jsx",
       "source_location": "L10",
       "weight": 1.0,
@@ -12883,7 +12117,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L10",
+      "source_location": "L9",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_components_settings_brainmemorysettings",
@@ -12905,7 +12139,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L10",
+      "source_location": "L9",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_components_settings_brainmemorysettings_brainmemorysettings",
@@ -13335,7 +12569,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L7",
+      "source_location": "L6",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_components_ui_glasscard",
@@ -13500,7 +12734,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L7",
+      "source_location": "L6",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_components_ui_glasscard_glasscard",
@@ -13782,7 +13016,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L8",
+      "source_location": "L7",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_components_ui_neonbutton",
@@ -13958,7 +13192,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L8",
+      "source_location": "L7",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_components_ui_neonbutton_neonbutton",
@@ -14652,7 +13886,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_config_aimodels",
@@ -14696,7 +13930,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_config_aimodels_ai_providers",
@@ -14707,7 +13941,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_config_aimodels_ai_provider_meta",
@@ -14740,7 +13974,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_config_aimodels_groq_models",
@@ -14773,7 +14007,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_config_aimodels_gemini_models",
@@ -14861,7 +14095,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_config_aimodels_getmodelsbyprovider",
@@ -14873,7 +14107,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L807",
+      "source_location": "L698",
       "weight": 1.0,
       "source": "client_src_pages_app_settings_settings",
       "target": "client_src_config_aimodels_getmodelsbyprovider"
@@ -14894,7 +14128,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_config_aimodels_getdefaultmodelforprovider",
@@ -14906,7 +14140,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L780",
+      "source_location": "L671",
       "weight": 1.0,
       "source": "client_src_pages_app_settings_settings",
       "target": "client_src_config_aimodels_getdefaultmodelforprovider"
@@ -16114,7 +15348,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Profile.jsx",
-      "source_location": "L127",
+      "source_location": "L126",
       "weight": 1.0,
       "source": "client_src_pages_app_profile",
       "target": "client_src_pages_app_profile_profile",
@@ -16124,7 +15358,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Profile.jsx",
-      "source_location": "L13",
+      "source_location": "L12",
       "weight": 1.0,
       "source": "client_src_pages_app_profile",
       "target": "client_src_pages_app_profile_radarchart",
@@ -16191,7 +15425,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "client/src/pages/app/Profile.jsx",
-      "source_location": "L128",
+      "source_location": "L127",
       "weight": 1.0,
       "source": "client_src_pages_app_profile_profile",
       "target": "client_src_store_authstore_useauthstore"
@@ -16285,7 +15519,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L20",
+      "source_location": "L18",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_pages_app_settings_neontoast",
@@ -16295,7 +15529,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L138",
+      "source_location": "L136",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_pages_app_settings_settings",
@@ -16305,7 +15539,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L87",
+      "source_location": "L85",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_pages_app_settings_skilltags",
@@ -16315,7 +15549,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L71",
+      "source_location": "L69",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_pages_app_settings_toggle",
@@ -16326,7 +15560,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L6",
+      "source_location": "L5",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_services_api",
@@ -16337,7 +15571,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L6",
+      "source_location": "L5",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_services_api_authapi",
@@ -16348,7 +15582,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L6",
+      "source_location": "L5",
       "weight": 1.0,
       "source": "client_src_pages_app_settings",
       "target": "client_src_services_api_settingsapi",
@@ -16377,34 +15611,12 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "client_src_pages_app_settings",
-      "target": "client_src_store_usethemestore",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "client_src_pages_app_settings",
-      "target": "client_src_store_usethemestore_usethemestore",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L139",
+      "source_location": "L137",
       "weight": 1.0,
       "source": "client_src_pages_app_settings_settings",
       "target": "client_src_store_authstore_useauthstore"
@@ -16415,7 +15627,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "client/src/pages/app/Settings.jsx",
-      "source_location": "L294",
+      "source_location": "L287",
       "weight": 1.0,
       "source": "client_src_pages_app_settings_settings",
       "target": "server_services_automation_modules_productivitymodule_showtoast"
@@ -16642,7 +15854,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "client/src/pages/app/VoiceAssistant.jsx",
-      "source_location": "L870",
+      "source_location": "L822",
       "weight": 1.0,
       "source": "client_src_pages_app_voiceassistant_voiceassistant",
       "target": "client_src_pages_app_voiceassistant_ai_models"
@@ -16653,7 +15865,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "client/src/pages/app/VoiceAssistant.jsx",
-      "source_location": "L692",
+      "source_location": "L689",
       "weight": 1.0,
       "source": "client_src_pages_app_voiceassistant_voiceassistant",
       "target": "client_src_pages_app_voiceassistant_elevenlabs_ids"
@@ -16663,7 +15875,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "client/src/pages/app/VoiceAssistant.jsx",
-      "source_location": "L840",
+      "source_location": "L792",
       "weight": 1.0,
       "source": "client_src_pages_app_voiceassistant_voiceassistant",
       "target": "client_src_pages_app_voiceassistant_detectmodelswitch",
@@ -16686,7 +15898,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "client/src/pages/app/VoiceAssistant.jsx",
-      "source_location": "L1079",
+      "source_location": "L1028",
       "weight": 1.0,
       "source": "client_src_pages_app_voiceassistant_voiceassistant",
       "target": "server_terminal_ptymanager_ptymanager_resize"
@@ -17365,7 +16577,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "client/src/services/api.js",
-      "source_location": "L236",
+      "source_location": "L228",
       "weight": 1.0,
       "source": "client_src_services_api",
       "target": "client_src_services_api_automationapi",
@@ -17476,17 +16688,6 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "client_src_store_usethemestore",
-      "target": "client_src_services_api",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "client/src/store/workspaceStore.js",
       "source_location": "L2",
       "weight": 1.0,
@@ -17503,17 +16704,6 @@
       "weight": 1.0,
       "source": "client_src_store_authstore",
       "target": "client_src_services_api_authapi",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "client_src_store_usethemestore",
-      "target": "client_src_services_api_settingsapi",
       "confidence_score": 1.0
     },
     {
@@ -17555,56 +16745,6 @@
       "weight": 1.0,
       "source": "client_src_store_sidebarstore",
       "target": "client_src_store_sidebarstore_usesidebarstore",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "client_src_store_usethemestore",
-      "target": "client_src_store_usethemestore_accent_colors",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L52",
-      "weight": 1.0,
-      "source": "client_src_store_usethemestore",
-      "target": "client_src_store_usethemestore_applythemetodom",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L38",
-      "weight": 1.0,
-      "source": "client_src_store_usethemestore",
-      "target": "client_src_store_usethemestore_font_families",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L46",
-      "weight": 1.0,
-      "source": "client_src_store_usethemestore",
-      "target": "client_src_store_usethemestore_font_sizes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "client/src/store/useThemeStore.js",
-      "source_location": "L106",
-      "weight": 1.0,
-      "source": "client_src_store_usethemestore",
-      "target": "client_src_store_usethemestore_usethemestore",
       "confidence_score": 1.0
     },
     {
@@ -17680,67 +16820,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "desktop-agent/agent.mjs",
-      "source_location": "L20",
-      "weight": 1.0,
-      "source": "desktop_agent_agent",
-      "target": "desktop_agent_agent_execute",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "desktop-agent/agent.mjs",
-      "source_location": "L6",
-      "weight": 1.0,
-      "source": "desktop_agent_agent",
-      "target": "desktop_agent_agent_origins",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "desktop-agent/agent.mjs",
-      "source_location": "L4",
-      "weight": 1.0,
-      "source": "desktop_agent_agent",
-      "target": "desktop_agent_agent_port",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "desktop-agent/agent.mjs",
-      "source_location": "L8",
-      "weight": 1.0,
-      "source": "desktop_agent_agent",
-      "target": "desktop_agent_agent_run",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "desktop-agent/agent.mjs",
-      "source_location": "L15",
-      "weight": 1.0,
-      "source": "desktop_agent_agent",
-      "target": "desktop_agent_agent_verifytoken",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "desktop-agent/agent.mjs",
-      "source_location": "L24",
-      "weight": 1.0,
-      "source": "desktop_agent_agent_execute",
-      "target": "desktop_agent_agent_run",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "package.json",
       "source_location": "L14",
       "weight": 1.0,
@@ -17762,7 +16841,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L32",
+      "source_location": "L37",
       "weight": 1.0,
       "source": "package",
       "target": "package_devdependencies",
@@ -17872,7 +16951,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L18",
+      "source_location": "L20",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_axios",
@@ -17882,7 +16961,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L19",
+      "source_location": "L21",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_cors",
@@ -17892,7 +16971,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L20",
+      "source_location": "L22",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_dotenv",
@@ -17902,7 +16981,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L21",
+      "source_location": "L23",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_express",
@@ -17912,7 +16991,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L22",
+      "source_location": "L24",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_express_rate_limit",
@@ -17932,7 +17011,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_groq_sdk",
@@ -17942,7 +17021,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L24",
+      "source_location": "L26",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_helmet",
@@ -17952,7 +17031,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L25",
+      "source_location": "L27",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_mammoth",
@@ -17962,7 +17041,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L26",
+      "source_location": "L28",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_mongodb",
@@ -17972,7 +17051,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L27",
+      "source_location": "L29",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_multer",
@@ -17982,7 +17061,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L28",
+      "source_location": "L30",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_nanoid",
@@ -17992,7 +17071,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L29",
+      "source_location": "L31",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_pdf_parse",
@@ -18002,7 +17081,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L30",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "package_dependencies",
+      "target": "package_dependencies_react_tsparticles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L33",
       "weight": 1.0,
       "source": "package_dependencies",
       "target": "package_dependencies_socket_io",
@@ -18029,10 +17118,40 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "package_dependencies",
+      "target": "package_dependencies_tsparticles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "package_dependencies",
+      "target": "package_dependencies_tsparticles_react",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "package_dependencies",
+      "target": "package_dependencies_tsparticles_slim",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L26",
+      "source_location": "L28",
       "weight": 1.0,
       "context": "import",
       "source": "package_dependencies_mongodb",
@@ -18043,7 +17162,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L33",
+      "source_location": "L38",
       "weight": 1.0,
       "source": "package_devdependencies",
       "target": "package_devdependencies_concurrently",
@@ -18175,7 +17294,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_config_db",
@@ -18197,7 +17316,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_config_db_connectdb",
@@ -18208,7 +17327,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0,
       "source": "server_server_startserver",
       "target": "server_config_db_connectdb",
@@ -18241,7 +17360,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_config_db_getdbhealth",
@@ -18643,7 +17762,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_config_supabase",
@@ -18679,17 +17798,6 @@
       "source_location": "L7",
       "weight": 1.0,
       "source": "server_services_automation_modules_studymodule",
-      "target": "server_config_supabase",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "server_services_chatimportservice",
       "target": "server_config_supabase",
       "confidence_score": 1.0
     },
@@ -19168,7 +18276,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/services/voiceService.js",
-      "source_location": "L11",
+      "source_location": "L10",
       "weight": 1.0,
       "source": "server_services_voiceservice",
       "target": "server_controllers_ai_chatcontroller",
@@ -19312,7 +18420,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L279",
+      "source_location": "L270",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller_autotagmemory",
       "target": "server_controllers_ai_chatcontroller_getaioptions"
@@ -19323,7 +18431,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L216",
+      "source_location": "L207",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller_detectconflicts",
       "target": "server_controllers_ai_chatcontroller_getaioptions"
@@ -19334,7 +18442,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L182",
+      "source_location": "L173",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller_summarizeidentity",
       "target": "server_controllers_ai_chatcontroller_getaioptions"
@@ -19388,7 +18496,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/services/voiceService.js",
-      "source_location": "L11",
+      "source_location": "L10",
       "weight": 1.0,
       "source": "server_services_voiceservice",
       "target": "server_controllers_ai_chatcontroller_getaioptions",
@@ -19400,7 +18508,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/services/voiceService.js",
-      "source_location": "L23",
+      "source_location": "L22",
       "weight": 1.0,
       "source": "server_services_voiceservice_transcribeaudio",
       "target": "server_controllers_ai_chatcontroller_getaioptions"
@@ -19756,7 +18864,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/ai/voiceController.js",
-      "source_location": "L23",
+      "source_location": "L30",
       "weight": 1.0,
       "source": "server_controllers_ai_voicecontroller",
       "target": "server_controllers_ai_voicecontroller_speaktext",
@@ -19766,7 +18874,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/ai/voiceController.js",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0,
       "source": "server_controllers_ai_voicecontroller",
       "target": "server_controllers_ai_voicecontroller_transcribespeech",
@@ -19811,7 +18919,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/controllers/ai/voiceController.js",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "source": "server_controllers_ai_voicecontroller_transcribespeech",
       "target": "server_services_voiceservice_transcribeaudio"
@@ -19833,7 +18941,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/controllers/ai/voiceController.js",
-      "source_location": "L29",
+      "source_location": "L36",
       "weight": 1.0,
       "source": "server_controllers_ai_voicecontroller_speaktext",
       "target": "server_services_voiceservice_synthesizespeech"
@@ -21534,7 +20642,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L272",
+      "source_location": "L263",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller",
       "target": "server_controllers_memorycontroller_autotagmemory",
@@ -21544,17 +20652,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L374",
-      "weight": 1.0,
-      "source": "server_controllers_memorycontroller",
-      "target": "server_controllers_memorycontroller_clearmemories",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/controllers/memoryController.js",
-      "source_location": "L55",
+      "source_location": "L46",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller",
       "target": "server_controllers_memorycontroller_creatememory",
@@ -21564,7 +20662,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L133",
+      "source_location": "L124",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller",
       "target": "server_controllers_memorycontroller_deletememory",
@@ -21574,7 +20672,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L202",
+      "source_location": "L193",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller",
       "target": "server_controllers_memorycontroller_detectconflicts",
@@ -21584,7 +20682,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L148",
+      "source_location": "L139",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller",
       "target": "server_controllers_memorycontroller_exportmemories",
@@ -21594,30 +20692,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L424",
-      "weight": 1.0,
-      "source": "server_controllers_memorycontroller",
-      "target": "server_controllers_memorycontroller_getbrainanalytics",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/controllers/memoryController.js",
-      "source_location": "L30",
+      "source_location": "L21",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller",
       "target": "server_controllers_memorycontroller_getmemories",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/controllers/memoryController.js",
-      "source_location": "L389",
-      "weight": 1.0,
-      "source": "server_controllers_memorycontroller",
-      "target": "server_controllers_memorycontroller_importmemories",
       "confidence_score": 1.0
     },
     {
@@ -21634,17 +20712,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L333",
-      "weight": 1.0,
-      "source": "server_controllers_memorycontroller",
-      "target": "server_controllers_memorycontroller_mergememories",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/controllers/memoryController.js",
-      "source_location": "L166",
+      "source_location": "L157",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller",
       "target": "server_controllers_memorycontroller_summarizeidentity",
@@ -21654,17 +20722,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L307",
-      "weight": 1.0,
-      "source": "server_controllers_memorycontroller",
-      "target": "server_controllers_memorycontroller_togglearchivememory",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/controllers/memoryController.js",
-      "source_location": "L106",
+      "source_location": "L97",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller",
       "target": "server_controllers_memorycontroller_togglepinmemory",
@@ -21674,7 +20732,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L82",
+      "source_location": "L298",
+      "weight": 1.0,
+      "source": "server_controllers_memorycontroller",
+      "target": "server_controllers_memorycontroller_triggerlearning",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "server/controllers/memoryController.js",
+      "source_location": "L73",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller",
       "target": "server_controllers_memorycontroller_updatememory",
@@ -21762,7 +20830,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L76",
+      "source_location": "L67",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller_creatememory",
       "target": "server_controllers_memorycontroller_mapmemory",
@@ -21773,7 +20841,7 @@
       "context": "argument",
       "confidence": "INFERRED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L160",
+      "source_location": "L151",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller_exportmemories",
       "target": "server_controllers_memorycontroller_mapmemory",
@@ -21784,7 +20852,7 @@
       "context": "argument",
       "confidence": "INFERRED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L49",
+      "source_location": "L40",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller_getmemories",
       "target": "server_controllers_memorycontroller_mapmemory",
@@ -21795,29 +20863,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L368",
-      "weight": 1.0,
-      "source": "server_controllers_memorycontroller_mergememories",
-      "target": "server_controllers_memorycontroller_mapmemory",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "server/controllers/memoryController.js",
-      "source_location": "L327",
-      "weight": 1.0,
-      "source": "server_controllers_memorycontroller_togglearchivememory",
-      "target": "server_controllers_memorycontroller_mapmemory",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "server/controllers/memoryController.js",
-      "source_location": "L126",
+      "source_location": "L117",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller_togglepinmemory",
       "target": "server_controllers_memorycontroller_mapmemory",
@@ -21828,7 +20874,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L100",
+      "source_location": "L91",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller_updatememory",
       "target": "server_controllers_memorycontroller_mapmemory",
@@ -21840,7 +20886,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "server/controllers/memoryController.js",
-      "source_location": "L33",
+      "source_location": "L24",
       "weight": 1.0,
       "source": "server_controllers_memorycontroller_getmemories",
       "target": "server_services_memoryservice_ensuredefaultmemories"
@@ -21945,15 +20991,15 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports",
-      "context": "import",
+      "relation": "calls",
+      "context": "call",
       "confidence": "EXTRACTED",
-      "source_file": "server/routes/memoryRoutes.js",
-      "source_location": "L3",
+      "confidence_score": 1.0,
+      "source_file": "server/controllers/memoryController.js",
+      "source_location": "L301",
       "weight": 1.0,
-      "source": "server_routes_memoryroutes",
-      "target": "server_controllers_memorycontroller_togglearchivememory",
-      "confidence_score": 1.0
+      "source": "server_controllers_memorycontroller_triggerlearning",
+      "target": "server_services_learningengine_analyzeactivityandlearn"
     },
     {
       "relation": "imports",
@@ -21963,40 +21009,7 @@
       "source_location": "L3",
       "weight": 1.0,
       "source": "server_routes_memoryroutes",
-      "target": "server_controllers_memorycontroller_mergememories",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "server/routes/memoryRoutes.js",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "server_routes_memoryroutes",
-      "target": "server_controllers_memorycontroller_clearmemories",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "server/routes/memoryRoutes.js",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "server_routes_memoryroutes",
-      "target": "server_controllers_memorycontroller_importmemories",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "server/routes/memoryRoutes.js",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "server_routes_memoryroutes",
-      "target": "server_controllers_memorycontroller_getbrainanalytics",
+      "target": "server_controllers_memorycontroller_triggerlearning",
       "confidence_score": 1.0
     },
     {
@@ -22920,7 +21933,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_adminroutes",
@@ -22931,7 +21944,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_adminroutes_router",
@@ -22952,7 +21965,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_airoutes",
@@ -22963,7 +21976,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_airoutes_router",
@@ -22984,7 +21997,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_authroutes",
@@ -22995,7 +22008,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_authroutes_router",
@@ -23016,7 +22029,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_automationroutes",
@@ -23027,7 +22040,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_automationroutes_router",
@@ -23058,7 +22071,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_chatroutes",
@@ -23069,7 +22082,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_chatroutes_router",
@@ -23090,7 +22103,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_fs",
@@ -23101,7 +22114,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_fs_router",
@@ -23111,7 +22124,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/routes/memoryRoutes.js",
-      "source_location": "L22",
+      "source_location": "L16",
       "weight": 1.0,
       "source": "server_routes_memoryroutes",
       "target": "server_routes_memoryroutes_router",
@@ -23121,52 +22134,8 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "server/routes/memoryRoutes.js",
-      "source_location": "L20",
-      "weight": 1.0,
-      "source": "server_routes_memoryroutes",
-      "target": "server_services_chatimportservice",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "server/routes/memoryRoutes.js",
-      "source_location": "L20",
-      "weight": 1.0,
-      "source": "server_routes_memoryroutes",
-      "target": "server_services_chatimportservice_controlbrainbuild",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "server/routes/memoryRoutes.js",
-      "source_location": "L20",
-      "weight": 1.0,
-      "source": "server_routes_memoryroutes",
-      "target": "server_services_chatimportservice_getbuildstatus",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "server/routes/memoryRoutes.js",
-      "source_location": "L20",
-      "weight": 1.0,
-      "source": "server_routes_memoryroutes",
-      "target": "server_services_chatimportservice_startbrainbuild",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_memoryroutes",
@@ -23177,7 +22146,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_memoryroutes_router",
@@ -23208,7 +22177,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_noteroutes",
@@ -23219,7 +22188,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_noteroutes_router",
@@ -23262,7 +22231,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_paymentroutes",
@@ -23273,7 +22242,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_paymentroutes_router",
@@ -23294,7 +22263,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_profileroutes",
@@ -23305,7 +22274,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_profileroutes_router",
@@ -23326,7 +22295,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_settingsroutes",
@@ -23337,7 +22306,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_settingsroutes_router",
@@ -23358,7 +22327,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_userroutes",
@@ -23369,7 +22338,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_routes_userroutes_router",
@@ -23513,7 +22482,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/scripts/seed_operator_memory.js",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "source": "server_scripts_seed_operator_memory",
       "target": "server_scripts_seed_operator_memory_operatormemories",
@@ -23523,7 +22492,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/scripts/seed_operator_memory.js",
-      "source_location": "L120",
+      "source_location": "L31",
       "weight": 1.0,
       "source": "server_scripts_seed_operator_memory",
       "target": "server_scripts_seed_operator_memory_seedoperatormemory",
@@ -23553,7 +22522,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L116",
+      "source_location": "L117",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_server_allowedorigins",
@@ -23563,7 +22532,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_server_app",
@@ -23573,7 +22542,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L144",
+      "source_location": "L145",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_server_authlimiter",
@@ -23583,7 +22552,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L203",
+      "source_location": "L204",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_server_httpserver",
@@ -23593,7 +22562,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L154",
+      "source_location": "L155",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_server_limiter",
@@ -23603,7 +22572,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L211",
+      "source_location": "L209",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_server_origin",
@@ -23613,7 +22582,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_server_startserver",
@@ -23624,7 +22593,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_services_groqservice",
@@ -23635,10 +22604,32 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "server/server.js",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0,
       "source": "server_server",
       "target": "server_services_groqservice_isaiconfigured",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "server/server.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "server_server",
+      "target": "server_socket_terminalsocket",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "server/server.js",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "server_server",
+      "target": "server_socket_terminalsocket_initializeterminalsocket",
       "confidence_score": 1.0
     },
     {
@@ -29843,122 +28834,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L58",
-      "weight": 1.0,
-      "source": "server_services_chatimportservice",
-      "target": "server_services_chatimportservice_controlbrainbuild",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L9",
-      "weight": 1.0,
-      "source": "server_services_chatimportservice",
-      "target": "server_services_chatimportservice_getbuildstatus",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L77",
-      "weight": 1.0,
-      "source": "server_services_chatimportservice",
-      "target": "server_services_chatimportservice_runbackgroundimport",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L25",
-      "weight": 1.0,
-      "source": "server_services_chatimportservice",
-      "target": "server_services_chatimportservice_startbrainbuild",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L4",
-      "weight": 1.0,
-      "source": "server_services_chatimportservice",
-      "target": "server_services_chatimportservice_userbuildstatus",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L59",
-      "weight": 1.0,
-      "source": "server_services_chatimportservice_controlbrainbuild",
-      "target": "server_services_chatimportservice_getbuildstatus",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L78",
-      "weight": 1.0,
-      "source": "server_services_chatimportservice_runbackgroundimport",
-      "target": "server_services_chatimportservice_getbuildstatus",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L26",
-      "weight": 1.0,
-      "source": "server_services_chatimportservice_startbrainbuild",
-      "target": "server_services_chatimportservice_getbuildstatus",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L68",
-      "weight": 1.0,
-      "source": "server_services_chatimportservice_controlbrainbuild",
-      "target": "server_services_chatimportservice_startbrainbuild",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L41",
-      "weight": 1.0,
-      "source": "server_services_chatimportservice_startbrainbuild",
-      "target": "server_services_chatimportservice_runbackgroundimport",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/chatImportService.js",
-      "source_location": "L66",
-      "weight": 1.0,
-      "source": "server_services_chatimportservice_controlbrainbuild",
-      "target": "server_services_chatimportservice_runbackgroundimport",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "server/services/geminiService.js",
       "source_location": "L15",
       "weight": 1.0,
@@ -30274,7 +29149,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/services/memoryService.js",
-      "source_location": "L121",
+      "source_location": "L73",
       "weight": 1.0,
       "source": "server_services_memoryservice",
       "target": "server_services_memoryservice_getcontextprompt",
@@ -30284,20 +29159,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/services/memoryService.js",
-      "source_location": "L162",
+      "source_location": "L130",
       "weight": 1.0,
       "source": "server_services_memoryservice",
       "target": "server_services_memoryservice_logactivity",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/memoryService.js",
-      "source_location": "L73",
-      "weight": 1.0,
-      "source": "server_services_memoryservice",
-      "target": "server_services_memoryservice_searchandrankmemories",
       "confidence_score": 1.0
     },
     {
@@ -30349,21 +29214,10 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "server/services/memoryService.js",
-      "source_location": "L123",
+      "source_location": "L75",
       "weight": 1.0,
       "source": "server_services_memoryservice_getcontextprompt",
       "target": "server_services_memoryservice_ensuredefaultmemories",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "server/services/memoryService.js",
-      "source_location": "L132",
-      "weight": 1.0,
-      "source": "server_services_memoryservice_getcontextprompt",
-      "target": "server_services_memoryservice_searchandrankmemories",
       "confidence_score": 1.0
     },
     {
@@ -30883,7 +29737,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/services/voiceService.js",
-      "source_location": "L59",
+      "source_location": "L54",
       "weight": 1.0,
       "source": "server_services_voiceservice",
       "target": "server_services_voiceservice_synthesizespeech",
@@ -30893,7 +29747,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/services/voiceService.js",
-      "source_location": "L21",
+      "source_location": "L20",
       "weight": 1.0,
       "source": "server_services_voiceservice",
       "target": "server_services_voiceservice_transcribeaudio",
@@ -31175,7 +30029,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "vercel.json",
-      "source_location": "L4",
+      "source_location": "L3",
       "weight": 1.0,
       "source": "vercel",
       "target": "vercel_buildcommand",
@@ -31185,7 +30039,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "vercel.json",
-      "source_location": "L6",
+      "source_location": "L5",
       "weight": 1.0,
       "source": "vercel",
       "target": "vercel_installcommand",
@@ -31195,7 +30049,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "vercel.json",
-      "source_location": "L5",
+      "source_location": "L4",
       "weight": 1.0,
       "source": "vercel",
       "target": "vercel_outputdirectory",
@@ -31205,7 +30059,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "vercel.json",
-      "source_location": "L7",
+      "source_location": "L6",
       "weight": 1.0,
       "source": "vercel",
       "target": "vercel_rewrites",
@@ -31216,16 +30070,6 @@
       "confidence": "EXTRACTED",
       "source_file": "vercel.json",
       "source_location": "L2",
-      "weight": 1.0,
-      "source": "vercel",
-      "target": "vercel_schema",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "vercel.json",
-      "source_location": "L3",
       "weight": 1.0,
       "source": "vercel",
       "target": "vercel_version",
@@ -31325,5 +30169,5 @@
       "source_file": ".github/workflows/ci.yml"
     }
   ],
-  "built_at_commit": "0d75cd77087c993d9584f710ae06d247cd3615a9"
+  "built_at_commit": "4fc320dbd97f67c6ae90fea8decf0dc7d52118a4"
 }
