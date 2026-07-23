@@ -150,7 +150,12 @@ export default function AdminPayments() {
                     <td className="px-5 py-3.5">
                       {payment.screenshotUrl ? (
                         <button
-                          onClick={() => setSelectedImg(`http://localhost:5000/uploads/${payment.screenshotUrl}`)}
+                          onClick={() => {
+                            const apiBase = import.meta.env.VITE_API_URL || '';
+                            const base = apiBase.endsWith('/api') ? apiBase.slice(0, -4) : apiBase;
+                            const host = base || window.location.origin;
+                            setSelectedImg(`${host}/uploads/${payment.screenshotUrl}`);
+                          }}
                           className="flex items-center gap-1.5 text-neon-blue text-[9px] font-mono hover:text-neon-blue/80 transition-colors border border-neon-blue/20 rounded-lg px-2.5 py-1 bg-neon-blue/5 hover:bg-neon-blue/10"
                         >
                           <ImageIcon size={10} /> View

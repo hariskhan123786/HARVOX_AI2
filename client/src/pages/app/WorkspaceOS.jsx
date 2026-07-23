@@ -10,7 +10,7 @@ import {
   Cpu, HardDrive, Zap, Wifi, Activity, Cloud,
   RefreshCw, Plus, Trash2, Monitor, Code2, Music, Volume2, VolumeX, Loader2, Check,
   Keyboard, GitCompare, StickyNote, Terminal, Sparkles, Wand2, MessageSquare,
-  Copy, RotateCcw, Send, AlignLeft, Hash, DollarSign, Clock
+  Copy, RotateCcw, Send, AlignLeft, Hash, DollarSign, Clock, PanelLeft
 } from 'lucide-react';
 
 // ============================================================
@@ -743,9 +743,22 @@ export default function WorkspaceOS() {
   // Layout
   const [showSystemPanel,   setShowSystemPanel]  = useState(true);
   const [showTerminal,      setShowTerminal]      = useState(true);
+  const [showSidebar,       setShowSidebar]       = useState(true);
   const [activeBottomTab,   setActiveBottomTab]  = useState('terminal');
   const [bottomPanelHeight, setBottomPanelHeight] = useState(220);
   const [isResizing,        setIsResizing]        = useState(false);
+
+  // ── Auto-hide sidebars on small screens ──
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth <= 1024;
+      setShowSidebar(!isMobile);
+      setShowSystemPanel(!isMobile);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Floating widgets
   const [showMusicPlayer,   setShowMusicPlayer]  = useState(false);
@@ -1237,17 +1250,27 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
       {/* ===========================================================
           HEADER
       =========================================================== */}
-      <div className="flex h-10 items-center justify-between bg-[#05050a]/90 px-4 border-b border-white/5 flex-shrink-0 select-none">
+      <div className="flex h-10 items-center justify-between bg-[#05050a]/90 px-3 sm:px-4 border-b border-white/5 flex-shrink-0 select-none">
 
         {/* Left - Logo & Window controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Sidebar toggle (mobile) */}
+          <button
+            onClick={() => setShowSidebar(v => !v)}
+            className={`p-1.5 rounded transition-colors ${
+              showSidebar ? 'text-purple-400 bg-purple-500/10' : 'text-gray-600 hover:text-white hover:bg-white/5'
+            }`}
+            title="Toggle Explorer"
+          >
+            <PanelLeft size={13} />
+          </button>
           <div className="flex gap-1.5">
             <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f56] border border-[#e0443e] cursor-pointer shadow-[0_0_8px_rgba(255,95,86,0.5)] transition-all duration-300 hover:scale-110" />
             <div className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e] border border-[#dea123] cursor-pointer shadow-[0_0_8px_rgba(255,189,46,0.5)] transition-all duration-300 hover:scale-110" />
             <div className="h-2.5 w-2.5 rounded-full bg-[#27c93f] border border-[#1aab29] cursor-pointer shadow-[0_0_8px_rgba(39,201,63,0.5)] transition-all duration-300 hover:scale-110" />
           </div>
-          <div className="w-px h-4 bg-white/10" />
-          <div className="flex items-center gap-2">
+          <div className="w-px h-4 bg-white/10 hidden sm:block" />
+          <div className="hidden sm:flex items-center gap-2">
             <div className="w-5 h-5 rounded-md bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center shadow">
               <span className="text-[9px] font-black text-white">H</span>
             </div>
@@ -1272,10 +1295,10 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
         )}
 
         {/* Right - Toolbar */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1">
           <button
             onClick={() => setShowNotesPad(v => !v)}
-            className={`flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded transition-colors ${
+            className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded transition-colors ${
               showNotesPad
                 ? 'bg-yellow-600/20 text-yellow-400 border border-yellow-500/30'
                 : 'text-gray-600 hover:text-white hover:bg-white/5'
@@ -1287,7 +1310,7 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
           </button>
           <button
             onClick={() => { setShowMusicPlayer(v => !v); }}
-            className={`flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded transition-colors ${
+            className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded transition-colors ${
               showMusicPlayer
                 ? 'bg-purple-600/20 text-purple-400 border border-purple-500/30'
                 : 'text-gray-600 hover:text-white hover:bg-white/5'
@@ -1299,7 +1322,7 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
           </button>
           <button
             onClick={() => { setShowTerminal(v => !v); }}
-            className={`flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded transition-colors ${
+            className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1 text-[10px] font-bold rounded transition-colors ${
               showTerminal
                 ? 'bg-purple-600/20 text-purple-400 border border-purple-500/30'
                 : 'text-gray-600 hover:text-white hover:bg-white/5'
@@ -1307,11 +1330,11 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
             title="Toggle Terminal"
           >
             <SquareTerminal size={11} />
-            Terminal
+            <span className="hidden sm:inline">Terminal</span>
           </button>
           <button
             onClick={() => setShowSystemPanel(v => !v)}
-            className={`flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded transition-colors ${
+            className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1 text-[10px] font-bold rounded transition-colors ${
               showSystemPanel
                 ? 'bg-purple-600/20 text-purple-400 border border-purple-500/30'
                 : 'text-gray-600 hover:text-white hover:bg-white/5'
@@ -1319,9 +1342,9 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
             title="Toggle System Panel"
           >
             <Activity size={11} />
-            System
+            <span className="hidden sm:inline">System</span>
           </button>
-          <div className="w-px h-4 bg-white/10 mx-1" />
+          <div className="w-px h-4 bg-white/10 mx-0.5 sm:mx-1" />
           <button
             onClick={toggleFocusMode}
             className="text-gray-600 hover:text-white transition-colors p-1.5 rounded hover:bg-white/5"
@@ -1338,7 +1361,11 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
       <div className="flex flex-1 overflow-hidden relative">
 
         {/* ── LEFT SIDEBAR ── */}
-        <div className="w-[230px] flex-shrink-0 bg-[#0f0f0f] border-r border-white/5 flex flex-col">
+        <div
+          className={`flex-shrink-0 bg-[#0f0f0f] border-r border-white/5 flex flex-col transition-all duration-300 overflow-hidden ${
+            showSidebar ? 'w-[230px]' : 'w-0'
+          }`}
+        >
           <ExplorerHeader
             onSearch={() => {}}
             onNewFile={() => {}}
@@ -1418,13 +1445,13 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
           </div>
 
           {/* ✅ EDITOR + PREVIEW - FULL HEIGHT FLEX */}
-          <div className="flex-1 flex overflow-hidden relative">
+          <div className="flex-1 flex flex-col sm:flex-row overflow-hidden relative">
 
             {/* Monaco Editor */}
             {(!previewFullWidth) && (
               <div className={`
                 flex flex-col overflow-hidden transition-all duration-300
-                ${previewContent !== null ? 'w-1/2 border-r border-white/5' : 'flex-1'}
+                ${previewContent !== null ? 'h-1/2 sm:h-auto sm:w-1/2 border-b sm:border-b-0 sm:border-r border-white/5' : 'flex-1'}
               `}>
                 {activeFile ? (
                   <Editor
@@ -1502,7 +1529,7 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
               <div className={`
                 flex flex-col overflow-hidden bg-[#111]
                 transition-all duration-300
-                ${previewFullWidth ? 'flex-1' : 'w-1/2'}
+                ${previewFullWidth ? 'flex-1' : 'flex-1 sm:w-1/2 sm:flex-none'}
               `}>
 
                 {/* Preview Toolbar */}
@@ -1767,9 +1794,9 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
 
                 {/* ✅ AUTONOMOUS AI AGENT CORE TAB */}
                 {activeBottomTab === 'agent' && (
-                  <div className="h-full flex overflow-hidden divide-x divide-white/5 p-3">
+                  <div className="h-full flex flex-col sm:flex-row overflow-auto sm:overflow-hidden divide-y sm:divide-y-0 sm:divide-x divide-white/5 p-3 gap-3 sm:gap-0">
                     {/* Left: Input task form */}
-                    <div className="w-1/3 flex flex-col justify-between pr-3">
+                    <div className="w-full sm:w-1/3 flex flex-col justify-between sm:pr-3 pb-3 sm:pb-0">
                       <div className="space-y-3">
                         <div className="flex items-center gap-1.5">
                           <Cpu className="text-neon-purple w-4 h-4 animate-pulse" />
@@ -1811,7 +1838,7 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
                     </div>
 
                     {/* Center: Step planner status */}
-                    <div className="w-1/3 px-3 flex flex-col">
+                    <div className="w-full sm:w-1/3 sm:px-3 flex flex-col min-h-[120px] sm:min-h-0">
                       <span className="text-[9px] font-orbitron font-bold text-gray-500 uppercase tracking-wider mb-2 block">
                         Task Execution Steps
                       </span>
@@ -1858,7 +1885,7 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
                     </div>
 
                     {/* Right: Live Scrolling Logs terminal */}
-                    <div className="w-1/3 pl-3 flex flex-col h-full">
+                    <div className="w-full sm:w-1/3 sm:pl-3 flex flex-col min-h-[120px] sm:h-full">
                       <span className="text-[9px] font-orbitron font-bold text-gray-500 uppercase tracking-wider mb-2 block">
                         Live Agent Telemetry Logs
                       </span>

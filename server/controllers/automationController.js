@@ -7,6 +7,7 @@ import { triggerWorkflow, getActiveWorkflowRuns, getWorkflowRunStatus } from '..
 import { supabase } from '../config/supabase.js';
 import { logActivity, getContextPrompt } from '../services/memoryService.js';
 import { getAIOptions } from './ai/chatController.js';
+import { needsAgentProxy, buildAgentProxyResponse } from '../services/desktopAgent.js';
 
 // Mappers for compatibility
 const mapTask = (t) => {
@@ -130,6 +131,11 @@ export const executeStep = async (req, res) => {
       }
     }
 
+    // ── Production: Route desktop-level actions to the local agent ──────────
+    if (needsAgentProxy(step.action)) {
+      return res.json(buildAgentProxyResponse(step.action, step.args));
+    }
+
     const result = await executeAutomationStep(req.user._id, step);
     res.json(result);
   } catch (err) {
@@ -139,6 +145,7 @@ export const executeStep = async (req, res) => {
     });
   }
 };
+
 
 export const getDashboardInfo = async (req, res) => {
   try {
@@ -377,7 +384,14 @@ export const quickAction = async (req, res) => {
     const { action, args } = req.body;
     if (!action) return res.status(400).json({ message: 'Action is required.' });
 
-    const step = { action, args: Array.isArray(args) ? args : (args ? [String(args)] : []) };
+    const safeArgs = Array.isArray(args) ? args : (args ? [String(args)] : []);
+
+    // ── Production: Route desktop-level actions to the local agent ──────────
+    if (needsAgentProxy(action)) {
+      return res.json(buildAgentProxyResponse(action, safeArgs));
+    }
+
+    const step = { action, args: safeArgs };
     const result = await executeAutomationStep(req.user._id, step);
 
     await recordRunInPrefs(req.user._id, true);

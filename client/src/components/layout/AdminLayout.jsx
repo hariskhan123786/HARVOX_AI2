@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { LayoutDashboard, Users, CreditCard, Settings, LogOut, ArrowLeft, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, Users, CreditCard, Settings, LogOut, ArrowLeft, ShieldAlert, X } from 'lucide-react';
 import GlassCard from '../ui/GlassCard';
 
 export default function AdminLayout() {
@@ -13,6 +13,7 @@ export default function AdminLayout() {
   );
   const [passcode, setPasscode] = useState('');
   const [error, setError] = useState('');
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleNumberPress = (num) => {
     setError('');
@@ -174,11 +175,45 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-primary">
+    <div className="flex flex-col lg:flex-row h-screen overflow-hidden bg-primary">
+      {/* Mobile Header Bar */}
+      <div className="lg:hidden h-14 bg-[#08080f] border-b border-white/10 flex items-center justify-between px-4 shrink-0 z-40">
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <span className="font-orbitron font-black text-sm tracking-widest text-neon-pink">HARVOX ADMIN</span>
+        <div className="w-9" />
+      </div>
+
+      {/* Mobile Drawer Overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/75 backdrop-blur-sm lg:hidden animate-fade-in"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
       {/* Admin Sidebar */}
-      <GlassCard className="w-64 flex-shrink-0 flex flex-col h-full rounded-none border-y-0 border-l-0 border-r border-white/10" hover={false}>
-        <div className="p-6 border-b border-white/10">
-          <h2 className="text-xl font-bold text-neon-pink tracking-wider">HARVOX ADMIN</h2>
+      <aside
+        className={`
+          fixed lg:static inset-y-0 left-0 z-50 w-64 shrink-0 flex flex-col h-full bg-[#040310] border-r border-white/10
+          transition-transform duration-300 ease-in-out lg:translate-x-0
+          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+      >
+        <div className="p-6 border-b border-white/10 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-neon-pink tracking-wider font-orbitron">HARVOX ADMIN</h2>
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="lg:hidden p-1.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:text-white"
+          >
+            <X size={14} />
+          </button>
         </div>
 
         <nav className="flex-1 py-6 px-4 space-y-2">
@@ -186,10 +221,11 @@ export default function AdminLayout() {
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={() => setMobileOpen(false)}
               className={({ isActive }) =>
                 `flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                   isActive
-                    ? 'bg-neon-pink/20 text-neon-pink border border-neon-pink/50'
+                    ? 'bg-neon-pink/20 text-neon-pink border border-neon-pink/50 shadow-[0_0_15px_rgba(255,0,200,0.15)]'
                     : 'text-muted hover:bg-white/5 hover:text-white border border-transparent'
                 }`
               }
@@ -202,7 +238,7 @@ export default function AdminLayout() {
 
         <div className="p-4 border-t border-white/10 space-y-2">
           <button
-            onClick={() => navigate('/app/dashboard')}
+            onClick={() => { navigate('/app/dashboard'); setMobileOpen(false); }}
             className="flex items-center space-x-3 px-4 py-3 w-full rounded-xl text-muted hover:bg-white/5 hover:text-white transition-colors"
           >
             <ArrowLeft size={20} />
@@ -217,10 +253,10 @@ export default function AdminLayout() {
             <span className="font-medium">Logout</span>
           </button>
         </div>
-      </GlassCard>
+      </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+      <main className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar relative">
         <Outlet />
       </main>
     </div>

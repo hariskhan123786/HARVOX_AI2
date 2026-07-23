@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { automationAPI } from '../../services/api';
+import { useAuthStore } from '../../store/authStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Music, Globe, MessageCircle, Mail, FolderOpen, Code2, Target,
   AppWindow, Workflow, Zap, Play, Check, XCircle, Plus, Trash2,
   Settings, History, Terminal, Loader2, ShieldAlert, Volume2,
   VolumeX, Maximize, SkipForward, Subtitles, ThumbsUp, Clock,
-  Activity, User, PlusCircle, Sparkles, Send, Keyboard
+  Activity, User, PlusCircle, Sparkles, Send, Keyboard, Cpu
 } from 'lucide-react';
 import GlassCard from '../../components/ui/GlassCard';
 import NeonButton from '../../components/ui/NeonButton';
@@ -24,7 +25,37 @@ const ICON_MAP = {
   Workflow
 };
 
+/**
+ * Calls the desktop agent running on the user's local machine (localhost:8765).
+ * This is needed in production where the server can't run PowerShell/exec.
+ */
+async function callDesktopAgent(action, args, token, agentPort = 8765) {
+  const url = `http://127.0.0.1:${agentPort}/execute`;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ step: { action, args } }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Agent returned an error');
+    return { success: true, message: data.message || 'Executed on your PC.' };
+  } catch (err) {
+    if (err.message?.includes('fetch') || err.message?.includes('Failed to fetch') || err.name === 'TypeError') {
+      throw new Error(
+        '🖥️ Desktop Agent not running!\n\nTo use OS automation, start the agent on your PC:\n' +
+        '  cd desktop-agent\n  node agent.mjs'
+      );
+    }
+    throw err;
+  }
+}
+
 export default function AutomationCenter() {
+  const { token } = useAuthStore();
   const [modules, setModules] = useState([]);
   const [selectedModule, setSelectedModule] = useState(null);
   const [history, setHistory] = useState([]);
@@ -95,9 +126,17 @@ export default function AutomationCenter() {
     try {
       addLog(`Initiating quick action: ${label || action}...`, 'info');
       const { data } = await automationAPI.quickAction(action, defaultArgs);
-      addLog(`[Success] ${data.message || 'Action executed successfully.'}`, 'success');
-      if (data.output) addLog(`[Output] ${data.output}`, 'stdout');
-      
+
+      // ── Production: server returned a desktop-agent proxy instruction ──
+      if (data.requiresDesktopAgent) {
+        addLog('⚡ Forwarding to your Desktop Agent...', 'info');
+        const agentResult = await callDesktopAgent(data.action, data.args, token, data.agentPort);
+        addLog(`[Agent] ${agentResult.message}`, 'success');
+      } else {
+        addLog(`[Success] ${data.message || 'Action executed successfully.'}`, 'success');
+        if (data.output) addLog(`[Output] ${data.output}`, 'stdout');
+      }
+
       // Reload history logs
       const historyRes = await automationAPI.getHistory({ limit: 15 });
       setHistory(historyRes.data?.activities || []);
@@ -283,8 +322,16 @@ export default function AutomationCenter() {
 
       try {
         const { data } = await automationAPI.executeStep(step);
-        addLog(`Step ${i + 1} completed: ${data.message || 'Done'}`, 'success');
-        if (data.output) addLog(`[Output] ${data.output}`, 'stdout');
+
+        // ── Production: server returned a desktop-agent proxy instruction ──
+        if (data.requiresDesktopAgent) {
+          addLog('⚡ Forwarding to your Desktop Agent...', 'info');
+          const agentResult = await callDesktopAgent(data.action, data.args, token, data.agentPort);
+          addLog(`Step ${i + 1} completed via agent: ${agentResult.message}`, 'success');
+        } else {
+          addLog(`Step ${i + 1} completed: ${data.message || 'Done'}`, 'success');
+          if (data.output) addLog(`[Output] ${data.output}`, 'stdout');
+        }
       } catch (err) {
         const errMsg = err.response?.data?.error || err.response?.data?.message || err.message;
         addLog(`[Fault] Step ${i + 1} failed: ${errMsg}`, 'error');

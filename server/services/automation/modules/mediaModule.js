@@ -95,34 +95,43 @@ async function spotifyLikedSongs(userId) {
 // ─── YouTube Skills ───────────────────────────────────────────────────────────
 
 async function youtubePlay(userId, args) {
-  const query = args[0] || 'lofi hip hop';
+  const query = (args[0] || 'lofi hip hop').replace(/on youtube/i, '').replace(/^play\s*/i, '').trim();
 
-  try {
-    const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%3D%3D`;
-    const res = await fetch(searchUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+  // ── Strategy 1: Invidious public API (no key, CORS-free from server) ───────
+  const INVIDIOUS_INSTANCES = [
+    'https://inv.nadeko.net',
+    'https://invidious.nerdvpn.de',
+    'https://yt.artemislena.eu',
+  ];
+
+  for (const instance of INVIDIOUS_INSTANCES) {
+    try {
+      const apiUrl = `${instance}/api/v1/search?q=${encodeURIComponent(query)}&type=video&fields=videoId,title&page=1`;
+      const res = await fetch(apiUrl, {
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!res.ok) continue;
+      const results = await res.json();
+      const first = Array.isArray(results) ? results[0] : null;
+      if (first?.videoId) {
+        const playUrl = `https://www.youtube.com/watch?v=${first.videoId}`;
+        await execP(`start "" "${playUrl}"`);
+        await logActivity(userId, 'youtube_play', `▶️ Playing: "${first.title || query}"`, { query, videoId: first.videoId });
+        return { success: true, message: `▶️ Now playing "${first.title || query}" on YouTube!` };
       }
-    });
-    const html = await res.text();
-    const match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
-    if (match) {
-      const videoId = match[1];
-      const playUrl = `https://www.youtube.com/watch?v=${videoId}`;
-      await execP(`start "" "${playUrl}"`);
-      await logActivity(userId, 'youtube_play', `Playing on YouTube: "${query}" (direct link)`, { query, videoId });
-      return { success: true, message: `▶️ Directly playing "${query}" on YouTube! URL: ${playUrl}` };
+    } catch (err) {
+      console.warn(`[YouTube] Invidious instance ${instance} failed:`, err.message);
     }
-  } catch (err) {
-    console.error('[YouTube Play] Direct lookup failed, falling back to search page:', err.message);
   }
 
-  // Fallback if scraping fails
+  // ── Strategy 2: Direct YouTube search results page (opens in browser) ──────
   const fallbackUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%3D%3D`;
   await execP(`start "" "${fallbackUrl}"`);
-  await logActivity(userId, 'youtube_play', `Opened search page for "${query}" (fallback)`, { query });
-  return { success: true, message: `Opened YouTube search results for "${query}" (fallback).` };
+  await logActivity(userId, 'youtube_play', `Opened YouTube search for "${query}" (fallback)`, { query });
+  return { success: true, message: `🔍 Opened YouTube search for "${query}". Click the first video to play.` };
 }
+
 
 async function youtubeSearch(userId, args) {
   const query = args[0] || '';

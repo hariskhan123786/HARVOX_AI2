@@ -231,18 +231,86 @@ router.get('/analytics', async (_req, res) => {
       { count: proUsers },
       { count: bannedUsers },
       { data: recentUsers },
+      { data: subscriptions },
+      { data: recentGrowthUsers },
+      { data: topUsersRaw },
+      { data: usageData }
     ] = await Promise.all([
       supabase.from('users').select('*', { count: 'exact', head: true }),
       supabase.from('users').select('*', { count: 'exact', head: true }).eq('subscription', 'pro'),
       supabase.from('users').select('*', { count: 'exact', head: true }).eq('is_banned', true),
       supabase.from('users').select('id, email, created_at, profiles(name)').order('created_at', { ascending: false }).limit(5),
+      supabase.from('subscriptions').select('payment_history'),
+      supabase.from('users').select('created_at').gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
+      supabase.from('users').select('id, email, subscription, daily_usage, profiles(name)').order('daily_usage', { ascending: false }).limit(5),
+      supabase.from('users').select('usage_chats, usage_code_gen, usage_files, usage_projects')
     ]);
+
+    // Calculate revenue
+    let revenue = 0;
+    for (const sub of subscriptions || []) {
+      const history = sub.payment_history || [];
+      for (const payment of history) {
+        if (payment.status === 'approved') {
+          revenue += Number(payment.amount || 0);
+        }
+      }
+    }
+
+    // Calculate growth data (7 days)
+    const growthMap = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      growthMap[dateStr] = 0;
+    }
+    for (const u of recentGrowthUsers || []) {
+      const dateStr = new Date(u.created_at).toISOString().split('T')[0];
+      if (growthMap[dateStr] !== undefined) {
+        growthMap[dateStr]++;
+      }
+    }
+    const growthData = Object.entries(growthMap).map(([date, users]) => ({
+      date,
+      users,
+    }));
+
+    // Calculate top users
+    const topUsers = (topUsersRaw || []).map(u => ({
+      name: u.profiles?.name || u.email.split('@')[0],
+      email: u.email,
+      subscription: u.subscription || 'free',
+      chats: u.daily_usage || 0,
+    }));
+
+    // Sum AI usage stats
+    let chats = 0;
+    let codeGen = 0;
+    let files = 0;
+    let projects = 0;
+    for (const u of usageData || []) {
+      chats += u.usage_chats || 0;
+      codeGen += u.usage_code_gen || 0;
+      files += u.usage_files || 0;
+      projects += u.usage_projects || 0;
+    }
 
     res.json({
       totalUsers: totalUsers || 0,
       proUsers: proUsers || 0,
       freeUsers: (totalUsers || 0) - (proUsers || 0),
       bannedUsers: bannedUsers || 0,
+      activeUsers: (totalUsers || 0) - (bannedUsers || 0),
+      revenue,
+      growthData,
+      topUsers,
+      aiUsageStats: {
+        chats,
+        codeGen,
+        files,
+        projects,
+      },
       recentUsers: (recentUsers || []).map((u) => ({
         _id: u.id,
         email: u.email,

@@ -71,7 +71,7 @@ export default function AdminUsers() {
           <div className="w-1.5 h-1.5 rounded-full bg-neon-purple animate-pulse shadow-[0_0_8px_rgba(138,43,226,0.8)]" />
           <p className="text-[9px] font-orbitron font-black tracking-[0.3em] text-neon-purple/50 uppercase">Admin Control</p>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-neon-purple/10 border border-neon-purple/25 flex items-center justify-center shadow-[0_0_15px_rgba(138,43,226,0.2)]">
               <Shield size={16} className="text-neon-purple" />
@@ -81,9 +81,9 @@ export default function AdminUsers() {
               <p className="text-[10px] text-gray-600 font-mono">{users.length} operators indexed</p>
             </div>
           </div>
-
+ 
           {/* Search */}
-          <div className="relative w-64">
+          <div className="relative w-full sm:w-64">
             <Search size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600" />
             <input
               type="text"

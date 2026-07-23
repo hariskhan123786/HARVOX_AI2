@@ -271,7 +271,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stat cards */}
-      <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Total Operators"  value={totalUsers}                       icon={Users}      color="#8A2BE2" sub="Registered accounts"       delay={0.05} />
         <StatCard title="PRO Subscribers"  value={proUsers}                         icon={Crown}      color="#F59E0B" sub="Active PRO sessions"        delay={0.1} />
         <StatCard title="PKR Revenue"      value={`Rs. ${revenue.toLocaleString()}`} icon={CreditCard} color="#10B981" sub="Total approved payments"    delay={0.15} />
