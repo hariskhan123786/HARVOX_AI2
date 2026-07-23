@@ -1,3 +1,8 @@
+/**
+ * HARVOX AI — Desktop Automation Agent
+ * © Haris Khan — All Rights Reserved
+ */
+
 import http from 'node:http';
 import { execFile, exec } from 'node:child_process';
 import { writeFile, unlink, mkdir } from 'node:fs/promises';
@@ -355,6 +360,7 @@ http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
 
   if (req.method === 'GET' && req.url === '/health') {
+    console.log(`\x1b[96m  ❤️  Health check received\x1b[0m`);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({ status: 'ok', version: '2.0.0', port: PORT }));
   }
@@ -382,10 +388,14 @@ http.createServer(async (req, res) => {
         return res.end(JSON.stringify({ success: false, message: 'step.action is required.' }));
       }
 
+      console.log(`\x1b[95m  ⚡ Executing: \x1b[97m${step.action}\x1b[0m`);
       const result = await execute(step);
+      console.log(`\x1b[92m  ✓ Success: \x1b[90m${typeof result === 'string' ? result.slice(0, 50) : result?.message?.slice(0, 50) || 'Done'}\x1b[0m`);
+      
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ success: true, message: typeof result === 'string' ? result : result?.message || 'Executed on your Windows PC.' }));
     } catch (error) {
+      console.log(`\x1b[91m  ✗ Error: \x1b[90m${error.message}\x1b[0m`);
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ success: false, message: error.message }));
     }
@@ -393,19 +403,26 @@ http.createServer(async (req, res) => {
 
 }).listen(PORT, '127.0.0.1', () => {
   console.log('');
-  console.log('  ██╗  ██╗ █████╗ ██████╗ ██╗   ██╗ ██████╗ ██╗  ██╗');
-  console.log('  ██║  ██║██╔══██╗██╔══██╗██║   ██║██╔═══██╗╚██╗██╔╝');
-  console.log('  ███████║███████║██████╔╝██║   ██║██║   ██║ ╚███╔╝ ');
-  console.log('  ██╔══██║██╔══██║██╔══██╗╚██╗ ██╔╝██║   ██║ ██╔██╗ ');
-  console.log('  ██║  ██║██║  ██║██║  ██║ ╚████╔╝ ╚██████╔╝██╔╝ ██╗');
-  console.log('  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝   ╚═════╝ ╚═╝  ╚═╝');
+  console.log('\x1b[95m  ██╗  ██╗ █████╗ ██████╗ ██╗   ██╗ ██████╗ ██╗  ██╗\x1b[0m');
+  console.log('\x1b[95m  ██║  ██║██╔══██╗██╔══██╗██║   ██║██╔═══██╗╚██╗██╔╝\x1b[0m');
+  console.log('\x1b[95m  ███████║███████║██████╔╝██║   ██║██║   ██║ ╚███╔╝ \x1b[0m');
+  console.log('\x1b[96m  ██╔══██║██╔══██║██╔══██╗╚██╗ ██╔╝██║   ██║ ██╔██╗ \x1b[0m');
+  console.log('\x1b[96m  ██║  ██║██║  ██║██║  ██║ ╚████╔╝ ╚██████╔╝██╔╝ ██╗\x1b[0m');
+  console.log('\x1b[96m  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝  ╚═══╝   ╚═════╝ ╚═╝  ╚═╝\x1b[0m');
   console.log('');
-  console.log(`  ✅ Desktop Agent v2.0 running on http://127.0.0.1:${PORT}`);
-  console.log(`  🔒 Listening only on localhost (secure)`);
-  console.log(`  🌐 API: ${API_URL}`);
-  console.log(`  📋 Supported origins: ${[...ORIGINS].join(', ')}`);
+  console.log(`\x1b[92m  ✅ Desktop Agent v2.0 running on \x1b[97mhttp://127.0.0.1:${PORT}\x1b[0m`);
+  console.log(`\x1b[95m  🔒 Listening only on localhost (secure)\x1b[0m`);
+  console.log(`\x1b[96m  🌐 API: \x1b[97m${API_URL}\x1b[0m`);
+  console.log(`\x1b[93m  📋 Supported origins: \x1b[90m${[...ORIGINS].join(', ')}\x1b[0m`);
   console.log('');
-  console.log('  Keep this window open while using HARVOX AI.');
-  console.log('  Close it to stop all desktop automation.');
+  console.log('\x1b[95m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
+  console.log(`\x1b[96m  💜 HARVOX AI Desktop Automation Ready\x1b[0m`);
+  console.log(`\x1b[95m  🎯 60+ Commands Available\x1b[0m`);
+  console.log('\x1b[95m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m');
+  console.log('');
+  console.log(`\x1b[93m  Keep this window open while using HARVOX AI.\x1b[0m`);
+  console.log(`\x1b[93m  Close it to stop all desktop automation.\x1b[0m`);
+  console.log('');
+  console.log('\x1b[96m  © Haris Khan — All Rights Reserved\x1b[0m');
   console.log('');
 });

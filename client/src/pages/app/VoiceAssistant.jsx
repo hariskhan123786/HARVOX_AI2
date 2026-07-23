@@ -587,14 +587,8 @@ const Particles = () => {
 export default function VoiceAssistant() {
   const { user } = useAuthStore();
   const isPro = user?.subscription === 'pro' || user?.role === 'admin';
-  if (!isPro) {
-    return (
-      <PremiumLockOverlay
-        featureName="Voice Assistant System"
-        description="Initiate voice reactive holograms, text-to-speech feedback, and wake-word telemetry links."
-      />
-    );
-  }
+  // NOTE: Do NOT put an early return here — all hooks must run unconditionally
+  // (React Rules of Hooks). The isPro gate is applied in the JSX return below.
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [listening,           setListening]           = useState(false);
@@ -630,15 +624,20 @@ export default function VoiceAssistant() {
   const [autoApprove, setAutoApprove] = useState(true);
 
   // ── Mutable refs (avoid stale closures) ───────────────────────────────────
-  const recognitionRef          = useRef(null);
+  const srClassRef              = useRef(null);  // SpeechRecognition constructor class
+  const recognitionRef          = useRef(null);  // current LIVE SR instance (new each session)
   const silenceTimerRef         = useRef(null);
+  const restartTimerRef         = useRef(null);
+  const isRestartingRef         = useRef(false);
+  const manualStopRef           = useRef(false); // true = user intentionally stopped
   const finalTranscriptRef      = useRef('');
   const isProcessingRef         = useRef(false);
   const canvasRef               = useRef(null);
-  const elevenLabsAudioRef      = useRef(null); // active ElevenLabs Audio element
+  const elevenLabsAudioRef      = useRef(null);
   const mediaRecorderRef        = useRef(null);
   const mediaStreamRef          = useRef(null);
   const recordingTimerRef       = useRef(null);
+
 
   // State refs — keep up-to-date so callbacks always see fresh values
   const continuousRef           = useRef(continuousMode);
@@ -802,44 +801,256 @@ export default function VoiceAssistant() {
     }
   }, []);
 
-  const startListening = useCallback(() => {
-    if (!recognitionRef.current) {
-      if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop();
-      else startFallbackRecording();
-      return;
+  // ── createNewSRSession: creates a FRESH SR instance and starts it ───────────
+  // SpeechRecognition instances are single-use — once onend fires, they are dead.
+  // Every listening session MUST use a new instance.
+  const createNewSRSession = useCallback(() => {
+    const SR = srClassRef.current;
+    if (!SR) return false;
+
+    // GUARD: Prevent creating a new session if already restarting
+    if (isRestartingRef.current) {
+      console.log('[SR] Already restarting, ignoring duplicate session request');
+      return false;
     }
-    if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }
+
+    // GUARD: Prevent creating a new session if one is already active
+    if (recognitionRef.current) {
+      console.log('[SR] Active session exists, aborting it first');
+      try { recognitionRef.current.abort(); } catch {}
+      recognitionRef.current = null;
+    }
+
+    const rec = new SR();
+    rec.continuous      = false;  // manual restarts only — avoids Chrome loop bug
+    rec.interimResults  = true;
+    rec.lang            = voiceLanguageRef.current;  // always use latest language
+    rec.maxAlternatives = 1;
+
+    rec.onresult = (e) => {
+      let interim = '', final = '';
+      for (let i = 0; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) final   += r[0].transcript;
+        else           interim += r[0].transcript;
+      }
+      const full = (final + interim).trim();
+      if (full) {
+        setTranscript(full);
+        finalTranscriptRef.current = full;
+      }
+      // Silence timer: stop after 3s of no new results
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = setTimeout(() => {
+        try { rec.stop(); } catch {}
+      }, 3000);
+    };
+
+    rec.onend = () => {
+      console.log('[SR] onend fired');
+      clearTimeout(silenceTimerRef.current);
+      clearTimeout(restartTimerRef.current);
+      recognitionRef.current = null;  // mark instance as dead
+      setListening(false);
+
+      const captured = finalTranscriptRef.current.trim();
+      if (captured && !isProcessingRef.current) {
+        console.log('[SR] Processing captured speech:', captured);
+        isProcessingRef.current = true;
+        isRestartingRef.current = false;
+        askAIRef.current(captured);
+      } else if (
+        continuousRef.current &&
+        !isProcessingRef.current &&
+        !thinkingRef.current &&
+        !speakingRef.current &&
+        !isRestartingRef.current
+      ) {
+        // No speech — restart with a NEW instance after a short delay
+        // Set flag BEFORE scheduling to prevent race conditions
+        console.log('[SR] No speech captured, scheduling restart in 800ms');
+        isRestartingRef.current = true;
+        restartTimerRef.current = setTimeout(() => {
+          if (
+            continuousRef.current &&
+            !isProcessingRef.current &&
+            !thinkingRef.current &&
+            !speakingRef.current
+          ) {
+            console.log('[SR] Executing scheduled restart');
+            startListeningRef.current?.();
+          } else {
+            console.log('[SR] Restart cancelled - conditions no longer met');
+            isRestartingRef.current = false;
+          }
+        }, 800);
+      } else {
+        console.log('[SR] No restart needed');
+        isRestartingRef.current = false;
+      }
+    };
+
+    rec.onerror = (e) => {
+      console.log('[SR] onerror fired:', e.error);
+      clearTimeout(silenceTimerRef.current);
+      clearTimeout(restartTimerRef.current);
+      recognitionRef.current = null;
+      
+      if (e.error === 'no-speech' || e.error === 'aborted') {
+        // Benign errors — only restart if NOT already scheduled by onend
+        setListening(false);
+        if (
+          continuousRef.current &&
+          !isProcessingRef.current &&
+          !isRestartingRef.current
+        ) {
+          console.log('[SR] Benign error, scheduling restart in 1200ms');
+          isRestartingRef.current = true;
+          restartTimerRef.current = setTimeout(() => {
+            if (
+              continuousRef.current &&
+              !isProcessingRef.current &&
+              !thinkingRef.current &&
+              !speakingRef.current
+            ) {
+              console.log('[SR] Executing benign error restart');
+              startListeningRef.current?.();
+            } else {
+              console.log('[SR] Benign error restart cancelled');
+              isRestartingRef.current = false;
+            }
+          }, 1200); // Longer delay to avoid overlap with onend
+        } else {
+          console.log('[SR] Benign error - restart already scheduled or not in continuous mode');
+          isRestartingRef.current = false;
+        }
+        return;
+      }
+
+      // Non-benign errors
+      console.warn('[SR] Non-benign error:', e.error);
+      setListening(false);
+      isRestartingRef.current = false;
+      
+      if (e.error === 'not-allowed' || e.error === 'permission-denied') {
+        setHasError(true);
+        setErrorMsg('Microphone permission denied. Please allow mic access in your browser.');
+        setSupported(false);
+      } else if (continuousRef.current && !isProcessingRef.current) {
+        // Non-benign errors get longer delay before retry
+        console.log('[SR] Non-benign error, scheduling recovery restart in 2500ms');
+        isRestartingRef.current = true;
+        restartTimerRef.current = setTimeout(() => {
+          if (
+            continuousRef.current &&
+            !isProcessingRef.current &&
+            !thinkingRef.current &&
+            !speakingRef.current
+          ) {
+            console.log('[SR] Executing recovery restart');
+            startListeningRef.current?.();
+          } else {
+            console.log('[SR] Recovery restart cancelled');
+            isRestartingRef.current = false;
+          }
+        }, 2500);
+      }
+    };
+
+    // Assign ref AFTER start() succeeds to avoid dead instances in ref
+    try {
+      rec.start();
+      console.log('[SR] Recognition started successfully');
+      recognitionRef.current = rec;
+      return true;
+    } catch (e) {
+      console.warn('[SR] start() threw error:', e.message);
+      // Don't assign to ref if start failed
+      setListening(false);
+      isRestartingRef.current = false;
+      
+      // Handle "already started" error specifically
+      if (e.message && e.message.includes('already started')) {
+        console.log('[SR] Recognition already started - ignoring');
+        return false;
+      }
+      
+      return false;
+    }
+  }, []); // empty deps — reads everything via refs
+
+  const startListening = useCallback(() => {
+    console.log('[SR] startListening called');
+    
+    // Clear all pending timers
+    clearTimeout(restartTimerRef.current);
+    clearTimeout(silenceTimerRef.current);
+
+    // Cancel any ongoing TTS
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     if (elevenLabsAudioRef.current) {
       try { elevenLabsAudioRef.current.pause(); } catch {}
       elevenLabsAudioRef.current = null;
     }
     setSpeaking(false);
+    
+    // Reset state
     finalTranscriptRef.current = '';
     isProcessingRef.current    = false;
     setTranscript('');
     setResponse('');
     setHasError(false);
     setErrorMsg('');
-    setListening(true);
     setThinking(false);
-    try { recognitionRef.current.start(); }
-    catch (e) { console.warn('[SR] start error:', e.message); setListening(false); }
-  }, [startFallbackRecording]);
+
+    // Use SpeechRecognition if available, else fall back to MediaRecorder
+    if (srClassRef.current) {
+      // Set listening AFTER successful start
+      const ok = createNewSRSession();
+      if (ok) {
+        console.log('[SR] Session created, setting listening=true');
+        setListening(true);
+        // Clear restart flag only after successful start
+        isRestartingRef.current = false;
+      } else {
+        console.log('[SR] Session creation failed, setting listening=false');
+        setListening(false);
+        isRestartingRef.current = false;
+      }
+    } else {
+      // Fallback: MediaRecorder + Whisper transcription
+      isRestartingRef.current = false;
+      if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop();
+      else startFallbackRecording();
+    }
+  }, [createNewSRSession, startFallbackRecording]);
+
 
   const toggleListening = useCallback(() => {
     if (listening) {
-      setListening(false);
+      console.log('[SR] Manual stop requested');
+      // Manual stop — cancel all pending restarts
+      clearTimeout(restartTimerRef.current);
+      clearTimeout(silenceTimerRef.current);
+      isRestartingRef.current = false;
       isProcessingRef.current = false;
+      setListening(false);
       if (recognitionRef.current) {
-        try { recognitionRef.current.stop(); } catch {}
+        try { 
+          recognitionRef.current.abort(); 
+          console.log('[SR] Recognition aborted');
+        } catch {}
+        recognitionRef.current = null;
       }
       if (mediaRecorderRef.current?.state === 'recording') {
         try { mediaRecorderRef.current.stop(); } catch {}
       }
     } else {
+      console.log('[SR] Manual start requested');
       startListening();
     }
   }, [listening, startListening]);
+
 
   startListeningRef.current = startListening;
 
@@ -1017,74 +1228,28 @@ export default function VoiceAssistant() {
     speak('Operation aborted. Automation plan has been rejected.');
   }, [speak]);
 
-  // ── Speech recognition ─────────────────────────────────────────────────────
+  // ── Speech recognition: detect SR class + cleanup on unmount ───────────────
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) {
+    if (SR) {
+      srClassRef.current = SR;
+    } else {
+      // No SR support — check if MediaRecorder fallback is available
+      srClassRef.current = null;
       setSupported(Boolean(navigator.mediaDevices?.getUserMedia && window.MediaRecorder));
-      return;
     }
-
-    const rec = new SR();
-    rec.continuous     = true;
-    rec.interimResults = true;
-    rec.lang           = voiceLanguage;
-
-    rec.onresult = (e) => {
-      let interim = '', final = '';
-      for (const result of e.results) {
-        if (result.isFinal) final   += result[0].transcript;
-        else                interim += result[0].transcript;
-      }
-      const full = final + interim;
-      setTranscript(full);
-      finalTranscriptRef.current = full;
-      clearTimeout(silenceTimerRef.current);
-      silenceTimerRef.current = setTimeout(() => {
-        try { if (recognitionRef.current && !isProcessingRef.current) recognitionRef.current.stop(); }
-        catch {}
-      }, 2500);
-    };
-
-    rec.onend = () => {
-      clearTimeout(silenceTimerRef.current);
-      setListening(false);
-      const captured = finalTranscriptRef.current.trim();
-      if (captured && !isProcessingRef.current) {
-        isProcessingRef.current = true;
-        askAIRef.current(captured);
-      } else {
-        if (continuousRef.current && !isProcessingRef.current && !thinkingRef.current && !speakingRef.current) {
-          setTimeout(() => {
-            if (continuousRef.current && !isProcessingRef.current && !thinkingRef.current && !speakingRef.current) {
-              setListening(true);
-              try { rec.start(); } catch (err) { console.warn('[SR] Restart error:', err.message); }
-            }
-          }, 300);
-        }
-      }
-    };
-
-    rec.onerror = (e) => {
-      if (e.error === 'no-speech') return;
-      console.warn('[SR] Error:', e.error);
-      setListening(false);
-      if (e.error === 'not-allowed' || e.error === 'permission-denied') {
-        setHasError(true);
-        setErrorMsg('Microphone permission denied. Please allow mic access in your browser.');
-      } else if (e.error !== 'aborted') {
-        setHasError(true);
-      }
-    };
-
-    recognitionRef.current = rec;
+    // Cleanup: abort any live session on unmount
     return () => {
       clearTimeout(silenceTimerRef.current);
-      try { rec.abort(); } catch {}
+      clearTimeout(restartTimerRef.current);
+      isRestartingRef.current = false;
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch {}
+        recognitionRef.current = null;
+      }
     };
-    // Re-init only when language changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [voiceLanguage]);
+  }, []);
+
 
   // ── Voice list ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -1234,9 +1399,20 @@ export default function VoiceAssistant() {
   }, [askAI, listening, thinking, speaking]);
 
   // ══════════════════════════════════════════════════════════════════════════
+  // isPro gate MUST be here — after all hooks, not before them
+  if (!isPro) {
+    return (
+      <PremiumLockOverlay
+        featureName="Voice Assistant System"
+        description="Initiate voice reactive holograms, text-to-speech feedback, and wake-word telemetry links."
+      />
+    );
+  }
+
   return (
     <div className="relative min-h-screen pb-10">
       <Particles />
+
 
       <div className="relative z-10 mx-auto max-w-2xl flex flex-col items-center gap-6 pt-4">
 
