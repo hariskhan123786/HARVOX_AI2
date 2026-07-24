@@ -183,6 +183,8 @@ async function execute(step) {
     case 'youtube_search':
       return openUrl(`https://www.youtube.com/results?search_query=${encodeURIComponent(arg0)}`);
 
+    // play_music is an alias for youtube_play (used by WorkspaceOS music widget)
+    case 'play_music':
     case 'youtube_play': {
       // Try Invidious API for direct video ID resolution
       const query = arg0 || 'lofi hip hop';

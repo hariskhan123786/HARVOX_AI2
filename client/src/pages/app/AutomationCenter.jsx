@@ -155,9 +155,9 @@ export default function AutomationCenter() {
     let steps = [];
 
     // Rule-based parsing to construct a visual execution plan
-    if (lowerCmd.includes('play') && (lowerCmd.includes('spotify') || lowerCmd.includes('song') || lowerCmd.includes('music') || lowerCmd.includes('playlist'))) {
-      const query = lowerCmd.replace(/play/i, '').replace(/on spotify/i, '').trim();
-      title = `Stream Playback: ${query || 'Music'}`;
+    if (lowerCmd.includes('play') && (lowerCmd.includes('spotify') || lowerCmd.includes('playlist'))) {
+      const query = command.replace(/play/i, '').replace(/on spotify/i, '').replace(/playlist/i, '').trim();
+      title = `Spotify Stream: ${query || 'Music'}`;
       steps = [
         {
           action: 'spotify_play',
@@ -168,13 +168,29 @@ export default function AutomationCenter() {
         }
       ];
     } else if (lowerCmd.includes('play') && lowerCmd.includes('youtube')) {
-      const query = lowerCmd.replace(/play/i, '').replace(/on youtube/i, '').trim();
-      title = `YouTube Video Stream: ${query || 'Tutorial'}`;
+      const query = command.replace(/play/i, '').replace(/on youtube/i, '').replace(/youtube/i, '').trim();
+      title = `YouTube: ${query || 'Music'}`;
       steps = [
         {
           action: 'youtube_play',
-          description: `Open browser and stream "${query || 'javascript tutorial'}" on YouTube`,
-          args: [query || 'javascript tutorial'],
+          description: `Open browser and play "${query || 'lofi hip hop'}" on YouTube`,
+          args: [query || 'lofi hip hop'],
+          agent: 'media',
+          estimatedMs: 8000
+        }
+      ];
+    } else if (lowerCmd.startsWith('play ') || (lowerCmd.includes('play') && (lowerCmd.includes('song') || lowerCmd.includes('music') || lowerCmd.includes('beat') || lowerCmd.includes('mix') || lowerCmd.includes('track')))) {
+      // Generic "play [song name]" → YouTube
+      const query = command
+        .replace(/^play\s+/i, '')
+        .replace(/\bsong\b|\bmusic\b|\bfor me\b|\bplease\b/gi, '')
+        .trim();
+      title = `▶ Playing: ${query || 'Lofi Beats'}`;
+      steps = [
+        {
+          action: 'youtube_play',
+          description: `Search YouTube and auto-play "${query || 'lofi hip hop'}"`,
+          args: [query || 'lofi hip hop'],
           agent: 'media',
           estimatedMs: 8000
         }

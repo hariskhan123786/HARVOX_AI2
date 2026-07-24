@@ -97,39 +97,54 @@ async function spotifyLikedSongs(userId) {
 async function youtubePlay(userId, args) {
   const query = (args[0] || 'lofi hip hop').replace(/on youtube/i, '').replace(/^play\s*/i, '').trim();
 
-  // ── Strategy 1: Invidious public API (no key, CORS-free from server) ───────
+  // ── Strategy 1: Invidious public API → Direct video play ───────
   const INVIDIOUS_INSTANCES = [
     'https://inv.nadeko.net',
     'https://invidious.nerdvpn.de',
     'https://yt.artemislena.eu',
+    'https://invidious.slipfox.xyz',
+    'https://invidious.privacydev.net',
   ];
+
+  console.log(`[YouTube] Searching for: "${query}"`);
 
   for (const instance of INVIDIOUS_INSTANCES) {
     try {
-      const apiUrl = `${instance}/api/v1/search?q=${encodeURIComponent(query)}&type=video&fields=videoId,title&page=1`;
+      console.log(`[YouTube] Trying instance: ${instance}`);
+      const apiUrl = `${instance}/api/v1/search?q=${encodeURIComponent(query)}&type=video`;
       const res = await fetch(apiUrl, {
         headers: { 'Accept': 'application/json' },
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(8000),
       });
-      if (!res.ok) continue;
+      
+      if (!res.ok) {
+        console.warn(`[YouTube] Instance ${instance} returned status ${res.status}`);
+        continue;
+      }
+      
       const results = await res.json();
-      const first = Array.isArray(results) ? results[0] : null;
+      console.log(`[YouTube] Got ${Array.isArray(results) ? results.length : 0} results from ${instance}`);
+      
+      const first = Array.isArray(results) && results.length > 0 ? results[0] : null;
+      
       if (first?.videoId) {
-        const playUrl = `https://www.youtube.com/watch?v=${first.videoId}`;
+        const playUrl = `https://www.youtube.com/watch?v=${first.videoId}&autoplay=1`;
+        console.log(`[YouTube] ✅ Found video: ${first.title} (${first.videoId})`);
         await execP(`start "" "${playUrl}"`);
         await logActivity(userId, 'youtube_play', `▶️ Playing: "${first.title || query}"`, { query, videoId: first.videoId });
         return { success: true, message: `▶️ Now playing "${first.title || query}" on YouTube!` };
       }
     } catch (err) {
-      console.warn(`[YouTube] Invidious instance ${instance} failed:`, err.message);
+      console.warn(`[YouTube] Instance ${instance} failed:`, err.message);
     }
   }
 
-  // ── Strategy 2: Direct YouTube search results page (opens in browser) ──────
-  const fallbackUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%3D%3D`;
+  // ── Strategy 2: Fallback - Open search page manually ──────
+  console.warn(`[YouTube] All Invidious instances failed. Opening search page.`);
+  const fallbackUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
   await execP(`start "" "${fallbackUrl}"`);
-  await logActivity(userId, 'youtube_play', `Opened YouTube search for "${query}" (fallback)`, { query });
-  return { success: true, message: `🔍 Opened YouTube search for "${query}". Click the first video to play.` };
+  await logActivity(userId, 'youtube_play', `Opened YouTube search for "${query}"`, { query });
+  return { success: true, message: `🔍 Opened YouTube search for "${query}". Please click the first video to play.` };
 }
 
 
@@ -311,7 +326,7 @@ registerModule(
     { action: 'spotify_open',        label: 'Open Spotify',            handler: (u) => spotifyOpen(u),           estimatedMs: 2000 },
     { action: 'spotify_liked_songs', label: 'Open Liked Songs',        handler: (u) => spotifyLikedSongs(u),     estimatedMs: 2000 },
     // YouTube
-    { action: 'youtube_play',        label: 'Play on YouTube',         handler: (u, a) => youtubePlay(u, a),     estimatedMs: 8000 },
+    { action: 'youtube_play',        label: 'Play on YouTube',         handler: (u, a) => youtubePlay(u, a),     estimatedMs: 10000 },
     { action: 'youtube_search',      label: 'Search YouTube',          handler: (u, a) => youtubeSearch(u, a),   estimatedMs: 2000 },
     { action: 'youtube_open',        label: 'Open YouTube',            handler: (u) => youtubeOpen(u),           estimatedMs: 2000 },
     { action: 'youtube_fullscreen',  label: 'Toggle Fullscreen',       handler: (u) => youtubeFullscreen(u),     estimatedMs: 1000 },

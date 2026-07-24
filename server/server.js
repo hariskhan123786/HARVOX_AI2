@@ -22,6 +22,7 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import fsRoutes from './routes/fs.js';
 import memoryRoutes from './routes/memoryRoutes.js';
 import automationRoutes from './routes/automationRoutes.js';
+import voiceRoutes from './routes/voiceRoutes.js';
 
 dotenv.config();
 
@@ -184,6 +185,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/fs', fsRoutes);
 app.use('/api/memory', memoryRoutes);
 app.use('/api/automation', automationRoutes);
+app.use('/api/voice', voiceRoutes);
 
 // ── Static Client (Production) ─────────────────────────────────────────────────
 if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {

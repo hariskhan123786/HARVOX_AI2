@@ -988,17 +988,47 @@ export default function WorkspaceOS() {
     };
   }, []);
 
+  // ── Desktop Agent direct call (for music + automation from WorkspaceOS) ──
+  const callLocalAgent = async (action, args, agentPort = 8765) => {
+    const res = await fetch(`http://127.0.0.1:${agentPort}/execute`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ step: { action, args } }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Agent error');
+    return data;
+  };
+
   // ── Music Player Controls ──
   const handlePlayMusic = async (songName) => {
-    const targetSong = songName || musicSearchQuery;
-    if (!targetSong.trim()) return;
+    const targetSong = (songName || musicSearchQuery).trim();
+    if (!targetSong) return;
+
+    // Clean up display name (strip "on youtube" etc.)
+    const displayName = targetSong
+      .replace(/\bon youtube\b/i, '')
+      .replace(/\bon spotify\b/i, '')
+      .trim();
+
     setMusicPlaying(true);
-    setCurrentSongName(targetSong);
+    setCurrentSongName(displayName || targetSong);
+
     try {
-      await automationAPI.executeStep({
+      const { data } = await automationAPI.executeStep({
         action: 'play_music',
         args: [targetSong]
       });
+
+      // If server proxies to desktop agent, make the direct call from browser
+      if (data?.requiresDesktopAgent) {
+        try {
+          await callLocalAgent(data.action || 'play_music', data.args || [targetSong], data.agentPort || 8765);
+        } catch (agentErr) {
+          console.warn('Desktop agent not reachable:', agentErr.message);
+          // Still keep animation playing — user may have opened YouTube manually
+        }
+      }
     } catch (err) {
       console.error('Failed to play music:', err);
     }
@@ -1593,88 +1623,122 @@ Return ONLY valid JSON. Do not include markdown code block backticks (like \`\`\
               </div>
             )}
 
-            {/* ✅ FLOATING HOLOGRAPHIC MUSIC PLAYER WIDGET */}
+            {/* ✅ FLOATING HOLOGRAPHIC MUSIC PLAYER WIDGET — Enhanced */}
             {showMusicPlayer && (
-              <div className="absolute right-4 top-4 z-50 w-72 bg-[#0c0a15]/95 border border-white/10 rounded-2xl p-4 backdrop-blur-xl shadow-[0_0_30px_rgba(138,43,226,0.3)] font-mono text-xs">
+              <div className="absolute right-4 top-4 z-50 w-80 bg-[#080612]/97 border border-purple-500/25 rounded-2xl p-4 backdrop-blur-2xl font-mono text-xs animate-music-glow">
+                {/* Header */}
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-[10px] font-orbitron font-black text-neon-purple tracking-widest uppercase">
-                    HARVOX MUSIC CORE
-                  </span>
-                  <button onClick={() => setShowMusicPlayer(false)} className="text-gray-500 hover:text-white">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${musicPlaying ? 'bg-green-400 shadow-[0_0_6px_#4ade80] animate-pulse' : 'bg-gray-600'}`} />
+                    <span className="text-[10px] font-orbitron font-black text-transparent bg-clip-text bg-gradient-to-r from-[#00f0ff] via-purple-400 to-[#ff007f] tracking-widest uppercase">
+                      HARVOX MUSIC CORE
+                    </span>
+                  </div>
+                  <button onClick={() => setShowMusicPlayer(false)} className="text-gray-500 hover:text-white transition-colors">
                     <X size={12} />
                   </button>
                 </div>
 
-                <div className="bg-black/45 rounded-xl border border-white/5 p-3 space-y-1.5 text-center">
-                  <p className="text-[9px] text-gray-500 font-mono tracking-wider">CURRENT TELEMETRY TRACK</p>
-                  <p className="text-[11px] text-white font-bold font-sans truncate">{currentSongName}</p>
+                {/* Now Playing Track Card */}
+                <div className="bg-black/60 rounded-xl border border-white/5 p-3 text-center mb-3 relative overflow-hidden">
+                  {/* Background shimmer when playing */}
+                  {musicPlaying && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-cyan-500/0 animate-sweep pointer-events-none" />
+                  )}
+                  <p className="text-[8px] text-gray-600 font-mono tracking-widest uppercase mb-1">
+                    {musicPlaying ? '▶ NOW STREAMING' : '⏸ IDLE'}
+                  </p>
+                  <p className="text-[11px] text-white font-bold font-sans truncate px-2">{currentSongName}</p>
                   
-                  {/* Equalizer Visualizer */}
-                  <div className="flex items-end justify-center gap-1.5 h-8 my-2 select-none">
+                  {/* 8-Bar Equalizer Visualizer */}
+                  <div className="flex items-end justify-center gap-[3px] h-9 mt-3 mb-1 select-none">
                     {[
-                      'animate-eq-1 bg-neon-blue',
-                      'animate-eq-2 bg-neon-purple',
-                      'animate-eq-3 bg-neon-pink',
-                      'animate-eq-4 bg-neon-blue',
-                      'animate-eq-5 bg-neon-purple',
-                      'animate-eq-2 bg-neon-pink'
-                    ].map((cls, i) => (
-                      <div 
-                        key={i} 
-                        className={`w-1 rounded-full transition-all duration-300 ${musicPlaying ? cls : 'h-1 bg-white/10'}`} 
+                      ['animate-eq-1 animate-eq-glow', 'bg-[#00f0ff]'],
+                      ['animate-eq-3', 'bg-[#7c3aed]'],
+                      ['animate-eq-5 animate-eq-glow', 'bg-[#ff007f]'],
+                      ['animate-eq-2', 'bg-[#00f0ff]'],
+                      ['animate-eq-4 animate-eq-glow', 'bg-[#a855f7]'],
+                      ['animate-eq-6', 'bg-[#ff007f]'],
+                      ['animate-eq-7 animate-eq-glow', 'bg-[#00f0ff]'],
+                      ['animate-eq-8', 'bg-[#7c3aed]'],
+                    ].map(([anim, color], i) => (
+                      <div
+                        key={i}
+                        className={`w-[5px] rounded-full transition-all duration-150 ${
+                          musicPlaying
+                            ? `${anim} ${color} shadow-lg`
+                            : 'h-[3px] bg-white/10'
+                        }`}
+                        style={musicPlaying ? { boxShadow: `0 0 4px currentColor` } : {}}
                       />
                     ))}
                   </div>
                 </div>
 
-                <div className="mt-3 flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Search song to play..."
-                    value={musicSearchQuery}
-                    onChange={(e) => setMusicSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handlePlayMusic()}
-                    className="flex-1 bg-black/45 border border-white/10 rounded-xl px-3 py-1.5 text-[10px] focus:outline-none"
-                  />
-                  <button
-                    onClick={() => handlePlayMusic()}
-                    className="p-1.5 bg-neon-purple text-white rounded-xl hover:bg-neon-purple/80"
-                  >
-                    <Play size={12} />
-                  </button>
-                </div>
-
-                {/* Pre-sets */}
-                <div className="mt-3.5 space-y-1">
-                  <p className="text-[8px] text-gray-600 uppercase tracking-widest">Neural Stations</p>
-                  <div className="grid grid-cols-2 gap-1.5">
+                {/* Command Input — "play a song for me" style */}
+                <div className="space-y-1.5">
+                  <p className="text-[8px] text-gray-600 uppercase tracking-widest">🎙 Command a song</p>
+                  <div className="flex gap-1.5">
+                    <input
+                      type="text"
+                      placeholder='e.g. "Blinding Lights" or "lofi beats"'
+                      value={musicSearchQuery}
+                      onChange={(e) => setMusicSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handlePlayMusic()}
+                      className="flex-1 bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-[10px] text-white placeholder-gray-700 focus:outline-none focus:border-purple-500/50 focus:shadow-[0_0_10px_rgba(168,85,247,0.15)] transition-all"
+                    />
                     <button
-                      onClick={() => handlePlayMusic('Lofi Coding beats on youtube')}
-                      className="p-1.5 bg-white/3 border border-white/5 rounded-lg text-gray-400 hover:text-white text-left truncate text-[10px]"
+                      onClick={() => handlePlayMusic()}
+                      className="px-3 py-2 bg-gradient-to-r from-purple-600 to-cyan-600 text-white rounded-xl hover:from-purple-500 hover:to-cyan-500 transition-all shadow-lg shadow-purple-500/20 flex items-center gap-1"
+                      title="Play on YouTube"
                     >
-                      🎵 Lofi Coding
+                      <Play size={11} fill="currentColor" />
                     </button>
-                    <button
-                      onClick={() => handlePlayMusic('Synthwave Cyberpunk mix on youtube')}
-                      className="p-1.5 bg-white/3 border border-white/5 rounded-lg text-gray-400 hover:text-white text-left truncate text-[10px]"
-                    >
-                      🎵 Cyberpunk
-                    </button>
+                    {musicPlaying && (
+                      <button
+                        onClick={() => setMusicPlaying(false)}
+                        className="px-2 py-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl hover:bg-red-500/20 transition-all"
+                        title="Stop animation"
+                      >
+                        <VolumeX size={11} />
+                      </button>
+                    )}
                   </div>
                 </div>
 
-                {/* Volume system control */}
-                <div className="mt-3.5 border-t border-white/5 pt-2.5 flex items-center justify-between">
-                  <span className="text-[8px] text-gray-600 uppercase font-mono">System Volume</span>
-                  <div className="flex gap-2">
-                    <button onClick={() => handleMediaControl('voldown')} className="p-1 hover:bg-white/5 text-gray-500 hover:text-white rounded">
-                      <VolumeX size={12} />
+                {/* Quick Presets */}
+                <div className="mt-3 space-y-1">
+                  <p className="text-[8px] text-gray-600 uppercase tracking-widest">⚡ Neural Stations</p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {[
+                      { emoji: '🎵', label: 'Lofi Coding', query: 'lofi hip hop coding beats' },
+                      { emoji: '🌆', label: 'Cyberpunk', query: 'synthwave cyberpunk mix' },
+                      { emoji: '🚀', label: 'Deep Focus', query: 'deep focus study music' },
+                      { emoji: '🔥', label: 'Trap Beats', query: 'trap beats hip hop' },
+                    ].map(({ emoji, label, query }) => (
+                      <button
+                        key={label}
+                        onClick={() => handlePlayMusic(query)}
+                        className="p-1.5 bg-white/3 border border-white/5 hover:border-purple-500/30 rounded-lg text-gray-400 hover:text-white text-left truncate text-[9px] transition-all hover:bg-purple-500/5"
+                      >
+                        {emoji} {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Volume Controls */}
+                <div className="mt-3 border-t border-white/5 pt-2.5 flex items-center justify-between">
+                  <span className="text-[8px] text-gray-600 uppercase font-mono">System Vol</span>
+                  <div className="flex gap-1">
+                    <button onClick={() => handleMediaControl('voldown')} className="p-1.5 hover:bg-white/5 text-gray-500 hover:text-white rounded-lg transition-colors" title="Volume Down">
+                      <VolumeX size={11} />
                     </button>
-                    <button onClick={() => handleMediaControl('volup')} className="p-1 hover:bg-white/5 text-gray-500 hover:text-white rounded">
-                      <Volume2 size={12} />
+                    <button onClick={() => handleMediaControl('volup')} className="p-1.5 hover:bg-white/5 text-gray-500 hover:text-white rounded-lg transition-colors" title="Volume Up">
+                      <Volume2 size={11} />
                     </button>
-                    <button onClick={() => handleMediaControl('mute')} className="p-1 hover:bg-white/5 text-red-500/70 hover:text-red-400 rounded">
-                      <VolumeX size={12} />
+                    <button onClick={() => handleMediaControl('mute')} className="p-1.5 hover:bg-red-500/10 text-gray-600 hover:text-red-400 rounded-lg transition-colors" title="Mute">
+                      <VolumeX size={11} />
                     </button>
                   </div>
                 </div>

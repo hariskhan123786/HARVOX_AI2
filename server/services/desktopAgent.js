@@ -36,6 +36,7 @@ export const DESKTOP_AGENT_ACTIONS = new Set([
   'youtube_play', 'youtube_search', 'youtube_open', 'youtube_fullscreen',
   'youtube_speed_up', 'youtube_speed_down', 'youtube_subtitles',
   'youtube_like', 'youtube_watch_later', 'youtube_skip',
+  'play_music',  // alias → youtube_play (used by WorkspaceOS music widget)
   'open_netflix', 'open_prime_video', 'open_disney_plus', 'open_youtube_music',
   'media_volume_up', 'media_volume_down', 'media_mute', 'media_play_pause',
   'media_next_track', 'media_prev_track', 'media_stop',

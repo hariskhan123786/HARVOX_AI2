@@ -11,6 +11,7 @@ import {
   Trash2, Sparkles, Radio,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { VoiceProviderManager, getVoiceConfigStore } from '../../services/voice/index.js';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 const AGENT_BADGES = {
@@ -590,6 +591,19 @@ export default function VoiceAssistant() {
   // NOTE: Do NOT put an early return here — all hooks must run unconditionally
   // (React Rules of Hooks). The isPro gate is applied in the JSX return below.
 
+  // ── Mobile Detection ──────────────────────────────────────────────────────
+  const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const isIOSDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const browserSupported = (() => {
+    const hasSR = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
+    const hasMR = 'MediaRecorder' in window;
+    const hasGUM = navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
+    // iOS Safari doesn't support SpeechRecognition, needs MediaRecorder
+    if (isIOSDevice) return hasMR && hasGUM;
+    // Android/Desktop needs at least one method
+    return hasSR || (hasMR && hasGUM);
+  })();
+
   // ── State ──────────────────────────────────────────────────────────────────
   const [listening,           setListening]           = useState(false);
   const [thinking,            setThinking]            = useState(false);
@@ -601,7 +615,7 @@ export default function VoiceAssistant() {
   const [taskPlan,            setTaskPlan]            = useState(null);
   const [executingPlan,       setExecutingPlan]       = useState(null);
   const [pendingPlanApproval, setPendingPlanApproval] = useState(false);
-  const [supported,           setSupported]           = useState(true);
+  const [supported,           setSupported]           = useState(browserSupported);
   const [selectedModelIdx,    setSelectedModelIdx]    = useState(0);
   const [switchToast,         setSwitchToast]         = useState(null);
   const [sessionStats,        setSessionStats]        = useState({ queries: 0 });
@@ -638,6 +652,51 @@ export default function VoiceAssistant() {
   const mediaStreamRef          = useRef(null);
   const recordingTimerRef       = useRef(null);
 
+  // ── Voice Provider Manager ─────────────────────────────────────────────────
+  const voiceProviderManagerRef = useRef(null);
+  const voiceConfigStoreRef     = useRef(null);
+
+  // Initialize voice provider manager and config store
+  useEffect(() => {
+    try {
+      if (!voiceConfigStoreRef.current) {
+        voiceConfigStoreRef.current = getVoiceConfigStore();
+      }
+      
+      if (!voiceProviderManagerRef.current) {
+        const config = voiceConfigStoreRef.current.getConfig();
+        voiceProviderManagerRef.current = new VoiceProviderManager(config);
+        
+        // Expose to window for testing (development only)
+        if (process.env.NODE_ENV === 'development') {
+          window.__HARVOX_VOICE_MANAGER__ = voiceProviderManagerRef.current;
+          window.__HARVOX_VOICE_CONFIG__ = voiceConfigStoreRef.current;
+          console.log('[VoiceAssistant] Voice Provider Manager initialized');
+          console.log('[VoiceAssistant] Testing: Access via window.__HARVOX_VOICE_MANAGER__');
+        }
+      }
+    } catch (error) {
+      console.error('[VoiceAssistant] Voice Provider Manager initialization failed:', error);
+      // Continue without voice provider manager - fallback to legacy mode
+    }
+
+    // Cleanup on unmount
+    return () => {
+      try {
+        if (voiceProviderManagerRef.current) {
+          voiceProviderManagerRef.current.cleanup();
+          voiceProviderManagerRef.current = null;
+        }
+        if (process.env.NODE_ENV === 'development') {
+          delete window.__HARVOX_VOICE_MANAGER__;
+          delete window.__HARVOX_VOICE_CONFIG__;
+        }
+      } catch (error) {
+        console.error('[VoiceAssistant] Cleanup error:', error);
+      }
+    };
+  }, []);
+
 
   // State refs — keep up-to-date so callbacks always see fresh values
   const continuousRef           = useRef(continuousMode);
@@ -672,9 +731,9 @@ export default function VoiceAssistant() {
 
   const activeModel = AI_MODELS[selectedModelIdx];
 
-  // ── speak — ElevenLabs (preferred) → native speechSynthesis fallback ────────
-  const speak = useCallback((text, onEnd) => {
-    // Stop any ongoing ElevenLabs audio
+  // ── speak — Multi-Provider TTS with automatic fallback ────────────────────
+  const speak = useCallback(async (text, onEnd) => {
+    // Stop any ongoing audio
     if (elevenLabsAudioRef.current) {
       elevenLabsAudioRef.current.pause();
       elevenLabsAudioRef.current = null;
@@ -689,40 +748,81 @@ export default function VoiceAssistant() {
       if (onEnd) {
         onEnd();
       } else if (continuousRef.current && !pendingPlanApprovalRef.current && !executingPlanRef.current) {
-        setTimeout(() => startListeningRef.current?.(), 500);
+        setTimeout(() => startListeningRef.current?.(), 200);
       }
     };
 
-    const sel = selectedVoiceRef.current;
-    const isElevenLabs = sel && ELEVENLABS_IDS.has(sel);
+    // Use Voice Provider Manager if available
+    if (voiceProviderManagerRef.current) {
+      try {
+        setSpeaking(true);
 
-    if (isElevenLabs) {
-      // ── ElevenLabs TTS ──
-      setSpeaking(true);
-      aiAPI.tts({ text: clean, voiceId: sel })
-        .then(({ data }) => {
-          if (data.audioBase64) {
-            const audio = new Audio(`data:audio/mpeg;base64,${data.audioBase64}`);
-            audio.playbackRate = voiceSpeedRef.current;
-            elevenLabsAudioRef.current = audio;
-            audio.onended  = afterSpeak;
-            audio.onerror  = () => {
-              console.warn('[ElevenLabs] Playback error — falling back to native TTS');
-              elevenLabsAudioRef.current = null;
-              speakNative(clean, afterSpeak);
-            };
-            audio.play().catch(() => speakNative(clean, afterSpeak));
-          } else {
-            // fallback = true means API key not configured
-            speakNative(clean, afterSpeak);
-          }
-        })
-        .catch(() => {
-          console.warn('[ElevenLabs] API call failed — falling back to native TTS');
-          speakNative(clean, afterSpeak);
+        // Update voice config with current settings
+        voiceProviderManagerRef.current.updateVoiceConfig({
+          voiceId: selectedVoiceRef.current,
+          speed: voiceSpeedRef.current,
+          language: voiceLanguageRef.current
         });
+
+        // Synthesize with automatic fallback
+        const result = await voiceProviderManagerRef.current.synthesize(clean);
+
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[VoiceAssistant] TTS Success:', {
+            provider: result.provider,
+            cached: result.cached
+          });
+        }
+
+        // Handle audio playback based on provider type
+        if (result.audio instanceof Audio) {
+          // ElevenLabs provider returns Audio object
+          elevenLabsAudioRef.current = result.audio;
+          result.audio.onended = afterSpeak;
+          result.audio.onerror = afterSpeak;
+          await result.audio.play();
+        } else {
+          // Edge/Browser providers handle playback internally
+          // Speech is already playing, just wait for completion
+          // The afterSpeak will be called when utterance ends
+        }
+
+      } catch (error) {
+        console.error('[VoiceAssistant] TTS failed:', error);
+        // All providers failed, fallback to basic native speech
+        speakNative(clean, afterSpeak);
+      }
     } else {
-      speakNative(clean, afterSpeak);
+      // Fallback to legacy implementation if manager not initialized
+      const sel = selectedVoiceRef.current;
+      const isElevenLabs = sel && ELEVENLABS_IDS.has(sel);
+
+      if (isElevenLabs) {
+        setSpeaking(true);
+        aiAPI.tts({ text: clean, voiceId: sel })
+          .then(({ data }) => {
+            if (data.audioBase64) {
+              const audio = new Audio(`data:audio/mpeg;base64,${data.audioBase64}`);
+              audio.playbackRate = voiceSpeedRef.current;
+              elevenLabsAudioRef.current = audio;
+              audio.onended  = afterSpeak;
+              audio.onerror  = () => {
+                console.warn('[ElevenLabs] Playback error — falling back to native TTS');
+                elevenLabsAudioRef.current = null;
+                speakNative(clean, afterSpeak);
+              };
+              audio.play().catch(() => speakNative(clean, afterSpeak));
+            } else {
+              speakNative(clean, afterSpeak);
+            }
+          })
+          .catch(() => {
+            console.warn('[ElevenLabs] API call failed — falling back to native TTS');
+            speakNative(clean, afterSpeak);
+          });
+      } else {
+        speakNative(clean, afterSpeak);
+      }
     }
   }, []); // intentionally empty — reads via refs
 
@@ -822,10 +922,13 @@ export default function VoiceAssistant() {
     }
 
     const rec = new SR();
-    rec.continuous      = false;  // manual restarts only — avoids Chrome loop bug
+    rec.continuous      = true;   // IMPROVED: Continuous mode for better detection
     rec.interimResults  = true;
-    rec.lang            = voiceLanguageRef.current;  // always use latest language
+    rec.lang            = voiceLanguageRef.current;
     rec.maxAlternatives = 1;
+    
+    // IMPROVED: More sensitive audio detection
+    rec.audioTrack = true;
 
     rec.onresult = (e) => {
       let interim = '', final = '';
@@ -839,18 +942,26 @@ export default function VoiceAssistant() {
         setTranscript(full);
         finalTranscriptRef.current = full;
       }
-      // Silence timer: stop after 3s of no new results
+      
+      // IMPROVED: Faster silence detection (1.5s instead of 3s)
       clearTimeout(silenceTimerRef.current);
       silenceTimerRef.current = setTimeout(() => {
-        try { rec.stop(); } catch {}
-      }, 3000);
+        const captured = finalTranscriptRef.current.trim();
+        if (captured && !isProcessingRef.current) {
+          // Quick process on silence
+          console.log('[SR] Silence detected, processing:', captured);
+          isProcessingRef.current = true;
+          try { rec.stop(); } catch {}
+          askAIRef.current(captured);
+        }
+      }, 1500); // FASTER: 1.5s instead of 3s
     };
 
     rec.onend = () => {
       console.log('[SR] onend fired');
       clearTimeout(silenceTimerRef.current);
       clearTimeout(restartTimerRef.current);
-      recognitionRef.current = null;  // mark instance as dead
+      recognitionRef.current = null;
       setListening(false);
 
       const captured = finalTranscriptRef.current.trim();
@@ -866,9 +977,8 @@ export default function VoiceAssistant() {
         !speakingRef.current &&
         !isRestartingRef.current
       ) {
-        // No speech — restart with a NEW instance after a short delay
-        // Set flag BEFORE scheduling to prevent race conditions
-        console.log('[SR] No speech captured, scheduling restart in 800ms');
+        // IMPROVED: Faster restart (300ms instead of 800ms)
+        console.log('[SR] No speech captured, scheduling restart in 300ms');
         isRestartingRef.current = true;
         restartTimerRef.current = setTimeout(() => {
           if (
@@ -883,7 +993,7 @@ export default function VoiceAssistant() {
             console.log('[SR] Restart cancelled - conditions no longer met');
             isRestartingRef.current = false;
           }
-        }, 800);
+        }, 300); // FASTER: 300ms instead of 800ms
       } else {
         console.log('[SR] No restart needed');
         isRestartingRef.current = false;
@@ -897,14 +1007,14 @@ export default function VoiceAssistant() {
       recognitionRef.current = null;
       
       if (e.error === 'no-speech' || e.error === 'aborted') {
-        // Benign errors — only restart if NOT already scheduled by onend
+        // Benign errors — restart quickly for better responsiveness
         setListening(false);
         if (
           continuousRef.current &&
           !isProcessingRef.current &&
           !isRestartingRef.current
         ) {
-          console.log('[SR] Benign error, scheduling restart in 1200ms');
+          console.log('[SR] Benign error, scheduling restart in 500ms');
           isRestartingRef.current = true;
           restartTimerRef.current = setTimeout(() => {
             if (
@@ -919,7 +1029,7 @@ export default function VoiceAssistant() {
               console.log('[SR] Benign error restart cancelled');
               isRestartingRef.current = false;
             }
-          }, 1200); // Longer delay to avoid overlap with onend
+          }, 500); // FASTER: 500ms instead of 1200ms
         } else {
           console.log('[SR] Benign error - restart already scheduled or not in continuous mode');
           isRestartingRef.current = false;
@@ -937,8 +1047,8 @@ export default function VoiceAssistant() {
         setErrorMsg('Microphone permission denied. Please allow mic access in your browser.');
         setSupported(false);
       } else if (continuousRef.current && !isProcessingRef.current) {
-        // Non-benign errors get longer delay before retry
-        console.log('[SR] Non-benign error, scheduling recovery restart in 2500ms');
+        // Non-benign errors get moderate delay before retry
+        console.log('[SR] Non-benign error, scheduling recovery restart in 1500ms');
         isRestartingRef.current = true;
         restartTimerRef.current = setTimeout(() => {
           if (
@@ -953,7 +1063,7 @@ export default function VoiceAssistant() {
             console.log('[SR] Recovery restart cancelled');
             isRestartingRef.current = false;
           }
-        }, 2500);
+        }, 1500); // FASTER: 1500ms instead of 2500ms
       }
     };
 

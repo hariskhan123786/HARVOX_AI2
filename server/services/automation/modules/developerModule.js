@@ -130,6 +130,85 @@ async function openVSCode(userId, args) {
   return { success: true, message: `VS Code opened for "${projectName || 'workspace'}".` };
 }
 
+async function vscodeCreateFile(userId, args) {
+  const fileName = args[0] || 'newfile.js';
+  const content = args[1] || '// Created by HARVOX AI\n\n';
+  const projectName = args[2] || '';
+  
+  const targetDir = projectName ? path.resolve(WORKSPACE_DIR, projectName) : WORKSPACE_DIR;
+  const filePath = path.resolve(targetDir, fileName);
+  
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, content, 'utf-8');
+  
+  // Open the file in VS Code
+  exec(`code "${filePath}"`);
+  
+  await logActivity(userId, 'vscode_create_file', `Created and opened file: ${fileName}`, { fileName, projectName });
+  return { success: true, message: `File "${fileName}" created and opened in VS Code.` };
+}
+
+async function vscodeOpenFile(userId, args) {
+  const fileName = args[0] || '';
+  const projectName = args[1] || '';
+  
+  if (!fileName) throw new Error('File name is required.');
+  
+  const targetDir = projectName ? path.resolve(WORKSPACE_DIR, projectName) : WORKSPACE_DIR;
+  const filePath = path.resolve(targetDir, fileName);
+  
+  exec(`code "${filePath}"`);
+  
+  await logActivity(userId, 'vscode_open_file', `Opened file in VS Code: ${fileName}`);
+  return { success: true, message: `File "${fileName}" opened in VS Code.` };
+}
+
+async function vscodeNextTab(userId) {
+  await runCmd('powershell -Command "$wshell = New-Object -ComObject wscript.shell; $wshell.AppActivate(\'Code\'); Start-Sleep -Milliseconds 200; $wshell.SendKeys(\'^{PGDN}\')"');
+  return { success: true, message: 'Switched to next tab in VS Code.' };
+}
+
+async function vscodePrevTab(userId) {
+  await runCmd('powershell -Command "$wshell = New-Object -ComObject wscript.shell; $wshell.AppActivate(\'Code\'); Start-Sleep -Milliseconds 200; $wshell.SendKeys(\'^{PGUP}\')"');
+  return { success: true, message: 'Switched to previous tab in VS Code.' };
+}
+
+async function vscodeCloseTab(userId) {
+  await runCmd('powershell -Command "$wshell = New-Object -ComObject wscript.shell; $wshell.AppActivate(\'Code\'); Start-Sleep -Milliseconds 200; $wshell.SendKeys(\'^w\')"');
+  return { success: true, message: 'Closed current tab in VS Code.' };
+}
+
+async function vscodeQuickOpen(userId) {
+  await runCmd('powershell -Command "$wshell = New-Object -ComObject wscript.shell; $wshell.AppActivate(\'Code\'); Start-Sleep -Milliseconds 200; $wshell.SendKeys(\'^p\')"');
+  return { success: true, message: 'Opened Quick Open (Ctrl+P) in VS Code.' };
+}
+
+async function vscodeCommandPalette(userId) {
+  await runCmd('powershell -Command "$wshell = New-Object -ComObject wscript.shell; $wshell.AppActivate(\'Code\'); Start-Sleep -Milliseconds 200; $wshell.SendKeys(\'^+p\')"');
+  return { success: true, message: 'Opened Command Palette in VS Code.' };
+}
+
+async function vscodeSidebar(userId) {
+  await runCmd('powershell -Command "$wshell = New-Object -ComObject wscript.shell; $wshell.AppActivate(\'Code\'); Start-Sleep -Milliseconds 200; $wshell.SendKeys(\'^b\')"');
+  return { success: true, message: 'Toggled sidebar in VS Code.' };
+}
+
+async function vscodeTerminalToggle(userId) {
+  await runCmd('powershell -Command "$wshell = New-Object -ComObject wscript.shell; $wshell.AppActivate(\'Code\'); Start-Sleep -Milliseconds 200; $wshell.SendKeys(\'^`\')"');
+  return { success: true, message: 'Toggled integrated terminal in VS Code.' };
+}
+
+async function vscodeFormatDocument(userId) {
+  await runCmd('powershell -Command "$wshell = New-Object -ComObject wscript.shell; $wshell.AppActivate(\'Code\'); Start-Sleep -Milliseconds 200; $wshell.SendKeys(\'^+f\')"');
+  return { success: true, message: 'Formatted document in VS Code.' };
+}
+
+async function vscodeSaveAll(userId) {
+  await runCmd('powershell -Command "$wshell = New-Object -ComObject wscript.shell; $wshell.AppActivate(\'Code\'); Start-Sleep -Milliseconds 200; $wshell.SendKeys(\'^k s\')"');
+  await logActivity(userId, 'vscode_save_all', 'Saved all files in VS Code');
+  return { success: true, message: 'Saved all files in VS Code.' };
+}
+
 async function openCursor(userId, args) {
   const projectName = args[0] || '';
   const targetPath = projectName ? path.resolve(WORKSPACE_DIR, projectName) : WORKSPACE_DIR;
@@ -261,10 +340,21 @@ registerModule(
     { action: 'npm_run_dev',         label: 'NPM Run Dev',              handler: (u, a) => npmRunDev(u, a),          estimatedMs: 3000 },
     { action: 'npm_build',           label: 'NPM Build',                handler: (u, a) => npmBuild(u, a),           estimatedMs: 30000 },
     // Editors
-    { action: 'dev_open_vscode',     label: 'Open VS Code',             handler: (u, a) => openVSCode(u, a),         estimatedMs: 2000 },
-    { action: 'dev_open_cursor',     label: 'Open Cursor',              handler: (u, a) => openCursor(u, a),         estimatedMs: 2000 },
-    { action: 'dev_open_terminal',   label: 'Open Terminal',            handler: (u) => openTerminal(u),             estimatedMs: 2000 },
-    { action: 'dev_open_localhost',  label: 'Open Localhost',           handler: (u, a) => openLocalhost(u, a),      estimatedMs: 2000 },
+    { action: 'dev_open_vscode',           label: 'Open VS Code',             handler: (u, a) => openVSCode(u, a),           estimatedMs: 2000 },
+    { action: 'vscode_create_file',        label: 'Create File in VS Code',   handler: (u, a) => vscodeCreateFile(u, a),     estimatedMs: 2000 },
+    { action: 'vscode_open_file',          label: 'Open File in VS Code',     handler: (u, a) => vscodeOpenFile(u, a),       estimatedMs: 1500 },
+    { action: 'vscode_next_tab',           label: 'Next Tab in VS Code',      handler: (u) => vscodeNextTab(u),              estimatedMs: 500 },
+    { action: 'vscode_prev_tab',           label: 'Previous Tab in VS Code',  handler: (u) => vscodePrevTab(u),              estimatedMs: 500 },
+    { action: 'vscode_close_tab',          label: 'Close Tab in VS Code',     handler: (u) => vscodeCloseTab(u),             estimatedMs: 500 },
+    { action: 'vscode_quick_open',         label: 'Quick Open (Ctrl+P)',      handler: (u) => vscodeQuickOpen(u),            estimatedMs: 500 },
+    { action: 'vscode_command_palette',    label: 'Command Palette',          handler: (u) => vscodeCommandPalette(u),       estimatedMs: 500 },
+    { action: 'vscode_sidebar',            label: 'Toggle Sidebar',           handler: (u) => vscodeSidebar(u),              estimatedMs: 500 },
+    { action: 'vscode_terminal',           label: 'Toggle Terminal',          handler: (u) => vscodeTerminalToggle(u),       estimatedMs: 500 },
+    { action: 'vscode_format',             label: 'Format Document',          handler: (u) => vscodeFormatDocument(u),       estimatedMs: 1000 },
+    { action: 'vscode_save_all',           label: 'Save All Files',           handler: (u) => vscodeSaveAll(u),              estimatedMs: 500 },
+    { action: 'dev_open_cursor',           label: 'Open Cursor',              handler: (u, a) => openCursor(u, a),           estimatedMs: 2000 },
+    { action: 'dev_open_terminal',         label: 'Open Terminal',            handler: (u) => openTerminal(u),               estimatedMs: 2000 },
+    { action: 'dev_open_localhost',        label: 'Open Localhost',           handler: (u, a) => openLocalhost(u, a),        estimatedMs: 2000 },
     // Code generation
     { action: 'dev_generate_readme', label: 'Generate README.md',       handler: (u, a) => generateReadme(u, a),     estimatedMs: 2000 },
     { action: 'dev_generate_api',    label: 'Generate API Route',       handler: (u, a) => generateApiRoute(u, a),   estimatedMs: 2000 },

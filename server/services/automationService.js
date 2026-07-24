@@ -18,6 +18,7 @@ import './automation/modules/smartPlannerModule.js';
 import './automation/modules/systemModule.js'; // Phase 13.1: OS-level automation
 import './automation/modules/studyModule.js'; // Phase 13.3: Study Assistant
 import './automation/modules/cloudModule.js'; // Phase 13.3: Cloud Deployer
+import './automation/modules/navigationModule.js'; // Phase 13.4: Navigation & Window Management
 
 export { getAllModules, getAllActions };
 
