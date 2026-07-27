@@ -139,12 +139,55 @@ async function youtubePlay(userId, args) {
     }
   }
 
-  // ── Strategy 2: Fallback - Open search page manually ──────
-  console.warn(`[YouTube] All Invidious instances failed. Opening search page.`);
+  // ── Strategy 2: Fallback - Auto-click first video ──────
+  console.warn(`[YouTube] All Invidious instances failed. Using search + auto-click.`);
   const fallbackUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
   await execP(`start "" "${fallbackUrl}"`);
-  await logActivity(userId, 'youtube_play', `Opened YouTube search for "${query}"`, { query });
-  return { success: true, message: `🔍 Opened YouTube search for "${query}". Please click the first video to play.` };
+  
+  // PowerShell automation to auto-click first video
+  await runPS(`
+Add-Type -AssemblyName System.Windows.Forms
+$wshell = New-Object -ComObject WScript.Shell
+
+# Wait for page to load
+Start-Sleep -Seconds 7
+
+# Try to activate browser
+$browsers = @("Chrome", "Edge", "Firefox", "Brave", "Google Chrome", "Microsoft Edge")
+$activated = $false
+foreach ($b in $browsers) {
+  if ($wshell.AppActivate($b)) {
+    $activated = $true
+    Start-Sleep -Milliseconds 800
+    break
+  }
+}
+
+if ($activated) {
+  # Click on page to ensure it has focus
+  $wshell.SendKeys(" ")
+  Start-Sleep -Milliseconds 200
+  $wshell.SendKeys("{BACKSPACE}")
+  Start-Sleep -Milliseconds 500
+  
+  # Scroll down slightly to ensure first video is visible
+  $wshell.SendKeys("{PGDN}")
+  Start-Sleep -Milliseconds 500
+  $wshell.SendKeys("{PGUP}")
+  Start-Sleep -Milliseconds 500
+  
+  # Tab to first video and press Enter
+  for ($i = 1; $i -le 12; $i++) {
+    $wshell.SendKeys("{TAB}")
+    Start-Sleep -Milliseconds 120
+  }
+  Start-Sleep -Milliseconds 500
+  $wshell.SendKeys("{ENTER}")
+}
+  `, 'ytplay');
+  
+  await logActivity(userId, 'youtube_play', `▶️ Auto-playing: "${query}"`, { query });
+  return { success: true, message: `▶️ Playing "${query}" on YouTube!` };
 }
 
 
