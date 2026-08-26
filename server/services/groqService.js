@@ -12,7 +12,7 @@ const getClient = () => {
   return groq;
 };
 
-export const chat = async ({ messages, systemPrompt, model = 'llama-3.3-70b-versatile', temperature = 0.7, max_tokens = 4096, stream = false, apiKey = null }) => {
+export const chat = async ({ messages, systemPrompt, model = 'llama-3.1-8b-instant', temperature = 0.7, max_tokens = 4096, stream = false, apiKey = null }) => {
   try {
     let client;
     if (apiKey && apiKey.trim() !== '') {
