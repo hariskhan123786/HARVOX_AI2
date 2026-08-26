@@ -29,9 +29,18 @@ export const chat = async ({
       client = getClient();
     }
 
-    // ✅ FIX 1: Pass systemInstruction here in getGenerativeModel, not in startChat
+    // Map legacy / deprecated model names to current active endpoints
+    let effectiveModel = model;
+    if (effectiveModel.includes('gemini-2.0') || effectiveModel === 'gemini-1.5-flash') {
+      effectiveModel = 'gemini-1.5-flash';
+    } else if (effectiveModel === 'gemini-1.5-pro') {
+      effectiveModel = 'gemini-1.5-pro';
+    } else if (effectiveModel.includes('gemini-2.5') || effectiveModel.includes('gemini-3')) {
+      effectiveModel = 'gemini-2.5-flash';
+    }
+
     const genModel = client.getGenerativeModel({
-      model,
+      model: effectiveModel,
       systemInstruction: systemPrompt || undefined,
     });
 
@@ -75,16 +84,19 @@ export const chat = async ({
     if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')) {
       throw Object.assign(new Error('Rate limit exceeded. Please try again later.'), { code: 'RATE_LIMIT' });
     }
-    // Catch all invalid key variants: 400 Bad Request, API_KEY_INVALID, 401, UNAUTHENTICATED
+    // Catch all invalid key & model not found variants: 400, 404, API_KEY_INVALID, 401, UNAUTHENTICATED
     if (
       msg.includes('400') ||
+      msg.includes('404') ||
+      msg.includes('not found') ||
+      msg.includes('no longer available') ||
       msg.includes('API_KEY_INVALID') ||
       msg.includes('401') ||
       msg.includes('UNAUTHENTICATED') ||
       msg.includes('Invalid API key') ||
       msg.includes('API key not valid')
     ) {
-      throw Object.assign(new Error('Invalid Gemini API key. Switching to fallback provider.'), { code: 'RATE_LIMIT' });
+      throw Object.assign(new Error('Gemini model unavailable or invalid key. Switching to fallback provider.'), { code: 'RATE_LIMIT' });
     }
     throw Object.assign(new Error(msg || 'AI service error'), { code: 'AI_ERROR' });
   }
