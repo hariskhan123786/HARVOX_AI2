@@ -5,7 +5,7 @@
 export const chat = async ({
   messages,
   systemPrompt,
-  model = 'deepseek/deepseek-r1:free',
+  model = 'meta-llama/llama-3.3-70b-instruct:free',
   temperature = 0.7,
   max_tokens = 2048,
   stream = false,

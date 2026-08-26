@@ -21,7 +21,7 @@ const providers = {
 const MODEL_PRICING = {
   // Free OpenRouter models
   'openrouter/free': [0.0, 0.0],
-  'deepseek/deepseek-r1:free': [0.0, 0.0],
+  'meta-llama/llama-3.3-70b-instruct:free': [0.0, 0.0],
   'qwen/qwen-2.5-coder-32b-instruct:free': [0.0, 0.0],
   'qwen/qwen-2.5-72b-instruct:free': [0.0, 0.0],
   'meta-llama/llama-3.2-3b-instruct:free': [0.0, 0.0],
@@ -56,7 +56,7 @@ const FAILOVER_CHAIN = {
   // Gemini -> OpenRouter free (Cerebras now requires payment)
   'gemini-2.0-flash-001': { provider: 'openrouter', model: 'meta-llama/llama-3.2-3b-instruct:free' },
   'gemini-2.0-flash':     { provider: 'openrouter', model: 'meta-llama/llama-3.2-3b-instruct:free' },
-  'gemini-1.5-pro':       { provider: 'openrouter', model: 'deepseek/deepseek-r1:free' },
+  'gemini-1.5-pro':       { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct:free' },
   'gemini-1.5-flash':     { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' },
   // Groq -> OpenRouter free
   'llama-3.3-70b-versatile': { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct:free' },
@@ -69,13 +69,13 @@ const FAILOVER_CHAIN = {
   // OpenRouter free chain
   'meta-llama/llama-3.3-70b-instruct:free': { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' },
   'meta-llama/llama-3.2-3b-instruct:free':  { provider: 'openrouter', model: 'google/gemma-2-9b-it:free' },
-  'deepseek/deepseek-r1:free':               { provider: 'openrouter', model: 'meta-llama/llama-3.2-3b-instruct:free' },
+  'meta-llama/llama-3.3-70b-instruct:free': { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' },
   'qwen/qwen-2.5-coder-32b-instruct:free':  { provider: 'openrouter', model: 'meta-llama/llama-3.2-3b-instruct:free' },
   'qwen/qwen-2.5-72b-instruct:free':        { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' },
   'google/gemma-2-9b-it:free':               { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' },
   'mistralai/mistral-7b-instruct:free':      { provider: 'openrouter', model: 'meta-llama/llama-3.2-3b-instruct:free' },
   // OpenAI -> OpenRouter free (Cerebras requires payment)
-  'gpt-4o':       { provider: 'openrouter', model: 'deepseek/deepseek-r1:free' },
+  'gpt-4o':       { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct:free' },
   'gpt-3.5-turbo':{ provider: 'openrouter', model: 'meta-llama/llama-3.2-3b-instruct:free' },
   // Deprecated Cerebras models -> reroute via OpenRouter
   'llama-3.3-70b': { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct:free' },
@@ -155,7 +155,7 @@ export const routePrompt = (promptText, keys = {}) => {
     if (hasGemini) return { provider: 'gemini', model: 'gemini-2.0-flash-001' };
   }
   if (isResearch) {
-    if (hasOpenRouter) return { provider: 'openrouter', model: 'deepseek/deepseek-r1:free' };
+    if (hasOpenRouter) return { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct:free' };
     if (hasGemini) return { provider: 'gemini', model: 'gemini-1.5-pro' };
     if (hasCerebras) return { provider: 'cerebras', model: 'gpt-oss-120b' };
   }
@@ -465,7 +465,7 @@ export const chat = async ({
           (openRouterKeyClean)                               ? { provider: 'openrouter', model: 'meta-llama/llama-3.2-3b-instruct:free' }   : null,
           (openRouterKeyClean)                               ? { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' }       : null,
           (openRouterKeyClean)                               ? { provider: 'openrouter', model: 'google/gemma-2-9b-it:free' }               : null,
-          (openRouterKeyClean)                               ? { provider: 'openrouter', model: 'deepseek/deepseek-r1:free' }               : null,
+          (openRouterKeyClean)                               ? { provider: 'openrouter', model: 'meta-llama/llama-3.3-70b-instruct:free' }             : null,
           (apiKeys.gemini  || process.env.GEMINI_API_KEY)    ? { provider: 'gemini',     model: 'gemini-2.0-flash-001' }                    : null,
           (apiKeys.groq    || process.env.GROQ_API_KEY)      ? { provider: 'groq',       model: 'llama-3.3-70b-versatile' }                 : null,
           (apiKeys.openai  || process.env.OPENAI_API_KEY)    ? { provider: 'openai',     model: 'gpt-4o' }                                  : null,
