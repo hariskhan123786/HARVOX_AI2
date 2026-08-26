@@ -52,16 +52,18 @@ const MODEL_PRICING = {
 // Failover Chain configuration — each entry points to the next provider to try.
 // The chain must always eventually reach an OpenRouter :free model (no paid key needed).
 const FAILOVER_CHAIN = {
-  // Gemini -> OpenRouter free (only confirmed-free models used)
-  'gemini-2.0-flash-001': { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' },
-  'gemini-2.0-flash':     { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' },
-  'gemini-1.5-pro':       { provider: 'openrouter', model: 'google/gemma-2-9b-it:free' },
-  'gemini-1.5-flash':     { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' },
-  // Groq -> OpenRouter free
-  'llama-3.3-70b-versatile': { provider: 'openrouter', model: 'google/gemma-2-9b-it:free' },
-  'llama-3.1-70b-versatile': { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' },
-  'llama-3.1-8b-instant':    { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' },
-  'mixtral-8x7b-32768':      { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' },
+  // Gemini -> Groq (ultra-fast, working free tier) -> OpenRouter
+  'gemini-2.0-flash-001': { provider: 'groq', model: 'openai/gpt-oss-120b' },
+  'gemini-2.0-flash':     { provider: 'groq', model: 'openai/gpt-oss-120b' },
+  'gemini-1.5-pro':       { provider: 'groq', model: 'openai/gpt-oss-120b' },
+  'gemini-1.5-flash':     { provider: 'groq', model: 'openai/gpt-oss-120b' },
+  // Groq -> Groq backup model (qwen) -> OpenRouter
+  'openai/gpt-oss-120b':     { provider: 'groq', model: 'qwen/qwen3.6-27b' },
+  'qwen/qwen3.6-27b':        { provider: 'groq', model: 'openai/gpt-oss-120b' },
+  'llama-3.3-70b-versatile': { provider: 'groq', model: 'openai/gpt-oss-120b' },
+  'llama-3.1-70b-versatile': { provider: 'groq', model: 'openai/gpt-oss-120b' },
+  'llama-3.1-8b-instant':    { provider: 'groq', model: 'openai/gpt-oss-120b' },
+  'mixtral-8x7b-32768':      { provider: 'groq', model: 'openai/gpt-oss-120b' },
   // Cerebras -> OpenRouter free
   'gpt-oss-120b':                    { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' },
   'gemma-4-31b':                     { provider: 'openrouter', model: 'google/gemma-2-9b-it:free' },
@@ -139,33 +141,33 @@ export const routePrompt = (promptText, keys = {}) => {
   const hasCerebras = Boolean(keys.cerebras || process.env.CEREBRAS_API_KEY);
 
   if (isCoding) {
+    if (hasGroq) return { provider: 'groq', model: 'openai/gpt-oss-120b' };
     if (hasOpenRouter) return { provider: 'openrouter', model: 'qwen/qwen-2.5-coder-32b-instruct:free' };
-    if (hasGroq) return { provider: 'groq', model: 'llama-3.3-70b-versatile' };
     if (hasCerebras) return { provider: 'cerebras', model: 'gpt-oss-120b' };
   }
   if (isMath) {
+    if (hasGroq) return { provider: 'groq', model: 'qwen/qwen3.6-27b' };
     if (hasOpenRouter) return { provider: 'openrouter', model: 'qwen/qwen-2.5-72b-instruct:free' };
     if (hasGemini) return { provider: 'gemini', model: 'gemini-1.5-pro' };
-    if (hasCerebras) return { provider: 'cerebras', model: 'gpt-oss-120b' };
   }
   if (isCreative) {
+    if (hasGroq) return { provider: 'groq', model: 'openai/gpt-oss-120b' };
     if (hasOpenAI) return { provider: 'openai', model: 'gpt-4o' };
     if (hasGemini) return { provider: 'gemini', model: 'gemini-1.5-flash' };
-    if (hasOpenRouter) return { provider: 'openrouter', model: 'google/gemma-2-9b-it:free' };
   }
   if (isResearch) {
+    if (hasGroq) return { provider: 'groq', model: 'qwen/qwen3.6-27b' };
     if (hasOpenRouter) return { provider: 'openrouter', model: 'google/gemma-2-9b-it:free' };
     if (hasGemini) return { provider: 'gemini', model: 'gemini-1.5-pro' };
-    if (hasCerebras) return { provider: 'cerebras', model: 'gpt-oss-120b' };
   }
 
-  // Default — confirmed-free OpenRouter models only
+  // Default — prefer Groq (ultra-fast, working free tier)
+  if (hasGroq) return { provider: 'groq', model: 'openai/gpt-oss-120b' };
   if (hasOpenRouter) return { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' };
   if (hasGemini) return { provider: 'gemini', model: 'gemini-1.5-flash' };
-  if (hasGroq) return { provider: 'groq', model: 'llama-3.3-70b-versatile' };
   if (hasCerebras) return { provider: 'cerebras', model: 'gpt-oss-120b' };
   // Ultimate fallback
-  return { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' };
+  return { provider: 'groq', model: 'openai/gpt-oss-120b' };
 };
 
 /**
@@ -343,13 +345,11 @@ export const chat = async ({
             if (openRouterKeyClean.startsWith('ssk-')) openRouterKeyClean = openRouterKeyClean.slice(1);
 
             const candidates = [
-              (openRouterKeyClean)                              ? { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' } : null,
-              (openRouterKeyClean)                              ? { provider: 'openrouter', model: 'google/gemma-2-9b-it:free' }          : null,
-              (openRouterKeyClean)                              ? { provider: 'openrouter', model: 'meta-llama/llama-3.2-3b-instruct:free' } : null,
+              (apiKeys.groq   || process.env.GROQ_API_KEY)      ? { provider: 'groq',       model: 'openai/gpt-oss-120b' }                 : null,
+              (apiKeys.groq   || process.env.GROQ_API_KEY)      ? { provider: 'groq',       model: 'qwen/qwen3.6-27b' }                    : null,
               (apiKeys.gemini || process.env.GEMINI_API_KEY)    ? { provider: 'gemini',     model: 'gemini-1.5-flash' }                    : null,
-              (apiKeys.groq   || process.env.GROQ_API_KEY)      ? { provider: 'groq',       model: 'llama-3.3-70b-versatile' }             : null,
+              (openRouterKeyClean)                              ? { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' } : null,
               (apiKeys.openai || process.env.OPENAI_API_KEY)    ? { provider: 'openai',     model: 'gpt-4o' }                              : null,
-              (apiKeys.cerebras || process.env.CEREBRAS_API_KEY) ? { provider: 'cerebras',  model: 'gpt-oss-120b' }                        : null,
             ]
               .filter(Boolean)
               .filter((c) => !triedProviders.has(`${c.provider}:${c.model}`));
@@ -463,13 +463,11 @@ export const chat = async ({
 
         // Priority: OpenRouter free first (no billing), then Gemini, then paid providers
         const candidates = [
-          (openRouterKeyClean)                               ? { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' }       : null,
-          (openRouterKeyClean)                               ? { provider: 'openrouter', model: 'google/gemma-2-9b-it:free' }               : null,
-          (openRouterKeyClean)                               ? { provider: 'openrouter', model: 'meta-llama/llama-3.2-3b-instruct:free' }   : null,
+          (apiKeys.groq    || process.env.GROQ_API_KEY)      ? { provider: 'groq',       model: 'openai/gpt-oss-120b' }                     : null,
+          (apiKeys.groq    || process.env.GROQ_API_KEY)      ? { provider: 'groq',       model: 'qwen/qwen3.6-27b' }                        : null,
           (apiKeys.gemini  || process.env.GEMINI_API_KEY)    ? { provider: 'gemini',     model: 'gemini-1.5-flash' }                        : null,
-          (apiKeys.groq    || process.env.GROQ_API_KEY)      ? { provider: 'groq',       model: 'llama-3.3-70b-versatile' }                 : null,
+          (openRouterKeyClean)                               ? { provider: 'openrouter', model: 'mistralai/mistral-7b-instruct:free' }       : null,
           (apiKeys.openai  || process.env.OPENAI_API_KEY)    ? { provider: 'openai',     model: 'gpt-4o' }                                  : null,
-          (apiKeys.cerebras || process.env.CEREBRAS_API_KEY) ? { provider: 'cerebras',   model: 'gpt-oss-120b' }                            : null,
         ]
           .filter(Boolean)
           .filter((c) => !triedProviders.has(`${c.provider}:${c.model}`));

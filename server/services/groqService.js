@@ -12,7 +12,7 @@ const getClient = () => {
   return groq;
 };
 
-export const chat = async ({ messages, systemPrompt, model = 'llama-3.1-8b-instant', temperature = 0.7, max_tokens = 4096, stream = false, apiKey = null }) => {
+export const chat = async ({ messages, systemPrompt, model = 'openai/gpt-oss-120b', temperature = 0.7, max_tokens = 4096, stream = false, apiKey = null }) => {
   try {
     let client;
     if (apiKey && apiKey.trim() !== '') {
@@ -21,8 +21,16 @@ export const chat = async ({ messages, systemPrompt, model = 'llama-3.1-8b-insta
       client = getClient();
     }
     let effectiveModel = model;
-    if (effectiveModel === 'llama-3.1-8b-instant' || effectiveModel === 'llama3-8b-8192') {
-      effectiveModel = 'llama-3.3-70b-versatile';
+    // Map legacy / deprecated model names to current active Groq models
+    if (
+      effectiveModel.includes('llama') ||
+      effectiveModel.includes('mixtral') ||
+      effectiveModel === 'openai/gpt-oss-120b' ||
+      !effectiveModel
+    ) {
+      effectiveModel = 'openai/gpt-oss-120b';
+    } else if (effectiveModel.includes('qwen')) {
+      effectiveModel = 'qwen/qwen3.6-27b';
     }
 
     const response = await client.chat.completions.create({
