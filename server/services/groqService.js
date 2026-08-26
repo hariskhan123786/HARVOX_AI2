@@ -20,8 +20,13 @@ export const chat = async ({ messages, systemPrompt, model = 'llama-3.1-8b-insta
     } else {
       client = getClient();
     }
+    let effectiveModel = model;
+    if (effectiveModel === 'llama-3.1-8b-instant' || effectiveModel === 'llama3-8b-8192') {
+      effectiveModel = 'llama-3.3-70b-versatile';
+    }
+
     const response = await client.chat.completions.create({
-      model,
+      model: effectiveModel,
       messages: [{ role: 'system', content: systemPrompt }, ...messages],
       temperature,
       max_tokens,
@@ -43,8 +48,8 @@ export const chat = async ({ messages, systemPrompt, model = 'llama-3.1-8b-insta
     if (error.status === 429 || error.message?.includes('429') || error.message?.includes('rate limit')) {
       throw Object.assign(new Error('Rate limit exceeded. Please try again later.'), { code: 'RATE_LIMIT' });
     }
-    if (error.status === 401 || error.status === 400 || error.message?.includes('Invalid API Key') || error.message?.includes('invalid_api_key')) {
-      throw Object.assign(new Error('Invalid Groq API key. Switching to fallback provider.'), { code: 'RATE_LIMIT' });
+    if (error.status === 401 || error.status === 400 || error.status === 404 || error.message?.includes('model_not_found') || error.message?.includes('does not exist') || error.message?.includes('Invalid API Key') || error.message?.includes('invalid_api_key')) {
+      throw Object.assign(new Error('Groq model unavailable or invalid key. Switching to fallback provider.'), { code: 'RATE_LIMIT' });
     }
     throw Object.assign(new Error(error.message || 'AI service error'), { code: 'RATE_LIMIT' });
   }
