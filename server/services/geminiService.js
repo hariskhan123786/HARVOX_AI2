@@ -15,7 +15,7 @@ const getClient = () => {
 export const chat = async ({ 
   messages, 
   systemPrompt, 
-  model = 'gemini-2.0-flash', 
+  model = 'gemini-2.0-flash-001', 
   temperature = 0.7, 
   max_tokens = 4096, 
   stream = false, 

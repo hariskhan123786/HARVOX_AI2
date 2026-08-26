@@ -29,6 +29,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust the first proxy hop (required on Vercel/Railway where X-Forwarded-For is set)
+// Without this, express-rate-limit throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
+app.set('trust proxy', 1);
+
 // ── Startup ────────────────────────────────────────────────────────────────────
 const startServer = async () => {
   try {

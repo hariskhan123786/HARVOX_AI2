@@ -8,6 +8,11 @@ import {
   useScroll,
   useInView,
 } from 'framer-motion';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 import {
   MessageSquare, Code2, Bug, Mic, Upload, FolderKanban,
   Zap, Sparkles, ChevronDown, Star, ArrowRight,
@@ -123,16 +128,13 @@ const VP = { once: true, amount: 0.05 };
 
 /* ─── TiltCard3D ─────────────────────────────────────────────────────────── */
 function TiltCard3D({ image, badge, badgeColor, title, description, accent, reverse, index }) {
-  // Motion values — always active, no reducedMotion blocking
+  // Motion values for 3D tilt effect
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const mx = useSpring(x, { stiffness: 120, damping: 22 });
   const my = useSpring(y, { stiffness: 120, damping: 22 });
   const rotX = useTransform(my, [-0.5, 0.5], ['12deg', '-12deg']);
   const rotY = useTransform(mx, [-0.5, 0.5], ['-12deg', '12deg']);
-
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.05 });
 
   // Always handle mouse — no shouldReduceMotion block here
   const handleMouseMove = (e) => {
@@ -146,13 +148,8 @@ function TiltCard3D({ image, badge, badgeColor, title, description, accent, reve
   };
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 60 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: index * 0.07 }}
-      style={{ willChange: 'transform, opacity' }}
-      className={`flex flex-col gap-12 md:items-center ${reverse ? 'md:flex-row-reverse' : 'md:flex-row'} mb-28 md:mb-40`}
+    <div
+      className={`flex flex-col gap-12 md:items-center ${reverse ? 'md:flex-row-reverse' : 'md:flex-row'} mb-28 md:mb-40 scroll-article-card`}
     >
       {/* Image side — z-10 so it receives pointer events above background */}
       <div
@@ -216,11 +213,7 @@ function TiltCard3D({ image, badge, badgeColor, title, description, accent, reve
       </div>
 
       {/* Text side */}
-      <motion.div
-        initial={{ opacity: 0, x: reverse ? -30 : 30 }}
-        animate={isInView ? { opacity: 1, x: 0 } : {}}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: index * 0.07 + 0.15 }}
-        style={{ willChange: 'transform, opacity' }}
+      <div
         className="flex-1 space-y-5 px-2"
       >
         <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-orbitron text-[10px] tracking-widest ${badgeColor}`}>
@@ -235,24 +228,15 @@ function TiltCard3D({ image, badge, badgeColor, title, description, accent, reve
             Get Started <ArrowRight size={16} />
           </NeonButton>
         </Link>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
 /* ─── FeatureCard ───────────────────────────────────────────────────────── */
-function FeatureCard({ feature, index }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.05 });
-
+function FeatureCard({ feature }) {
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: index * 0.06 }}
-      style={{ willChange: 'transform, opacity' }}
-    >
+    <div className="scroll-feature-card">
       <GlassCard className="h-full group cursor-none">
         <div className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition-all duration-300 group-hover:scale-110 group-hover:border-neon-purple/40 ${feature.color}`}>
           <feature.icon size={22} />
@@ -260,7 +244,7 @@ function FeatureCard({ feature, index }) {
         <h3 className="font-orbitron font-semibold text-sm">{feature.title}</h3>
         <p className="mt-2 text-xs text-muted leading-relaxed">{feature.desc}</p>
       </GlassCard>
-    </motion.div>
+    </div>
   );
 }
 
@@ -316,19 +300,16 @@ function StatItem({ value, label, delay }) {
   const suffix = match ? match[2] : '';
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay }}
-      className="text-center"
+      className="text-center scroll-stat-item"
     >
       <p className="font-hero text-fluid-title font-bold gradient-text">
         {startCount && numStr ? <CountUp target={numStr} /> : (numStr || value)}
         {suffix}
       </p>
       <p className="mt-1 font-body text-fluid-caption text-muted tracking-wider uppercase">{label}</p>
-    </motion.div>
+    </div>
   );
 }
 
@@ -338,11 +319,101 @@ export default function Landing() {
 
   const [openFaq, setOpenFaq] = useState(null);
   const heroRef = useRef(null);
+  const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
 
+  useGSAP(() => {
+    const ctx = containerRef.current;
+    if (!ctx) return;
+
+    // Safety: ensure all animated elements start visible by default.
+    // gsap.from() will override these at animation start, but this prevents
+    // permanent invisible state if ScrollTrigger never fires.
+    const allAnimated = ctx.querySelectorAll(
+      '.hero-badge,.hero-title,.hero-desc,.hero-cta,.hero-widgets-item,' +
+      '.scroll-stat-item,.articles-header,.scroll-article-card,' +
+      '.features-header,.scroll-feature-card,.pricing-header,' +
+      '.scroll-pricing-card,.testimonials-header,.scroll-testimonial-card'
+    );
+    allAnimated.forEach(el => { el.style.opacity = '1'; });
+
+    // 1. Hero timeline — scoped to container
+    const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    heroTl
+      .fromTo('.hero-badge',
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.7 })
+      .fromTo('.hero-title',
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power4.out' }, '-=0.5')
+      .fromTo('.hero-desc',
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.7 }, '-=0.5')
+      .fromTo('.hero-cta',
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.7 }, '-=0.5')
+      .fromTo('.hero-widgets-item',
+        { opacity: 0, scale: 0.85 },
+        { opacity: 1, scale: 1, stagger: 0.08, duration: 0.6, ease: 'back.out(1.5)' }, '-=0.4');
+
+    // Helper to create a safe scrollTrigger animation that uses fromTo
+    // so elements are never permanently hidden
+    const scrollReveal = (selector, vars, triggerEl) => {
+      const els = ctx.querySelectorAll(selector);
+      if (!els.length) return;
+      gsap.fromTo(els,
+        { opacity: 0, y: vars.y ?? 30, scale: vars.scale ?? 1 },
+        {
+          opacity: 1, y: 0, scale: 1,
+          duration: vars.duration ?? 0.7,
+          stagger: vars.stagger ?? 0,
+          ease: vars.ease ?? 'power2.out',
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: triggerEl ?? els[0],
+            start: vars.start ?? 'top 88%',
+            toggleActions: 'play none none none',
+            onEnter: () => {},
+          },
+        }
+      );
+    };
+
+    // 2. Stats Bar
+    scrollReveal('.scroll-stat-item', { y: 25, duration: 0.6, stagger: 0.1 });
+
+    // 3. Articles section
+    scrollReveal('.articles-header', { y: 30, duration: 0.8 }, ctx.querySelector('#articles'));
+    scrollReveal('.scroll-article-card', { y: 80, duration: 1, stagger: 0.2, start: 'top 80%' }, ctx.querySelector('#articles'));
+
+    // 4. Features section
+    scrollReveal('.features-header', { y: 30, duration: 0.8 }, ctx.querySelector('#features'));
+    scrollReveal('.scroll-feature-card', { y: 45, duration: 0.7, stagger: 0.08, scale: 0.92, start: 'top 80%' }, ctx.querySelector('#features'));
+
+    // 5. Pricing section
+    scrollReveal('.pricing-header', { y: 30, duration: 0.8 }, ctx.querySelector('#pricing'));
+    scrollReveal('.scroll-pricing-card', { y: 45, duration: 0.8, stagger: 0.15, start: 'top 80%' }, ctx.querySelector('#pricing'));
+
+    // 6. Testimonials
+    scrollReveal('.testimonials-header', { y: 30, duration: 0.8 });
+    scrollReveal('.scroll-testimonial-card', { y: 40, duration: 0.7, stagger: 0.12, start: 'top 85%' });
+
+    // Fallback: after 2s force-show any elements that are still invisible
+    // (guards against Lenis/timing race conditions)
+    const fallbackTimer = setTimeout(() => {
+      allAnimated.forEach(el => {
+        if (parseFloat(getComputedStyle(el).opacity) < 0.1) {
+          gsap.to(el, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'power2.out' });
+        }
+      });
+    }, 2000);
+
+    return () => clearTimeout(fallbackTimer);
+  }, { scope: containerRef, dependencies: [] });
+
   return (
-    <div className="relative min-h-screen">
+    <div ref={containerRef} className="relative min-h-screen">
       <BackgroundEffects />
 
       {/* ── Navbar ── */}
@@ -379,55 +450,37 @@ export default function Landing() {
         <motion.div style={{ y: heroY, willChange: 'transform' }} className="relative z-10 mx-auto max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center text-left">
 
-            {/* Left Content Column */}
-            <div className="lg:col-span-7 flex flex-col space-y-6">
-              <div className="flex flex-wrap items-center gap-3 self-start">
+            {/* Hero Left Text Column */}
+            <div className="lg:col-span-7 flex flex-col justify-center space-y-6 text-left relative z-10">
+              <div
+                className="inline-flex items-center gap-2 rounded-full border border-neon-purple/30 bg-neon-purple/10 px-4 py-1.5 backdrop-blur-md hero-badge"
+              >
                 <FOMOBadge />
-                <motion.p
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.55 }}
-                  className="inline-flex items-center gap-2 rounded-full border border-neon-blue/30 bg-neon-blue/10 px-4 py-1.5 font-hero text-[10px] tracking-widest text-neon-blue"
-                >
-                  <Sparkles size={12} className="animate-spinSlow" /> CODE SMARTER. LEARN FASTER. BUILD BETTER.
-                </motion.p>
               </div>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.08 }}
-                className="font-hero text-fluid-hero font-bold leading-tight text-white"
+              <h1
+                className="font-hero text-fluid-hero font-bold leading-tight text-white hero-title"
               >
                 Your Intelligent{' '}
                 <span className="relative inline-block gradient-text">
                   Development Companion
-                  <motion.span
+                  <span
                     className="absolute -bottom-1 left-0 h-px w-full bg-gradient-to-r from-neon-purple via-neon-blue to-neon-pink"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.9, delay: 0.7 }}
                     style={{ transformOrigin: 'left', willChange: 'transform' }}
                   />
                 </span>
-              </motion.h1>
+              </h1>
 
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.7, delay: 0.25 }}
-                className="font-body text-fluid-lead text-muted leading-relaxed max-w-xl"
+              <p
+                className="font-body text-fluid-lead text-muted leading-relaxed max-w-xl hero-desc"
               >
                 An immersive AI-powered operating system for code generation, debugging, project planning, voice assistance,
                 and interactive learning — crafted for modern developers.
-              </motion.p>
+              </p>
 
               {/* Glowing CTA Buttons */}
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.4 }}
-                className="flex flex-wrap gap-4 pt-2"
+              <div
+                className="flex flex-wrap gap-4 pt-2 hero-cta"
               >
                 <Link to="/register">
                   <NeonButton magnetic={true} className="px-8 py-3 text-sm shadow-neon-purple hover:scale-105 transition-all duration-300">
@@ -439,28 +492,25 @@ export default function Landing() {
                     Sign In
                   </NeonButton>
                 </Link>
-              </motion.div>
+              </div>
 
               {/* Floating UI Widgets under CTA */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.5 }}
-                className="flex flex-wrap gap-4 items-center pt-6 border-t border-white/5"
+              <div
+                className="flex flex-wrap gap-4 items-center pt-6 border-t border-white/5 hero-widgets"
               >
-                <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 backdrop-blur-md">
+                <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 backdrop-blur-md hero-widgets-item">
                   <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="font-orbitron text-xs text-neutral-300">Neural Link Online</span>
                 </div>
-                <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 backdrop-blur-md">
+                <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 backdrop-blur-md hero-widgets-item">
                   <span className="font-orbitron text-xs text-neutral-400">Response Speed:</span>
                   <span className="font-orbitron text-xs text-neon-blue font-bold">14ms</span>
                 </div>
-                <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 backdrop-blur-md">
+                <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 py-2 backdrop-blur-md hero-widgets-item">
                   <span className="font-orbitron text-xs text-neutral-400">GPU Rendering:</span>
                   <span className="font-orbitron text-xs text-neon-pink font-bold">ON</span>
                 </div>
-              </motion.div>
+              </div>
             </div>
 
             {/* Right Hologram Spline Column */}
@@ -534,12 +584,8 @@ export default function Landing() {
 
       {/* ── 3D Article Sections ── */}
       <section id="articles" className="relative z-10 px-6 py-24 lg:px-16">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={VP}
-          transition={{ duration: 0.6 }}
-          className="mb-20 text-center"
+        <div
+          className="mb-20 text-center articles-header"
         >
           <p className="mb-3 font-hero text-xs tracking-widest text-neon-purple">CORE TECHNOLOGY</p>
           <h2 className="font-hero text-fluid-title font-bold">
@@ -548,7 +594,7 @@ export default function Landing() {
           <p className="mx-auto mt-4 max-w-xl font-body text-fluid-body text-muted">
             Three pillars that make HARVOX AI the most advanced developer companion ever created.
           </p>
-        </motion.div>
+        </div>
 
         <div className="mx-auto max-w-6xl">
           {articles.map((article, i) => (
@@ -559,18 +605,14 @@ export default function Landing() {
 
       {/* ── Features Grid ── */}
       <section id="features" className="relative z-10 px-6 py-20 lg:px-16">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={VP}
-          transition={{ duration: 0.6 }}
-          className="mb-14 text-center"
+        <div
+          className="mb-14 text-center features-header"
         >
           <p className="mb-3 font-hero text-xs tracking-widest text-neon-blue">CAPABILITIES</p>
           <h2 className="font-hero text-fluid-title font-bold">
             Powerful <span className="gradient-text">AI Tools</span>
           </h2>
-        </motion.div>
+        </div>
         <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => <FeatureCard key={f.title} feature={f} index={i} />)}
         </div>
@@ -635,28 +677,19 @@ export default function Landing() {
 
       {/* ── Pricing ── */}
       <section id="pricing" className="relative z-10 px-6 py-20 lg:px-16">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={VP}
-          transition={{ duration: 0.6 }}
-          className="mb-14 text-center"
+        <div
+          className="mb-14 text-center pricing-header"
         >
           <p className="mb-3 font-hero text-xs tracking-widest text-neon-blue">PRICING</p>
           <h2 className="font-hero text-fluid-title font-bold">
             Simple <span className="gradient-text">Pricing</span>
           </h2>
-        </motion.div>
+        </div>
         <div className="mx-auto grid max-w-3xl gap-8 md:grid-cols-2">
           {plans.map((p, i) => (
-            <motion.div
+            <div
               key={p.name}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={VP}
-              transition={{ duration: 0.55, delay: i * 0.12 }}
-              style={{ willChange: 'transform, opacity' }}
-              className="relative group/card"
+              className="relative group/card scroll-pricing-card"
             >
               {p.highlight && (
                 <>
@@ -695,7 +728,7 @@ export default function Landing() {
                   </NeonButton>
                 </Link>
               </HologramCard>
-            </motion.div>
+            </div>
           ))}
         </div>
       </section>
@@ -808,26 +841,18 @@ export default function Landing() {
 
       {/* ── Testimonials ── */}
       <section className="relative z-10 px-6 py-16 lg:px-16">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={VP}
-          transition={{ duration: 0.6 }}
-          className="mb-12 text-center"
+        <div
+          className="mb-12 text-center testimonials-header"
         >
           <h2 className="font-hero text-fluid-title font-bold">
             Loved by <span className="gradient-text">Developers</span>
           </h2>
-        </motion.div>
+        </div>
         <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-3">
           {testimonials.map((t, i) => (
-            <motion.div
+            <div
               key={t.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={VP}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              style={{ willChange: 'transform, opacity' }}
+              className="scroll-testimonial-card"
             >
               <GlassCard hover={false} className="h-full">
                 <div className="mb-3 text-2xl">{t.icon}</div>
@@ -845,7 +870,7 @@ export default function Landing() {
                   </div>
                 </div>
               </GlassCard>
-            </motion.div>
+            </div>
           ))}
         </div>
       </section>

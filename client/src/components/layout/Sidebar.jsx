@@ -10,6 +10,7 @@ import { cn } from '../../utils/cn';
 import { useAuthStore } from '../../store/authStore';
 import { useSidebarStore } from '../../store/sidebarStore';
 import { useState } from 'react';
+import Magnetic from '../ui/Magnetic';
 
 // ─── Nav Groups ───────────────────────────────────────────────────────────────
 const NAV_GROUPS = [
@@ -91,19 +92,21 @@ function NavItem({ item, collapsed, onClose }) {
           )}
 
           {/* Icon */}
-          <div
-            className="relative z-10 shrink-0 transition-colors duration-200"
-            style={{ color: isActive ? item.neon : undefined }}
-          >
-            <item.icon size={16} strokeWidth={isActive ? 2.5 : 1.8} />
-            {/* Glow dot for active */}
-            {isActive && (
-              <div
-                className="absolute -top-0.5 -right-0.5 w-1 h-1 rounded-full"
-                style={{ background: item.neon, boxShadow: `0 0 6px ${item.neon}` }}
-              />
-            )}
-          </div>
+          <Magnetic range={25} strength={0.25}>
+            <div
+              className="relative z-10 shrink-0 transition-colors duration-200"
+              style={{ color: isActive ? item.neon : undefined }}
+            >
+              <item.icon size={16} strokeWidth={isActive ? 2.5 : 1.8} />
+              {/* Glow dot for active */}
+              {isActive && (
+                <div
+                  className="absolute -top-0.5 -right-0.5 w-1 h-1 rounded-full"
+                  style={{ background: item.neon, boxShadow: `0 0 6px ${item.neon}` }}
+                />
+              )}
+            </div>
+          </Magnetic>
 
           {/* Label */}
           {!collapsed && (
@@ -210,13 +213,15 @@ export default function Sidebar({ mobileOpen, onClose }) {
         )}>
           <div className="flex items-center gap-3 min-w-0">
             {/* Logo mark */}
-            <div className="relative w-9 h-9 shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-neon-purple to-neon-blue flex items-center justify-center font-orbitron font-black text-base shadow-[0_0_20px_rgba(138,43,226,0.4)]">
-                H
+            <Magnetic range={30} strength={0.25}>
+              <div className="relative w-9 h-9 shrink-0 cursor-pointer">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-neon-purple to-neon-blue flex items-center justify-center font-orbitron font-black text-base shadow-[0_0_20px_rgba(138,43,226,0.4)]">
+                  H
+                </div>
+                {/* Pulse ring */}
+                <div className="absolute inset-0 rounded-xl animate-ping opacity-20 bg-neon-purple" style={{ animationDuration: '3s' }} />
               </div>
-              {/* Pulse ring */}
-              <div className="absolute inset-0 rounded-xl animate-ping opacity-20 bg-neon-purple" style={{ animationDuration: '3s' }} />
-            </div>
+            </Magnetic>
             {!collapsed && (
               <div className="min-w-0 animate-fade-in">
                 <p className="font-orbitron text-sm font-black tracking-widest text-white truncate">HARVOX AI</p>
@@ -227,13 +232,15 @@ export default function Sidebar({ mobileOpen, onClose }) {
 
           {/* Collapse toggle (desktop only) */}
           {!mobileOpen && (
-            <button
-              onClick={toggleCollapse}
-              className="hidden lg:flex w-7 h-7 items-center justify-center rounded-lg text-gray-600 hover:text-white hover:bg-white/5 transition-all shrink-0"
-              title={collapsed ? 'Expand' : 'Collapse'}
-            >
-              {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-            </button>
+            <Magnetic range={20} strength={0.3}>
+              <button
+                onClick={toggleCollapse}
+                className="hidden lg:flex w-7 h-7 items-center justify-center rounded-lg text-gray-600 hover:text-white hover:bg-white/5 transition-all shrink-0 cursor-pointer"
+                title={collapsed ? 'Expand' : 'Collapse'}
+              >
+                {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+              </button>
+            </Magnetic>
           )}
         </div>
 
@@ -315,13 +322,15 @@ export default function Sidebar({ mobileOpen, onClose }) {
             onClick={() => { navigate('/app/profile'); onClose(); }}
           >
             {/* Avatar */}
-            <div className="relative shrink-0">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-neon-purple/40 to-neon-blue/30 border border-neon-purple/30 flex items-center justify-center font-orbitron font-black text-sm text-white shadow-[0_0_12px_rgba(138,43,226,0.25)]">
-                {userInitial}
+            <Magnetic range={25} strength={0.25}>
+              <div className="relative shrink-0">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-neon-purple/40 to-neon-blue/30 border border-neon-purple/30 flex items-center justify-center font-orbitron font-black text-sm text-white shadow-[0_0_12px_rgba(138,43,226,0.25)]">
+                  {userInitial}
+                </div>
+                {/* Online dot */}
+                <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-[#040310] shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
               </div>
-              {/* Online dot */}
-              <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-[#040310] shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
-            </div>
+            </Magnetic>
 
             {!collapsed && (
               <>
@@ -341,17 +350,19 @@ export default function Sidebar({ mobileOpen, onClose }) {
           </div>
 
           {/* Keep logout visible without requiring a profile-card hover. */}
-          <button
-            onClick={handleLogout}
-            className={cn(
-              'mt-2 flex items-center justify-center rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-300 transition-colors hover:bg-rose-500/20 hover:text-rose-200',
-              collapsed ? 'mx-auto h-9 w-10' : 'w-full gap-2 px-3 py-2 text-[11px] font-semibold'
-            )}
-            title="Log Out"
-          >
-            <LogOut size={14} strokeWidth={2.25} />
-            {!collapsed && <span>Log Out</span>}
-          </button>
+          <Magnetic range={collapsed ? 25 : 15} strength={collapsed ? 0.25 : 0.12}>
+            <button
+              onClick={handleLogout}
+              className={cn(
+                'mt-2 flex items-center justify-center rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-300 transition-colors hover:bg-rose-500/20 hover:text-rose-200 cursor-pointer',
+                collapsed ? 'mx-auto h-9 w-10' : 'w-full gap-2 px-3 py-2 text-[11px] font-semibold'
+              )}
+              title="Log Out"
+            >
+              <LogOut size={14} strokeWidth={2.25} />
+              {!collapsed && <span>Log Out</span>}
+            </button>
+          </Magnetic>
         </div>
       </aside>
     </>

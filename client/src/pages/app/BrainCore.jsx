@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { memoryAPI } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(useGSAP);
 import {
   Brain, User, Cpu, FileCode, Clock, Sparkles, Network,
   Activity, ShieldAlert, Zap, BookOpen, Layers, Search,
@@ -156,6 +160,30 @@ export default function BrainCore() {
     fetchBrainData();
     runConflictCheck();
   }, []);
+
+  useGSAP(() => {
+    if (loading) return;
+
+    // Bounce-in animation for graph nodes
+    gsap.fromTo(".interactive-node", 
+      { scale: 0, opacity: 0, y: 30 },
+      { scale: 1, opacity: 1, y: 0, stagger: 0.08, duration: 0.8, ease: "back.out(1.6)", delay: 0.1 }
+    );
+
+    // Dynamic dash drawing animation for core synapses
+    gsap.fromTo(".synapse-core-line", 
+      { strokeDasharray: "800", strokeDashoffset: "800" },
+      { strokeDashoffset: 0, duration: 1.6, ease: "power3.out", delay: 0.3 }
+    );
+
+    // Indefinite scrolling dash signal flow simulation
+    gsap.to(".synapse-signal-line", {
+      strokeDashoffset: -20,
+      duration: 1.2,
+      repeat: -1,
+      ease: "none"
+    });
+  }, [loading]);
 
   const matchesSearch = (m) => {
     if (!searchQuery) return true;
@@ -656,6 +684,7 @@ export default function BrainCore() {
                               stroke="rgba(0,240,255,0.12)"
                               strokeWidth={6}
                               filter="url(#neonGlow)"
+                              className="synapse-core-line"
                             />
                           )}
                           {/* Core line */}
@@ -663,7 +692,19 @@ export default function BrainCore() {
                             x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y}
                             stroke={isFaded ? 'rgba(255,255,255,0.02)' : 'rgba(0,240,255,0.25)'}
                             strokeWidth={isFaded ? 0.5 : 1.5}
+                            className="synapse-core-line"
                           />
+                          {/* Signal Flow animation line */}
+                          {!isFaded && (
+                            <line
+                              x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y}
+                              stroke={fromNode.color}
+                              strokeWidth={1.5}
+                              strokeDasharray="4 8"
+                              className="synapse-signal-line"
+                              opacity={0.7}
+                            />
+                          )}
                           {/* Midpoint pulse dot */}
                           {!isFaded && (
                             <circle cx={midX} cy={midY} r={2} fill="rgba(0,240,255,0.5)" filter="url(#neonGlow)" />
@@ -698,7 +739,7 @@ export default function BrainCore() {
                           else { setFormCategory(node.id); startCreate(); }
                         }}
                         whileHover={isVisible ? { scale: 1.15 } : {}}
-                        className="absolute z-10 flex flex-col items-center gap-1.5 select-none"
+                        className="absolute z-10 flex flex-col items-center gap-1.5 select-none interactive-node"
                       >
                         {/* Halo aura ring behind node */}
                         {isActive && isVisible && (
